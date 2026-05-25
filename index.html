@@ -1257,10 +1257,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               Steps to deploy:
               <ol style="margin:8px 0 0 16px;display:flex;flex-direction:column;gap:5px">
                 <li>Create a <strong style="color:var(--text2)">new public repo</strong> on GitHub (e.g. <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">trading-journal-app</code>) — <em>not</em> your data repo</li>
-                <li>Add this <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">trading_journal.html</code> file and rename it <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">index.html</code></li>
+                <li>Add this <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">index.html</code> file to your repo root</li>
                 <li>Download the workflow file below and commit it to <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">.github/workflows/deploy.yml</code></li>
                 <li>In that repo's Settings → Pages, set source to <strong style="color:var(--text2)">GitHub Actions</strong></li>
-                <li>Push — your journal will be live at <span id="gh-pages-url" style="color:var(--accent)">https://&lt;user&gt;.github.io/&lt;repo&gt;</span></li>
+                <li>Push — your journal will be live at <span id="gh-pages-url" style="color:var(--accent)">https://&lt;user&gt;.github.io/trading-journal-app</span></li>
                 <li>On any new device, open the URL, go to Backup &amp; Restore, enter your <strong style="color:var(--text2)">private data repo</strong> credentials and hit Pull</li>
               </ol>
             </div>
@@ -4067,6 +4067,7 @@ async function ghPull(){
   var cfg=ghGetConfig();
   if(!cfg.user||!cfg.repo||!cfg.token){toast('GitHub not configured — set up in Backup & Restore first','err');return;}
   if(!confirm('Pull from GitHub? Your local data will be merged (trades with same key are skipped).'))return;
+  await ghSnapshot('pre-pull');
   toast('Fetching from GitHub…','ok');
   try{
     var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_FILE,{
@@ -4167,13 +4168,28 @@ async function ghListSnapshots(){
   if(!cfg.user||!cfg.repo||!cfg.token){el.innerHTML='<div style="font-size:11px;color:var(--text3)">GitHub not configured.</div>';return;}
   el.innerHTML='<div style="font-size:11px;color:var(--text3)">Loading…</div>';
   try{
-    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/bkp',{
+    // Get default branch SHA first
+    var branchResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/ref/heads/main?_='+Date.now(),{
       headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
     });
-    if(resp.status===404){el.innerHTML='<div style="font-size:11px;color:var(--text3)">No snapshots yet. They appear here automatically before any delete.</div>';return;}
-    if(!resp.ok){el.innerHTML='<div style="font-size:11px;color:var(--red)">Error loading snapshots.</div>';return;}
-    var files=await resp.json();
-    if(!Array.isArray(files)||!files.length){el.innerHTML='<div style="font-size:11px;color:var(--text3)">No snapshots yet.</div>';return;}
+    if(!branchResp.ok){el.innerHTML='<div style="font-size:11px;color:var(--red)">Error loading snapshots.</div>';return;}
+    var branchData=await branchResp.json();
+    var treeSha=branchData.object&&branchData.object.sha;
+    if(!treeSha){el.innerHTML='<div style="font-size:11px;color:var(--red)">Error: could not resolve branch.</div>';return;}
+    // Use recursive Trees API — returns ALL files, no truncation issues
+    var treeResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/trees/'+treeSha+'?recursive=1&_='+Date.now(),{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!treeResp.ok){el.innerHTML='<div style="font-size:11px;color:var(--red)">Error loading snapshots.</div>';return;}
+    var treeData=await treeResp.json();
+    var files=(treeData.tree||[])
+      .filter(function(f){return f.type==='blob'&&f.path.startsWith('bkp/')&&f.path.endsWith('.json');})
+      .map(function(f){
+        var name=f.path.replace('bkp/','');
+        return{name:name,path:f.path,sha:f.sha,
+          download_url:'https://raw.githubusercontent.com/'+cfg.user+'/'+cfg.repo+'/main/'+f.path};
+      });
+    if(!files.length){el.innerHTML='<div style="font-size:11px;color:var(--text3)">No snapshots yet. They appear here automatically before any delete.</div>';return;}
     // Sort newest first
     files.sort(function(a,b){return b.name.localeCompare(a.name);});
     el.innerHTML=files.slice(0,20).map(function(f){
@@ -4245,7 +4261,7 @@ function toggleGhPages(){
   if(!open){
     var cfg=ghGetConfig();
     var u=document.getElementById('gh-pages-url');
-    if(u&&cfg.user&&cfg.repo)u.textContent='https://'+cfg.user+'.github.io/'+cfg.repo;
+    if(u&&cfg.user)u.textContent='https://'+cfg.user+'.github.io/trading-journal-app';
   }
 }
 
@@ -4278,6 +4294,9 @@ function ghDownloadPagesWorkflow(){
 'concurrency:\n'+
 '  group: pages\n'+
 '  cancel-in-progress: false\n'+
+'\n'+
+'env:\n'+
+'  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true\n'+
 '\n'+
 'jobs:\n'+
 '  deploy:\n'+
