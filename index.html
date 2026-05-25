@@ -3249,6 +3249,9 @@ openDB().then(async function(){
     grp.querySelectorAll('.opt-pill').forEach(function(p){p.setAttribute('onclick','pickOpt(this,\''+gid.replace('opt-','tp-').replace('-a','-a-val')+'\')');});
   });
   recalc();
+  // Auto-pull on page load if GitHub is configured — keeps multi-device in sync without snapshot
+  var _cfg=ghGetConfig();
+  if(_cfg.user&&_cfg.repo&&_cfg.token)ghAutoPullOnSetup();
 });
 
 // ══ Monte Carlo helpers ═══════════════════════════
@@ -3940,17 +3943,10 @@ function ghSaveConfig(){
   var u=document.getElementById('gh-user');
   var r=document.getElementById('gh-repo');
   var t=document.getElementById('gh-token');
-  var waComplete=!!(localStorage.getItem('tj-gh-user')&&localStorage.getItem('tj-gh-repo')&&localStorage.getItem('tj-gh-token'));
   if(u)localStorage.setItem('tj-gh-user',u.value.trim());
   if(r)localStorage.setItem('tj-gh-repo',r.value.trim());
   if(t)localStorage.setItem('tj-gh-token',t.value.trim());
   ghRefreshStatus();
-  var cfg=ghGetConfig();
-  var nowComplete=!!(cfg.user&&cfg.repo&&cfg.token);
-  if(!waComplete&&nowComplete){
-    // Credentials just became complete — silently pull without snapshot
-    ghAutoPullOnSetup();
-  }
 }
 async function ghAutoPullOnSetup(){
   var cfg=ghGetConfig();
@@ -4056,6 +4052,10 @@ async function ghTestConnection(){
     if(resp.ok){
       var data=await resp.json();
       if(resultEl)resultEl.innerHTML='<span style="color:var(--green)">✓ Connected — '+escHtml(data.full_name)+(data.private?' (private)':' (public)')+'</span>';
+      // Auto-pull on first setup (no previous sync on this device)
+      if(!localStorage.getItem('tj-gh-last-sync')){
+        ghAutoPullOnSetup();
+      }
     } else {
       var err=await resp.json().catch(function(){return{};});
       if(resultEl)resultEl.innerHTML='<span style="color:var(--red)">✗ '+(err.message||('HTTP '+resp.status))+'</span>';
