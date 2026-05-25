@@ -348,6 +348,35 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text3)}
 </style>
+<script>
+(function(){
+  var THEME_VARS={
+    'Midnight Blue':{bg:'#0f1117',bg2:'#161b27',bg3:'#1e2535',bg4:'#252d3f',border:'#2a3347',border2:'#3a4560',text:'#e8eaf0',text2:'#aab0c8',text3:'#7a8298',accent:'#4f8ef7',accent2:'#3a7aee',green:'#3ecf8e',red:'#f56565',amber:'#f6ad55',purple:'#a78bfa'},
+    'Pure Black':{bg:'#000000',bg2:'#0c0c0c',bg3:'#141414',bg4:'#1c1c1c',border:'#242424',border2:'#303030',text:'#f0f0f0',text2:'#aaaaaa',text3:'#707070',accent:'#3b82f6',accent2:'#2563eb',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',purple:'#a855f7'},
+    'AMOLED':{bg:'#000000',bg2:'#080808',bg3:'#101010',bg4:'#181818',border:'#1e1e1e',border2:'#282828',text:'#ffffff',text2:'#a0a8b8',text3:'#606878',accent:'#60a5fa',accent2:'#3b82f6',green:'#34d399',red:'#f87171',amber:'#fbbf24',purple:'#c084fc'},
+    'Charcoal':{bg:'#111111',bg2:'#1a1a1a',bg3:'#222222',bg4:'#2a2a2a',border:'#2e2e2e',border2:'#3a3a3a',text:'#ebebeb',text2:'#aaaaaa',text3:'#787878',accent:'#60a5fa',accent2:'#3b82f6',green:'#4ade80',red:'#f87171',amber:'#fbbf24',purple:'#c084fc'},
+    'Electric Blue':{bg:'#04080f',bg2:'#080f1e',bg3:'#0d162d',bg4:'#121e3a',border:'#1a2d50',border2:'#243d6a',text:'#d8e8ff',text2:'#8aabdc',text3:'#5878a8',accent:'#3b82f6',accent2:'#1d4ed8',green:'#22c55e',red:'#ef4444',amber:'#f59e0b',purple:'#818cf8'},
+    'Cobalt':{bg:'#020b18',bg2:'#061220',bg3:'#0a1a30',bg4:'#0e2240',border:'#152f52',border2:'#1e4070',text:'#c0d8f8',text2:'#7a9ac8',text3:'#4a6888',accent:'#1d6feb',accent2:'#1558cc',green:'#10b981',red:'#dc2626',amber:'#d97706',purple:'#7c3aed'},
+    'Slate':{bg:'#0d1117',bg2:'#161c24',bg3:'#1d2633',bg4:'#253040',border:'#2a3547',border2:'#3a4a60',text:'#e6ecf4',text2:'#a8b6c8',text3:'#7a8898',accent:'#58a6ff',accent2:'#388bfd',green:'#3fb950',red:'#f85149',amber:'#d29922',purple:'#bc8cff'},
+    'Steel Blue':{bg:'#0a0c10',bg2:'#111620',bg3:'#181f2e',bg4:'#1e2838',border:'#252f45',border2:'#2e3d5a',text:'#d4ddf0',text2:'#8898b8',text3:'#5a6a88',accent:'#4f7eb8',accent2:'#3a6090',green:'#3aaa78',red:'#d85050',amber:'#c08030',purple:'#7850c0'},
+    'Cloud':{bg:'#f0f4f8',bg2:'#ffffff',bg3:'#e8ecf4',bg4:'#dde3ee',border:'#c8d0de',border2:'#b0bcce',text:'#1a2030',text2:'#384868',text3:'#6878a0',accent:'#2563eb',accent2:'#1d4ed8',green:'#16a34a',red:'#dc2626',amber:'#d97706',purple:'#7c3aed'},
+    'Arctic':{bg:'#f4f8ff',bg2:'#ffffff',bg3:'#eaf0ff',bg4:'#dde8ff',border:'#c0d0f0',border2:'#a0bcec',text:'#0f1a30',text2:'#2a4070',text3:'#5070a8',accent:'#1d4ed8',accent2:'#1e3a8a',green:'#15803d',red:'#b91c1c',amber:'#b45309',purple:'#6d28d9'},
+    'Linen':{bg:'#faf8f4',bg2:'#ffffff',bg3:'#f4f0e8',bg4:'#ece6d8',border:'#d8cebe',border2:'#c0b0a0',text:'#201810',text2:'#604030',text3:'#907060',accent:'#2563eb',accent2:'#1d4ed8',green:'#15803d',red:'#b91c1c',amber:'#92400e',purple:'#6d28d9'}
+  };
+  try{
+    var name=localStorage.getItem('tj-theme');
+    var t=name&&THEME_VARS[name];
+    if(t){
+      var r=document.documentElement.style;
+      r.setProperty('--bg',t.bg);r.setProperty('--bg2',t.bg2);r.setProperty('--bg3',t.bg3);r.setProperty('--bg4',t.bg4);
+      r.setProperty('--border',t.border);r.setProperty('--border2',t.border2);
+      r.setProperty('--text',t.text);r.setProperty('--text2',t.text2);r.setProperty('--text3',t.text3);
+      r.setProperty('--accent',t.accent);r.setProperty('--accent2',t.accent2);
+      r.setProperty('--green',t.green);r.setProperty('--red',t.red);r.setProperty('--amber',t.amber);r.setProperty('--purple',t.purple);
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <div class="shell">
@@ -587,7 +616,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <select id="f-rating"><option value="">— select —</option><option>⭐</option><option>⭐⭐</option><option>⭐⭐⭐</option><option>⭐⭐⭐⭐</option><option>⭐⭐⭐⭐⭐</option></select>
             </div>
             <div class="frow" style="min-width:130px">
-              <label class="flabel">Error type <span style="color:var(--red);margin-left:2px">*</span></label>
+              <label class="flabel">Error type</label>
               <select id="f-error"><option value="">— none —</option><option>Valid - Natural</option><option>Invalid - Manual</option><option>Checklist</option></select>
             </div>
           </div>
@@ -595,15 +624,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
             <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Trade plan</div>
             <div class="frow-inline">
-              <div class="frow">
-                <label class="flabel">SL placement <span style="color:var(--red);margin-left:2px">*</span></label>
-                <div class="opt-group" id="opt-slplace">
-                  <span class="opt-pill opt-blue" data-val="Confirmation" onclick="pickOpt(this,'tp-slplace-val')">Confirmation</span>
-                  <span class="opt-pill opt-purple" data-val="Zone" onclick="pickOpt(this,'tp-slplace-val')">Zone</span>
-                  <span class="opt-pill opt-amber" data-val="Candle H/L" onclick="pickOpt(this,'tp-slplace-val')">Candle H/L</span>
-                </div>
-                <input type="hidden" id="tp-slplace-val" value="">
-              </div>
               <div class="frow">
                 <label class="flabel">Exit criteria <span style="color:var(--red);margin-left:2px">*</span></label>
                 <div class="opt-group" id="opt-exit-a">
@@ -613,6 +633,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                   <span class="opt-pill opt-gray" data-val="Manual" onclick="pickOpt(this,'tp-exit-a-val')">Manual</span>
                 </div>
                 <input type="hidden" id="tp-exit-a-val" value="">
+              </div>
+              <div class="frow">
+                <label class="flabel">SL placement <span style="color:var(--red);margin-left:2px">*</span></label>
+                <div class="opt-group" id="opt-slplace">
+                  <span class="opt-pill opt-blue" data-val="Confirmation" onclick="pickOpt(this,'tp-slplace-val')">Confirmation</span>
+                  <span class="opt-pill opt-purple" data-val="Zone" onclick="pickOpt(this,'tp-slplace-val')">Zone</span>
+                  <span class="opt-pill opt-amber" data-val="Candle H/L" onclick="pickOpt(this,'tp-slplace-val')">Candle H/L</span>
+                </div>
+                <input type="hidden" id="tp-slplace-val" value="">
               </div>
               <div class="frow">
                 <label class="flabel">TP placement <span style="color:var(--red);margin-left:2px">*</span></label>
@@ -645,15 +674,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="frow">
               <label class="flabel">Entry time <span style="color:var(--red);margin-left:2px">*</span></label>
               <div class="dt-wrap">
-                <input type="date" id="f-etime-date" oninput="recalc()">
-                <input type="text" id="f-etime-time" placeholder="14:30" maxlength="5" style="max-width:70px" oninput="recalc()">
+                <input type="date" id="f-etime-date" oninput="clampDateYear(this);recalc()">
+                <input type="text" id="f-etime-time" placeholder="e.g. 1430" maxlength="4" style="max-width:90px" oninput="onTimeInput(this)" onblur="onTimeBlur(this)" onfocus="onTimeFocus(this)" autocomplete="off">
               </div>
             </div>
             <div class="frow">
               <label class="flabel">Exit time <span style="color:var(--red);margin-left:2px">*</span></label>
               <div class="dt-wrap">
-                <input type="date" id="f-xtime-date" oninput="recalc()">
-                <input type="text" id="f-xtime-time" placeholder="16:45" maxlength="5" style="max-width:70px" oninput="recalc()">
+                <input type="date" id="f-xtime-date" oninput="clampDateYear(this);recalc()">
+                <input type="text" id="f-xtime-time" placeholder="e.g. 1645" maxlength="4" style="max-width:90px" oninput="onTimeInput(this)" onblur="onTimeBlur(this)" onfocus="onTimeFocus(this)" autocomplete="off">
               </div>
             </div>
             <div class="frow">
@@ -663,6 +692,8 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             </div>
           </div>
           <input type="hidden" id="f-sl" value="">
+          <input type="hidden" id="f-etime-time-24" value="">
+          <input type="hidden" id="f-xtime-time-24" value="">
           <input type="hidden" id="tp-criteria-val" value="">
           <input type="hidden" id="tp-rr-a" value="">
           <input type="hidden" id="tp-arr-display" value="">
@@ -796,7 +827,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <button class="btn btn-sm btn-primary" onclick="addTfChip('narrative')">Add</button>
               <button class="btn btn-sm btn-ghost" onclick="hideAddTf('narrative')">Cancel</button>
             </div>
-            <div class="frow" style="margin-top:12px"><label class="flabel">Narrative notes <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="narrative-notes" placeholder="Describe overall bias, structure, and context..."></textarea></div>
+            <div class="frow" style="margin-top:12px"><label class="flabel">Narrative notes <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="narrative-notes">1.</textarea></div>
           </div>
         </div>
 
@@ -807,7 +838,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body open">
-            <div class="frow"><label class="flabel">Setup description <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="setup-notes" placeholder="1. Trading within a&#10;2. "></textarea></div>
+            <div class="frow"><label class="flabel">Setup description <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="setup-notes">1. Trading within a </textarea></div>
             <div class="screenshots-group" style="margin-top:12px">
               <div class="screenshots-group-hdr"><span class="screenshots-group-title">Setup screenshots</span><span style="font-size:10px;color:var(--text3)"><kbd>Ctrl+V</kbd> to paste</span></div>
               <div class="img-grid" id="imgs-setup"></div>
@@ -869,7 +900,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body open">
-            <div class="frow"><textarea id="led-to-trade" placeholder="1.&#10;2. "></textarea></div>
+            <div class="frow"><textarea id="led-to-trade">1.</textarea></div>
           </div>
         </div>
 
@@ -880,7 +911,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body open">
-            <div class="frow"><textarea id="issues-notes" placeholder="1.&#10;2. "></textarea></div>
+            <div class="frow"><textarea id="issues-notes">1.</textarea></div>
           </div>
         </div>
 
@@ -891,7 +922,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body">
-            <div class="frow"><textarea id="post-analysis" placeholder="Hindsight analysis, follow-up ideas..."></textarea></div>
+            <div class="frow"><textarea id="post-analysis">1.</textarea></div>
           </div>
         </div>
         <div class="analysis-section">
@@ -900,7 +931,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body">
-            <div class="frow"><textarea id="f-news" placeholder="High-impact events, economic releases..."></textarea></div>
+            <div class="frow"><textarea id="f-news">1.</textarea></div>
           </div>
         </div>
 
@@ -915,17 +946,17 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
         <div class="form-section">
           <div class="fsec-title">Emotions</div>
           <div class="frow-inline">
-            <div class="frow"><label class="flabel">Before placing trade <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-before" placeholder="How were you feeling?"></textarea></div>
-            <div class="frow"><label class="flabel">After placing trade <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-after" placeholder="Immediately after entry?"></textarea></div>
-            <div class="frow"><label class="flabel">After trade completed <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-complete" placeholder="After close?"></textarea></div>
+            <div class="frow"><label class="flabel">Before placing trade <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-before">1.</textarea></div>
+            <div class="frow"><label class="flabel">After placing trade <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-after">1.</textarea></div>
+            <div class="frow"><label class="flabel">After trade completed <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-complete">1.</textarea></div>
           </div>
         </div>
         <div class="form-section">
           <div class="fsec-title">Lessons</div>
           <div class="frow-inline">
-            <div class="frow"><label class="flabel">Mistakes <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-mistakes" placeholder="What went wrong?"></textarea></div>
-            <div class="frow"><label class="flabel">Lessons learned <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-lessons" placeholder="What will you do differently?"></textarea></div>
-            <div class="frow"><label class="flabel">What went well <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-good" placeholder="Strengths to keep up..."></textarea></div>
+            <div class="frow"><label class="flabel">Mistakes <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-mistakes">1.</textarea></div>
+            <div class="frow"><label class="flabel">Lessons learned <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-lessons">1.</textarea></div>
+            <div class="frow"><label class="flabel">What went well <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-good">1.</textarea></div>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
@@ -1189,7 +1220,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             </div>
             <div class="bc-title">Push to GitHub</div>
             <div class="bc-desc">Manually push your full journal (trades, images, sessions, settings) to your GitHub repo right now.</div>
-            <button class="btn btn-primary" onclick="ghPush(true)">
+            <button class="btn btn-primary" onclick="ghPushManual()">
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
               Push now
             </button>
@@ -1229,7 +1260,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
           <div id="gh-snapshots-body" class="card-body" style="display:none">
             <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7">
-              Before every trade delete, session delete, or clear-all, a full snapshot is automatically pushed to <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">bkp/</code> in your repo. Download any snapshot below and use <strong style="color:var(--text2)">Import JSON backup</strong> above to restore it.
+              Before every session delete or clear-all, a full snapshot is automatically pushed to <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">bkp/sessions/</code> or <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">bkp/clear-all/</code> in your repo. Download any snapshot below and use <strong style="color:var(--text2)">Import JSON backup</strong> above to restore it.
             </div>
             <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
               <button class="btn btn-ghost btn-sm" onclick="ghListSnapshots()">
@@ -1240,6 +1271,41 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div id="gh-snapshot-list"></div>
           </div>
         </div>
+        <!-- Cloudinary Image Hosting -->
+        <div class="card" style="margin-top:12px">
+          <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleCloudinarySetup()">
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+              <span class="card-title">Cloudinary — Image Hosting</span>
+              <span id="cloudinary-status-dot" style="width:7px;height:7px;border-radius:50%;background:var(--border2);display:inline-block;margin-left:2px"></span>
+              <span id="cloudinary-status-label" style="font-size:10px;font-weight:500;color:var(--text3);text-transform:none;letter-spacing:0">Not configured</span>
+            </div>
+            <svg id="cloudinary-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div id="cloudinary-setup-body" class="card-body" style="display:none">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7">
+              When configured, screenshots are uploaded to <strong style="color:var(--text2)">Cloudinary</strong> (free tier: 25GB) instead of being stored as base64. Your <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">tj_backup.json</code> stays tiny — only image URLs are saved, not the image data itself.
+              <br><br>
+              Sign up free at <a href="https://cloudinary.com" target="_blank" style="color:var(--accent)">cloudinary.com</a>, then go to <strong style="color:var(--text2)">Settings → Upload → Upload presets</strong> and create an <strong style="color:var(--text2)">unsigned</strong> preset. Copy your Cloud Name from the dashboard.<br><br>
+              <strong style="color:var(--amber)">⚠ Required for screenshot deletion:</strong> In your upload preset settings, under <strong style="color:var(--text2)">Upload Control</strong>, set <strong style="color:var(--text2)">Return delete token</strong> to <strong style="color:var(--text2)">Yes</strong>. Without this, removed screenshots will not be deleted from Cloudinary.
+            </div>
+            <div class="frow-inline" style="margin-bottom:12px">
+              <div class="frow" style="flex:1;min-width:160px">
+                <label class="flabel">Cloud Name</label>
+                <input type="text" id="cld-cloud-name" placeholder="your-cloud-name" oninput="cloudinarySaveConfig()">
+              </div>
+              <div class="frow" style="flex:1;min-width:160px">
+                <label class="flabel">Upload Preset (unsigned)</label>
+                <input type="text" id="cld-upload-preset" placeholder="ml_default" oninput="cloudinarySaveConfig()">
+              </div>
+            </div>
+            <div style="font-size:11px;padding:10px 12px;background:rgba(77,127,255,.05);border:1px solid rgba(77,127,255,.15);border-radius:var(--radius);margin-bottom:12px;line-height:1.7">
+              <strong style="color:var(--text2)">How it works:</strong> When you paste or drop a screenshot, it's uploaded instantly to Cloudinary. The image URL is stored in your trade. Your GitHub backup stays lean — no base64 blobs. Existing trades with base64 images continue to work normally.
+            </div>
+            <div id="cloudinary-config-status" style="font-size:11px;color:var(--text3)"></div>
+          </div>
+        </div>
+
         <!-- GitHub Pages Deploy -->
         <div class="card" style="margin-top:12px">
           <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleGhPages()">
@@ -1962,7 +2028,9 @@ function isSessionActive(sess){
 
 async function deleteSession(id){
   if(!confirm('Delete this session?'))return;
-  await ghSnapshot('pre-delete-session');
+  var sess=await dbGet('sessions',id);
+  var safeName=(sess&&sess.name?sess.name.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,40):'session');
+  await ghSnapshot('sessions/'+safeName);
   await dbDelete('sessions',id);renderSessionsList();populateSessionSelects();toast('Deleted','ok');
 }
 async function renderSessionsList(){
@@ -2124,17 +2192,89 @@ function toggleTrailDetail(){var v=document.getElementById('f-trail-val').value;
 function toggleTpDetail(){var v=document.getElementById('f-tpchg-val').value;document.getElementById('tp-change-box').classList.toggle('visible',v==='Yes');}
 
 // ══ DateTime helpers ══════════════════════════════
+// ══ Time field helpers (type digits → 12h display, 24h storage) ══
+function pad2(n){return n<10?'0'+n:''+n;}
+function parseTimeInput(raw){
+  if(!raw)return null;
+  var s=raw.trim().toUpperCase();
+  // 12h with AM/PM e.g. "2:30 PM", "230PM"
+  var m12=s.match(/^(\d{1,2}):?(\d{2})?\s*(AM|PM)$/);
+  if(m12){
+    var h=parseInt(m12[1]),mn=parseInt(m12[2]||'0'),ap=m12[3];
+    if(ap==='PM'&&h!==12)h+=12;
+    if(ap==='AM'&&h===12)h=0;
+    if(h<0||h>23||mn<0||mn>59)return null;
+    return{h24:pad2(h)+':'+pad2(mn)};
+  }
+  // HH:MM 24h e.g. "14:30"
+  var mc=s.match(/^(\d{1,2}):(\d{2})$/);
+  if(mc){
+    var h=parseInt(mc[1]),mn=parseInt(mc[2]);
+    if(h<0||h>23||mn<0||mn>59)return null;
+    return{h24:pad2(h)+':'+pad2(mn)};
+  }
+  // Pure digits e.g. "1430", "930", "9"
+  var digits=s.replace(/\D/g,'');
+  if(digits.length===1||digits.length===2){var h=parseInt(digits);if(h<0||h>23)return null;return{h24:pad2(h)+':00'};}
+  if(digits.length===3){var h=parseInt(digits[0]),mn=parseInt(digits.slice(1));if(h<0||h>23||mn<0||mn>59)return null;return{h24:pad2(h)+':'+pad2(mn)};}
+  if(digits.length===4){var h=parseInt(digits.slice(0,2)),mn=parseInt(digits.slice(2));if(h<0||h>23||mn<0||mn>59)return null;return{h24:pad2(h)+':'+pad2(mn)};}
+  return null;
+}
+function to12h(h24){
+  if(!h24)return'';
+  var parts=h24.split(':');
+  var h=parseInt(parts[0]),mn=parseInt(parts[1]||'0');
+  var ap=h>=12?'PM':'AM';
+  var h12=h%12||12;
+  return h12+':'+pad2(mn)+' '+ap;
+}
+function onTimeInput(el){
+  // Only allow digits, max 4 (HHMM format while typing)
+  var raw=el.value.replace(/[^0-9]/g,'').slice(0,4);
+  if(raw!==el.value)el.value=raw;
+  var parsed=parseTimeInput(el.value);
+  var hidden=document.getElementById(el.id+'-24');
+  if(hidden)hidden.value=parsed?parsed.h24:'';
+  recalc();
+}
+function onTimeFocus(el){
+  // Swap formatted display ("2:30 PM") back to raw digits ("1430") for editing
+  var hidden=document.getElementById(el.id+'-24');
+  if(hidden&&hidden.value){
+    el.value=hidden.value.replace(':','');  // "14:30" -> "1430"
+  }
+  el.maxLength=4;  // enforce 4-digit cap while typing
+}
+function onTimeBlur(el){
+  var parsed=parseTimeInput(el.value);
+  var hidden=document.getElementById(el.id+'-24');
+  if(parsed){if(hidden)hidden.value=parsed.h24;el.value=to12h(parsed.h24);el.maxLength=8;}
+  else{el.value='';if(hidden)hidden.value='';el.maxLength=4;}
+  recalc();
+}
+function clampDateYear(el){
+  // Prevent years longer than 4 digits
+  if(!el.value)return;
+  var parts=el.value.split('-');
+  if(parts[0]&&parts[0].length>4){parts[0]=parts[0].slice(0,4);el.value=parts.join('-');}
+}
 function getDT(dateId,timeId){
   var d=document.getElementById(dateId).value;
-  var t=document.getElementById(timeId).value||'00:00';
-  return d?d+'T'+t:null;
+  var hiddenEl=document.getElementById(timeId+'-24');
+  var t24='';
+  if(hiddenEl&&hiddenEl.value){t24=hiddenEl.value;}
+  else{var vis=document.getElementById(timeId);var p=vis?parseTimeInput(vis.value):null;t24=p?p.h24:'00:00';}
+  return d?d+'T'+t24:null;
 }
 function setDT(dateId,timeId,iso){
   if(!iso)return;
   var d=iso.slice(0,10);
-  var t=iso.length>10?iso.slice(11,16):'';
+  var t24=iso.length>10?iso.slice(11,16):'';
   document.getElementById(dateId).value=d;
-  document.getElementById(timeId).value=t;
+  var hiddenEl=document.getElementById(timeId+'-24');
+  if(hiddenEl)hiddenEl.value=t24;
+  var visEl=document.getElementById(timeId);
+  if(visEl){visEl.value=t24?to12h(t24):'';visEl.maxLength=t24?8:4;}
 }
 
 // ══ Recalc (corrected) ════════════════════════════
@@ -2246,35 +2386,94 @@ function onDrop(e,zone){
   e.preventDefault();var el=document.getElementById('paste-zone-'+zone);if(el)el.classList.remove('drag');
   Array.from(e.dataTransfer.files).forEach(function(f){if(f.type.startsWith('image/'))addImageToZone(f,zone)});
 }
-function addImageToZone(file,zone){
-  var reader=new FileReader();
-  reader.onload=function(ev){
-    var obj={id:Date.now().toString(36)+Math.random().toString(36).slice(2),zone:zone,dataUrl:ev.target.result,name:file.name||'paste'};
-    if(!pendingImages[zone])pendingImages[zone]=[];
-    pendingImages[zone].push(obj);renderPendingImages(zone);
+async function addImageToZone(file,zone){
+  var cld=cloudinaryGetConfig();
+  if(cld.cloudName&&cld.uploadPreset){
+    // Upload to Cloudinary — store URL instead of base64
     var pz=document.getElementById('paste-zone-'+zone);
-    if(pz){pz.classList.add('paste-active');setTimeout(function(){pz.classList.remove('paste-active')},500);}
-  };reader.readAsDataURL(file);
+    if(pz){pz.classList.add('paste-active');}
+    try{
+      // Build descriptive public_id: session_tradeNum_pair_ZONE_timestamp
+      var sessionSel=document.getElementById('f-session');
+      var sessionName='';
+      if(sessionSel&&sessionSel.selectedIndex>0)sessionName=sessionSel.options[sessionSel.selectedIndex].text.replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,30);
+      var tradeNum=(document.getElementById('f-num')||{}).value||'new';
+      var pairVal=(document.getElementById('f-pair')||{}).value||'';
+      var pairClean=pairVal.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,10);
+      var zoneLabel=zone.toUpperCase();
+      var ts=Date.now();
+      var publicId='trading-journal/'+(sessionName?sessionName+'_':'')+'trade'+tradeNum+(pairClean?'_'+pairClean:'')+'_'+zoneLabel+'_'+ts;
+      var fd=new FormData();
+      fd.append('file',file);
+      fd.append('upload_preset',cld.uploadPreset);
+      fd.append('public_id',publicId);
+      var resp=await fetch('https://api.cloudinary.com/v1_1/'+cld.cloudName+'/image/upload',{method:'POST',body:fd});
+      if(!resp.ok)throw new Error('HTTP '+resp.status);
+      var data=await resp.json();
+      if(data.error)throw new Error(data.error.message);
+      var obj={id:Date.now().toString(36)+Math.random().toString(36).slice(2),zone:zone,cloudUrl:data.secure_url,publicId:data.public_id||publicId,deleteToken:data.delete_token||null,name:data.public_id||publicId};
+      if(!pendingImages[zone])pendingImages[zone]=[];
+      pendingImages[zone].push(obj);renderPendingImages(zone);
+      if(pz){setTimeout(function(){pz.classList.remove('paste-active')},500);}
+    }catch(e){
+      if(pz)pz.classList.remove('paste-active');
+      toast('Cloudinary upload failed: '+e.message+' — falling back to local','err');
+      // Fall back to base64 — reuse the descriptive publicId name already built
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        var obj={id:Date.now().toString(36)+Math.random().toString(36).slice(2),zone:zone,dataUrl:ev.target.result,name:publicId};
+        if(!pendingImages[zone])pendingImages[zone]=[];
+        pendingImages[zone].push(obj);renderPendingImages(zone);
+      };reader.readAsDataURL(file);
+    }
+  } else {
+    // No Cloudinary — use base64, build a descriptive local name
+    var sessionSel2=document.getElementById('f-session');
+    var sessionName2='';
+    if(sessionSel2&&sessionSel2.selectedIndex>0)sessionName2=sessionSel2.options[sessionSel2.selectedIndex].text.replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,30);
+    var tradeNum2=(document.getElementById('f-num')||{}).value||'new';
+    var pairVal2=(document.getElementById('f-pair')||{}).value||'';
+    var pairClean2=pairVal2.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,10);
+    var localName2='local/'+(sessionName2?sessionName2+'_':'')+'trade'+tradeNum2+(pairClean2?'_'+pairClean2:'')+'_'+zone.toUpperCase()+'_'+Date.now();
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      var obj={id:Date.now().toString(36)+Math.random().toString(36).slice(2),zone:zone,dataUrl:ev.target.result,name:localName2};
+      if(!pendingImages[zone])pendingImages[zone]=[];
+      pendingImages[zone].push(obj);renderPendingImages(zone);
+      var pz=document.getElementById('paste-zone-'+zone);
+      if(pz){pz.classList.add('paste-active');setTimeout(function(){pz.classList.remove('paste-active')},500);}
+    };reader.readAsDataURL(file);
+  }
 }
 function renderPendingImages(zone){
   var grid=document.getElementById('imgs-'+zone);if(!grid)return;
   grid.querySelectorAll('.pending-thumb').forEach(function(t){t.remove()});
   (pendingImages[zone]||[]).forEach(function(img,idx){
+    var src=img.cloudUrl||img.dataUrl;
     var t=document.createElement('div');t.className='img-thumb pending-thumb';
-    t.innerHTML='<img src="'+img.dataUrl+'" onclick="openLightbox(\''+img.dataUrl+'\')" alt="ss">'
+    t.innerHTML='<img src="'+src+'" onclick="openLightbox(\''+src+'\')" alt="ss">'
       +'<button class="img-del" onclick="removePendingImg(\''+zone+'\','+idx+')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Remove</button>';
     grid.appendChild(t);
   });
 }
-function removePendingImg(zone,idx){pendingImages[zone].splice(idx,1);renderPendingImages(zone);}
+function removePendingImg(zone,idx){
+  var img=pendingImages[zone][idx];
+  if(img&&img.cloudUrl){
+    // Prefer delete_token (valid ~10 min, no signature needed); fall back to publicId
+    if(img.deleteToken)cloudinaryDeleteImage(img.deleteToken,true);
+    else if(img.publicId)cloudinaryDeleteImage(img.publicId,false);
+  }
+  pendingImages[zone].splice(idx,1);renderPendingImages(zone);
+}
 function renderStoredImages(imageIds,zone){
   var grid=document.getElementById('imgs-'+zone);if(!grid)return;
   grid.querySelectorAll('.stored-thumb').forEach(function(t){t.remove()});
   (imageIds||[]).forEach(function(imgId){
     dbGet('images',imgId).then(function(img){
       if(!img)return;
+      var src=img.cloudUrl||img.dataUrl;
       var t=document.createElement('div');t.className='img-thumb stored-thumb';t.dataset.imgid=imgId;
-      t.innerHTML='<img src="'+img.dataUrl+'" onclick="openLightbox(\''+img.dataUrl+'\')" alt="ss">'
+      t.innerHTML='<img src="'+src+'" onclick="openLightbox(\''+src+'\')" alt="ss">'
         +'<button class="img-del" onclick="deleteStoredImg(\''+imgId+'\',\''+zone+'\',this)"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Remove</button>';
       grid.insertBefore(t,grid.firstChild);
     });
@@ -2284,6 +2483,13 @@ function deleteStoredImg(imgId,zone,btn){
   btn.closest('.img-thumb').remove();
   if(!pendingImages._deleted)pendingImages._deleted=[];
   pendingImages._deleted.push(imgId);
+  // Also delete from Cloudinary — use deleteToken if available (works ~10min after upload),
+  // otherwise try publicId (may require signed request; fails silently if not supported)
+  dbGet('images',imgId).then(function(img){
+    if(!img||!img.cloudUrl)return;
+    if(img.deleteToken)cloudinaryDeleteImage(img.deleteToken,true);
+    else if(img.publicId)cloudinaryDeleteImage(img.publicId,false);
+  }).catch(function(){});
 }
 
 // ══ Trade # auto-gen ══════════════════════════════
@@ -2327,13 +2533,12 @@ async function saveTrade(){
   var ratingVal=document.getElementById('f-rating').value;
   if(!ratingVal){toast('Rating is required','err');switchTab(0,null);return;}
   var errorVal=document.getElementById('f-error').value;
-  if(!errorVal){toast('Error type is required','err');switchTab(0,null);return;}
   var trrVal=document.getElementById('f-trr').value;
   if(!trrVal){toast('Target RR is required','err');switchTab(0,null);return;}
-  var etimeTime=document.getElementById('f-etime-time').value.trim();
-  if(!etimeTime){toast('Entry time is required','err');switchTab(0,null);return;}
-  var xtimeTime=document.getElementById('f-xtime-time').value.trim();
-  if(!xtimeTime){toast('Exit time is required','err');switchTab(0,null);return;}
+  var etimeTime=(document.getElementById('f-etime-time-24').value||'').trim()||(parseTimeInput(document.getElementById('f-etime-time').value||'')||{h24:''}).h24;
+  if(!etimeTime){toast('Entry time is required (e.g. 1430)','err');switchTab(0,null);return;}
+  var xtimeTime=(document.getElementById('f-xtime-time-24').value||'').trim()||(parseTimeInput(document.getElementById('f-xtime-time').value||'')||{h24:''}).h24;
+  if(!xtimeTime){toast('Exit time is required (e.g. 1645)','err');switchTab(0,null);return;}
   var slplaceVal=document.getElementById('tp-slplace-val').value;
   if(!slplaceVal){toast('SL placement is required','err');switchTab(0,null);return;}
   var exitCritVal=document.getElementById('tp-exit-a-val').value;
@@ -2411,7 +2616,7 @@ async function saveTrade(){
   }
   for(var zone of['htf','mtf','ltf','setup']){
     for(var img of(pendingImages[zone]||[])){
-      await dbPut('images',{id:img.id,dataUrl:img.dataUrl,name:img.name,zone:zone});
+      await dbPut('images',{id:img.id,dataUrl:img.dataUrl||null,cloudUrl:img.cloudUrl||null,publicId:img.publicId||null,deleteToken:img.deleteToken||null,name:img.name,zone:zone});
       if(!imageIds[zone])imageIds[zone]=[];imageIds[zone].push(img.id);
     }
   }
@@ -2488,15 +2693,18 @@ function cancelEdit(){editingId=null;document.getElementById('edit-banner').clas
 async function clearForm(skipCancelEdit){
   if(!skipCancelEdit)cancelEdit();
   var textIds=['f-entry','f-sl-price','f-sl','f-exit','f-qty','trail-notes','trail-count','trail-final-sl','tpchg-notes','tpchg-orig','tpchg-new',
-    'narrative-notes','setup-notes','led-to-trade','issues-notes','post-analysis','f-news',
-    'emo-before','emo-after','emo-complete','l-mistakes','l-lessons','l-good',
     'plan-if','plan-if-then','plan-elseif','plan-elseif-then','tp-rr-a'];
   textIds.forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  // Restore pre-filled defaults for analysis/reflection textareas
+  var prefilledDefaults={'narrative-notes':'1.','led-to-trade':'1.','issues-notes':'1.','post-analysis':'1.','f-news':'1.',
+    'emo-before':'1.','emo-after':'1.','emo-complete':'1.','l-mistakes':'1.','l-lessons':'1.','l-good':'1.'};
+  Object.keys(prefilledDefaults).forEach(function(id){var el=document.getElementById(id);if(el)el.value=prefilledDefaults[id];});
+  var setupEl=document.getElementById('setup-notes');if(setupEl)setupEl.value='1. Trading within a ';
   document.getElementById('f-acct').value='5000'; // will be overwritten by onSessionChange after populateSessionSelects
   document.getElementById('f-riskpct').value='1';
   document.getElementById('f-trr').value='';
-  document.getElementById('f-etime-date').value='';document.getElementById('f-etime-time').value='';
-  document.getElementById('f-xtime-date').value='';document.getElementById('f-xtime-time').value='';
+  document.getElementById('f-etime-date').value='';document.getElementById('f-etime-time').value='';document.getElementById('f-etime-time-24').value='';
+  document.getElementById('f-xtime-date').value='';document.getElementById('f-xtime-time').value='';document.getElementById('f-xtime-time-24').value='';
   document.getElementById('f-pair').selectedIndex=0;document.getElementById('f-asset-type').value='';
   document.getElementById('f-error').selectedIndex=0;document.getElementById('f-rating').selectedIndex=0;
   var wld2=document.getElementById('f-winloss-display');if(wld2){wld2.value='';wld2.style.color='';}
@@ -2586,11 +2794,11 @@ async function editTrade(id){
 // ══ Delete ════════════════════════════════════════
 async function deleteTrade(id){
   if(!confirm('Delete this trade and all its images?'))return;
-  await ghSnapshot('pre-delete-trade');
   var trade=await dbGet('trades',id);
   if(trade&&trade.imageIds)for(var z in trade.imageIds)for(var imgId of(trade.imageIds[z]||[]))await dbDelete('images',imgId);
   await dbDelete('trades',id);
   toast('Trade deleted','ok');renderHistory();renderDashboard();updateSidebarStats();closeDetail();
+  ghAutoSync();
 }
 
 // ══ History columns ════════════════════════════════
@@ -2604,7 +2812,7 @@ var ALL_HISTORY_COLS=[
   {key:'plDollar',  label:'P/L ($)',   sortVal:function(t){return parseFloat(t.plDollar)||0;},    render:function(t){var pl=parseFloat(t.plDollar)||0;return'<td class="mono" style="color:'+(pl>=0?'var(--green)':'var(--red)')+'">'+((pl>=0?'+':'')+pl.toFixed(2))+'</td>';}},
   {key:'plPct',     label:'P/L (%)',   sortVal:function(t){return parseFloat(t.plPct)||0;},       render:function(t){var p=parseFloat(t.plPct)||0;return'<td class="mono" style="color:'+(p>=0?'var(--green)':'var(--red)')+'">'+((p>=0?'+':'')+p.toFixed(2))+'%</td>';}},
   {key:'actualRR',  label:'RR',        sortVal:function(t){return t.actualRR!=null?parseFloat(t.actualRR):-999;},render:function(t){return'<td class="mono">'+(t.actualRR!=null?parseFloat(t.actualRR).toFixed(2)+'R':'—')+'</td>';}},
-  {key:'entryTime', label:'Date',      sortVal:function(t){return t.entryTime||t.savedAt||'';},   render:function(t){return'<td style="color:var(--text3);font-size:12px">'+(t.entryTime?t.entryTime.slice(0,10):'—')+'</td>';}},
+  {key:'entryTime', label:'Date',      sortVal:function(t){return t.entryTime||t.savedAt||'';},   render:function(t){if(!t.entryTime)return'<td style="color:var(--text3);font-size:12px">—</td>';var timeStr=t.entryTime.length>10?' <span style="color:var(--text3);font-size:10px">'+to12h(t.entryTime.slice(11,16))+'</span>':'';return'<td style="color:var(--text3);font-size:12px;white-space:nowrap">'+t.entryTime.slice(0,10)+timeStr+'</td>';}},
   {key:'entryPrice',label:'Entry',     sortVal:function(t){return parseFloat(t.entryPrice)||0;},  render:function(t){return'<td class="mono">'+escHtml(String(t.entryPrice||'—'))+'</td>';}},
   {key:'exitPrice', label:'Exit',      sortVal:function(t){return parseFloat(t.exitPrice)||0;},   render:function(t){return'<td class="mono">'+escHtml(String(t.exitPrice||'—'))+'</td>';}},
   {key:'stopLoss',  label:'SL',        sortVal:function(t){return parseFloat(t.stopLoss)||0;},    render:function(t){return'<td class="mono">'+escHtml(String(t.stopLoss||'—'))+'</td>';}},
@@ -2815,7 +3023,7 @@ async function openDetail(id){
     var allImgHtml=[];
     for(var zone of['htf','mtf','ltf','setup']){
       var zImgs=[];
-      for(var imgId of(trade.imageIds[zone]||[])){var img=await dbGet('images',imgId);if(img)zImgs.push('<div class="img-thumb" style="aspect-ratio:16/10"><img src="'+img.dataUrl+'" onclick="openLightbox(\''+img.dataUrl+'\')"></div>');}
+      for(var imgId of(trade.imageIds[zone]||[])){var img=await dbGet('images',imgId);if(img){var src=img.cloudUrl||img.dataUrl;zImgs.push('<div class="img-thumb" style="aspect-ratio:16/10"><img src="'+src+'" onclick="openLightbox(\''+src+'\')"></div>');}}
       if(zImgs.length)allImgHtml.push('<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">'+zone.toUpperCase()+'</div><div class="img-grid">'+zImgs.join('')+'</div></div>');
     }
     if(allImgHtml.length)imgSections='<div class="detail-section-title">Screenshots</div>'+allImgHtml.join('');
@@ -2837,6 +3045,8 @@ async function openDetail(id){
     +'<div class="detail-item"><div class="di-label">Duration</div><div class="di-val">'+(trade.durationMin?Math.floor(trade.durationMin/60)+'h '+trade.durationMin%60+'m':'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">LTF entry</div><div class="di-val">'+(trade.ltf||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Asset type</div><div class="di-val">'+(trade.assetType||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Entry date/time</div><div class="di-val mono">'+(trade.entryTime?trade.entryTime.slice(0,10)+(trade.entryTime.length>10?' '+to12h(trade.entryTime.slice(11,16)):''):'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Exit date/time</div><div class="di-val mono">'+(trade.exitTime?trade.exitTime.slice(0,10)+(trade.exitTime.length>10?' '+to12h(trade.exitTime.slice(11,16)):''):'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">SL trailing</div><div class="di-val">'+(trade.tpTrail||'No')+(trade.trailDetail?' ('+trade.trailDetail.trigger+')':'')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">TP changed</div><div class="di-val">'+(trade.tpTpChg||'No')+(trade.tpChangeDetail?' → '+trade.tpChangeDetail.dir:'')+'</div></div>'
     +'</div>'
@@ -3000,7 +3210,7 @@ async function exportBackup(){
   var trades=await dbGetAll('trades'),images=await dbGetAll('images'),sessions=await dbGetAll('sessions'),settings=await dbGetAll('settings');
   // Also capture localStorage keys used by the app
   var localData={};
-  ['tj-theme','tj-hist-cols'].forEach(function(k){var v=localStorage.getItem(k);if(v)localData[k]=v;});
+  ['tj-hist-cols'].forEach(function(k){var v=localStorage.getItem(k);if(v)localData[k]=v;});
   var blob=new Blob([JSON.stringify({version:5,exportedAt:new Date().toISOString(),trades,images,sessions,settings,localData},null,2)],{type:'application/json'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tj_backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
   toast('Full backup downloaded ('+images.length+' images, '+trades.length+' trades)','ok');
@@ -3065,7 +3275,7 @@ async function exportCSV(){
 }
 async function clearAll(){
   if(!confirm('Delete ALL trades, images and sessions? Export a backup first!'))return;
-  await ghSnapshot('pre-clear-all');
+  await ghSnapshot('clear-all/full-journal');
   await dbClear('trades');await dbClear('images');await dbClear('sessions');
   toast('All data cleared','ok');renderDashboard();updateSidebarStats();renderSessionsList();
 }
@@ -3205,14 +3415,19 @@ function applyThemeVars(name){
   r.setProperty('--accent',t.accent);r.setProperty('--accent2',t.accent2);
   r.setProperty('--green',t.green);r.setProperty('--red',t.red);r.setProperty('--amber',t.amber);r.setProperty('--purple',t.purple);
   localStorage.setItem('tj-theme',name);
+  // Also persist to IndexedDB so it survives via JSON backup/GitHub sync
+  if(typeof setSetting==='function')setSetting('tj-theme',name);
 }
 function applyTheme(name){
   applyThemeVars(name);
   openThemeModal();// re-render swatches to update active
   toast('Theme: '+name,'ok');
 }
-function loadSavedTheme(){
-  var saved=localStorage.getItem('tj-theme');
+async function loadSavedTheme(){
+  // Try IndexedDB first (persists via JSON/GitHub sync), fall back to localStorage
+  var saved=null;
+  try{var s=await dbGet('settings','tj-theme');if(s&&s.value)saved=s.value;}catch(e){}
+  if(!saved)saved=localStorage.getItem('tj-theme');
   if(saved&&THEMES[saved])applyThemeVars(saved);
 }
 
@@ -3246,7 +3461,8 @@ openDB().then(async function(){
   // Add missing hidden IDs for analysis opt groups
   ['opt-criteria','opt-slplace','opt-tpplace','opt-exit-a'].forEach(function(gid){
     var grp=document.getElementById(gid);if(!grp)return;
-    grp.querySelectorAll('.opt-pill').forEach(function(p){p.setAttribute('onclick','pickOpt(this,\''+gid.replace('opt-','tp-').replace('-a','-a-val')+'\')');});
+    var hiddenId=gid.replace('opt-','tp-').replace(/-a$/,'-a-val')+( gid.endsWith('-a')?'':'-val');
+    grp.querySelectorAll('.opt-pill').forEach(function(p){p.setAttribute('onclick','pickOpt(this,\''+hiddenId+'\')');});
   });
   recalc();
   // Auto-pull on page load if GitHub is configured — keeps multi-device in sync without snapshot
@@ -4068,8 +4284,13 @@ async function ghTestConnection(){
 async function ghBuildPayload(){
   var trades=await dbGetAll('trades'),images=await dbGetAll('images'),sessions=await dbGetAll('sessions'),settings=await dbGetAll('settings');
   var localData={};
-  ['tj-theme','tj-hist-cols'].forEach(function(k){var v=localStorage.getItem(k);if(v)localData[k]=v;});
-  return{version:5,exportedAt:new Date().toISOString(),trades:trades,images:images,sessions:sessions,settings:settings,localData:localData};
+  ['tj-hist-cols'].forEach(function(k){var v=localStorage.getItem(k);if(v)localData[k]=v;});
+  // Strip base64 data from images that have a Cloudinary URL — keeps the backup lean
+  var imagesForGH=images.map(function(img){
+    if(img.cloudUrl){return{id:img.id,cloudUrl:img.cloudUrl,name:img.name,zone:img.zone};}
+    return img; // keep base64 for legacy images without cloudUrl
+  });
+  return{version:5,exportedAt:new Date().toISOString(),trades:trades,images:imagesForGH,sessions:sessions,settings:settings,localData:localData};
 }
 
 // Get existing file SHA (needed for updates)
@@ -4083,6 +4304,10 @@ async function ghGetFileSHA(cfg){
   }catch(e){return null;}
 }
 
+async function ghPushManual(){
+  if(!confirm('Push to GitHub? This will overwrite the remote backup with your current local data.'))return;
+  await ghPush(true);
+}
 async function ghPush(showToast){
   var cfg=ghGetConfig();
   if(!cfg.user||!cfg.repo||!cfg.token){
@@ -4117,11 +4342,11 @@ async function ghPush(showToast){
 async function ghPull(){
   var cfg=ghGetConfig();
   if(!cfg.user||!cfg.repo||!cfg.token){toast('GitHub not configured — set up in Backup & Restore first','err');return;}
-  if(!confirm('Pull from GitHub? Your local data will be merged (trades with same key are skipped).'))return;
+  if(!confirm('Pull from GitHub? Your local trades will be replaced to match the remote JSON.'))return;
   await ghSnapshot('pre-pull');
   toast('Fetching from GitHub…','ok');
   try{
-    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_FILE,{
+    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_FILE+'?t='+Date.now(),{
       headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
     });
     if(!resp.ok){var err=await resp.json().catch(function(){return{};});toast('Pull failed: '+(err.message||('HTTP '+resp.status)),'err');return;}
@@ -4129,16 +4354,14 @@ async function ghPull(){
     var jsonStr;
     // GitHub truncates content for large files — use download_url in that case
     if(fileData.content&&fileData.content.trim()){
-      // Standard base64 inline content
       try{
         jsonStr=decodeURIComponent(escape(atob(fileData.content.replace(/\n/g,''))));
       }catch(e){
-        // Fallback to download_url if decode fails
         jsonStr=null;
       }
     }
     if(!jsonStr){
-      // Large file: GitHub truncated content — fetch via Blobs API (CORS-safe, works from local HTML)
+      // Large file: fetch via Blobs API
       var blobSha=fileData.sha;
       if(!blobSha){toast('Pull failed: could not get blob SHA','err');return;}
       var blobResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/blobs/'+blobSha,{
@@ -4153,18 +4376,27 @@ async function ghPull(){
       }
     }
     var data=JSON.parse(jsonStr);
-    // Merge trades
     var importedTrades=Array.isArray(data)?data:(data.trades||[]);
-    var existing=new Set((await dbGetAll('trades')).map(function(t){return t.num+'|'+t.pair+'|'+t.entryTime}));
-    var added=0,skipped=0;
-    for(var t of importedTrades){
-      var key=t.num+'|'+t.pair+'|'+t.entryTime;
-      if(!existing.has(key)){recomputeTradeFields(t);await dbPut('trades',t);added++;existing.add(key);}
-      else skipped++;
+
+    // ── True sync: upsert all remote trades, delete any local trade not in remote ──
+    var remoteIds=new Set(importedTrades.map(function(t){return t.id;}));
+    var localTrades=await dbGetAll('trades');
+    var removed=0;
+    for(var lt of localTrades){
+      if(lt.id&&!remoteIds.has(lt.id)){await dbDelete('trades',lt.id);removed++;}
     }
-    // Images: always upsert
+    var added=0,updated=0;
+    for(var t of importedTrades){
+      recomputeTradeFields(t);
+      var existing=await dbGet('trades',t.id).catch(function(){return null;});
+      if(!existing){added++;}else{updated++;}
+      await dbPut('trades',t);
+    }
+
+    // Images: upsert remote, delete local images whose trade is gone
     var imgCount=0;
     for(var img of(data.images||[])){await dbPut('images',img);imgCount++;}
+
     // Sessions & settings: upsert
     for(var sess of(data.sessions||[]))await dbPut('sessions',sess);
     for(var setting of(data.settings||[]))await dbPut('settings',setting);
@@ -4173,7 +4405,8 @@ async function ghPull(){
     var now=new Date().toISOString();
     localStorage.setItem('tj-gh-last-sync',now);
     ghRefreshStatus();
-    toast('Pulled from GitHub: '+added+' trades added, '+imgCount+' images'+(skipped?' ('+skipped+' dupes skipped)':''),'ok');
+    var msg='Synced from GitHub: '+added+' added, '+updated+' updated'+(removed?' '+removed+' removed':'');
+    toast(msg,'ok');
     loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
   }catch(e){toast('GitHub pull error: '+e.message,'err');}
 }
@@ -4192,12 +4425,14 @@ async function ghSnapshot(reason){
   try{
     var payload=await ghBuildPayload();
     var ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
-    var filename='bkp/'+ts+'_'+reason+'.json';
+    // reason may contain a subfolder, e.g. "sessions/My-Session" or "clear-all/full-journal"
+    var filename='bkp/'+reason+'/'+ts+'.json';
+    var label=reason.split('/').pop().replace(/-/g,' ');
     var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
     var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+filename,{
       method:'PUT',
       headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify({message:'TJ snapshot ['+reason+'] — '+ts,content:content})
+      body:JSON.stringify({message:'TJ snapshot ['+label+'] — '+ts,content:content})
     });
     if(resp.ok){
       toast('Snapshot saved to GitHub bkp/','ok');
@@ -4211,7 +4446,7 @@ async function ghSnapshot(reason){
   }
 }
 
-// List snapshot files in the bkp/ folder
+// List snapshot files in the bkp/ folder (supports subfolders: sessions/, clear-all/)
 async function ghListSnapshots(){
   var cfg=ghGetConfig();
   var el=document.getElementById('gh-snapshot-list');
@@ -4236,24 +4471,26 @@ async function ghListSnapshots(){
     var files=(treeData.tree||[])
       .filter(function(f){return f.type==='blob'&&f.path.startsWith('bkp/')&&f.path.endsWith('.json');})
       .map(function(f){
-        var name=f.path.replace('bkp/','');
-        return{name:name,path:f.path,sha:f.sha,
+        // path: bkp/sessions/My-Session/2024-06-01T12-30-00.json  OR  bkp/clear-all/full-journal/2024-...json
+        var rel=f.path.slice(4); // strip 'bkp/'
+        var parts=rel.split('/');
+        var folder=parts.length>2?parts.slice(0,-1).join('/'):parts[0]; // e.g. "sessions/My-Session" or "clear-all/full-journal"
+        var tsRaw=parts[parts.length-1].replace('.json','');
+        // Friendly folder label
+        var folderLabel=folder.replace('sessions/','Session: ').replace('clear-all/full-journal','Clear all data').replace(/-/g,' ');
+        var tsDisplay=tsRaw.replace('T',' ').replace(/-/g,function(m,i){return i<10?'-':':'});
+        return{folderLabel:folderLabel,tsRaw:tsRaw,tsDisplay:tsDisplay,path:f.path,sha:f.sha,
           download_url:'https://raw.githubusercontent.com/'+cfg.user+'/'+cfg.repo+'/main/'+f.path};
       });
-    if(!files.length){el.innerHTML='<div style="font-size:11px;color:var(--text3)">No snapshots yet. They appear here automatically before any delete.</div>';return;}
+    if(!files.length){el.innerHTML='<div style="font-size:11px;color:var(--text3)">No snapshots yet. They appear here automatically before a session delete or clear all.</div>';return;}
     // Sort newest first
-    files.sort(function(a,b){return b.name.localeCompare(a.name);});
+    files.sort(function(a,b){return b.tsRaw.localeCompare(a.tsRaw);});
     el.innerHTML=files.slice(0,20).map(function(f){
-      var name=f.name.replace('.json','');
-      // Parse timestamp and reason from filename: 2024-06-01T12-30-00_pre-delete-trade
-      var parts=name.split('_');
-      var ts=parts[0]?parts[0].replace('T',' ').replace(/-/g,function(m,i){return i<10?'-':':'}):'';
-      var reason=parts.slice(1).join(' ').replace(/-/g,' ');
       return'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px">'
-        +'<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">'+escHtml(ts)+'</div>'
-        +'<div style="font-size:10px;color:var(--text3);margin-top:1px">'+escHtml(reason)+'</div></div>'
+        +'<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">'+escHtml(f.tsDisplay)+'</div>'
+        +'<div style="font-size:10px;color:var(--text3);margin-top:1px">'+escHtml(f.folderLabel)+'</div></div>'
         +'<div style="display:flex;gap:5px;flex-shrink:0">'
-        +'<a href="'+escHtml(f.download_url)+'" download="'+escHtml(f.name)+'" class="btn btn-ghost btn-sm" style="text-decoration:none">'
+        +'<a href="'+escHtml(f.download_url)+'" download="'+escHtml(f.path.split('/').pop())+'" class="btn btn-ghost btn-sm" style="text-decoration:none">'
         +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</a>'
         +'<button class="btn btn-danger btn-sm" title="Delete this snapshot" onclick="ghDeleteSnapshot(\''+escHtml(f.path)+'\',\''+escHtml(f.sha)+'\')">'
         +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>'
@@ -4371,6 +4608,82 @@ function ghDownloadPagesWorkflow(){
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='deploy.yml';a.click();URL.revokeObjectURL(a.href);
   toast('deploy.yml downloaded — add it to .github/workflows/ in your repo','ok');
 }
+
+// ══ Cloudinary Image Hosting ══════════════════════════
+// ══ Cloudinary image deletion ══════════════════════════════════════════════
+// Uses delete_token (returned by Cloudinary at upload time when using unsigned presets).
+// The delete_token is valid for 10 minutes after upload, so it works for immediate removals.
+// For deletions after save (stored images), the token may have expired — in that case
+// deletion must be handled server-side or via the Cloudinary dashboard.
+async function cloudinaryDeleteImage(publicIdOrToken,isToken){
+  var cfg=cloudinaryGetConfig();
+  if(!cfg.cloudName||!publicIdOrToken)return;
+  try{
+    if(isToken){
+      // delete_by_token: valid ~10 min after upload, requires "Return delete token" ON in upload preset
+      var fd=new FormData();
+      fd.append('token',publicIdOrToken);
+      var resp=await fetch('https://api.cloudinary.com/v1_1/'+cfg.cloudName+'/delete_by_token',{method:'POST',body:fd});
+      if(resp.ok){
+        var r=await resp.json().catch(function(){return{};});
+        if(r.result==='ok')return;
+      }
+    }
+    // Fallback: unsigned destroy (requires preset to explicitly allow it — usually not enabled)
+    var fd2=new FormData();
+    fd2.append('public_id',publicIdOrToken);
+    fd2.append('upload_preset',cfg.uploadPreset);
+    await fetch('https://api.cloudinary.com/v1_1/'+cfg.cloudName+'/image/destroy',{method:'POST',body:fd2});
+  }catch(e){/* silent — if deletion fails, remove manually via Cloudinary dashboard */}
+}
+
+function cloudinaryGetConfig(){
+  return{
+    cloudName:localStorage.getItem('tj-cld-cloud-name')||'',
+    uploadPreset:localStorage.getItem('tj-cld-upload-preset')||''
+  };
+}
+function cloudinarySaveConfig(){
+  var cn=document.getElementById('cld-cloud-name');
+  var up=document.getElementById('cld-upload-preset');
+  if(cn)localStorage.setItem('tj-cld-cloud-name',cn.value.trim());
+  if(up)localStorage.setItem('tj-cld-upload-preset',up.value.trim());
+  cloudinaryRefreshStatus();
+}
+function cloudinaryRefreshStatus(){
+  var cfg=cloudinaryGetConfig();
+  var dot=document.getElementById('cloudinary-status-dot');
+  var lbl=document.getElementById('cloudinary-status-label');
+  var statusEl=document.getElementById('cloudinary-config-status');
+  if(cfg.cloudName&&cfg.uploadPreset){
+    if(dot){dot.style.background='var(--green)';}
+    if(lbl){lbl.style.color='var(--green)';lbl.textContent='Configured — screenshots upload to Cloudinary';}
+    if(statusEl){statusEl.innerHTML='<span style="color:var(--green)">✓ Active:</span> new screenshots go to <strong>'+cfg.cloudName+'</strong> / preset <strong>'+cfg.uploadPreset+'</strong>. Existing base64 images still work.';}
+  } else {
+    if(dot){dot.style.background='var(--border2)';}
+    if(lbl){lbl.style.color='var(--text3)';lbl.textContent='Not configured';}
+    if(statusEl){statusEl.textContent='Enter your Cloud Name and Upload Preset to enable.';}
+  }
+  // Populate fields if open
+  var cn=document.getElementById('cld-cloud-name');
+  var up=document.getElementById('cld-upload-preset');
+  if(cn&&!cn.value)cn.value=cfg.cloudName;
+  if(up&&!up.value)up.value=cfg.uploadPreset;
+}
+function toggleCloudinarySetup(){
+  var body=document.getElementById('cloudinary-setup-body');
+  var chevron=document.getElementById('cloudinary-chevron');
+  if(!body)return;
+  var open=body.style.display!=='none'&&body.style.display!=='';
+  body.style.display=open?'none':'block';
+  if(chevron)chevron.style.transform=open?'':'rotate(180deg)';
+  if(!open)cloudinaryRefreshStatus();
+}
+
+// Init Cloudinary status on page load
+(function(){
+  cloudinaryRefreshStatus();
+})();
 
 </script>
 </body>
