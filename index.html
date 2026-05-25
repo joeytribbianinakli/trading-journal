@@ -3940,10 +3940,61 @@ function ghSaveConfig(){
   var u=document.getElementById('gh-user');
   var r=document.getElementById('gh-repo');
   var t=document.getElementById('gh-token');
+  var waComplete=!!(localStorage.getItem('tj-gh-user')&&localStorage.getItem('tj-gh-repo')&&localStorage.getItem('tj-gh-token'));
   if(u)localStorage.setItem('tj-gh-user',u.value.trim());
   if(r)localStorage.setItem('tj-gh-repo',r.value.trim());
   if(t)localStorage.setItem('tj-gh-token',t.value.trim());
   ghRefreshStatus();
+  var cfg=ghGetConfig();
+  var nowComplete=!!(cfg.user&&cfg.repo&&cfg.token);
+  if(!waComplete&&nowComplete){
+    // Credentials just became complete — silently pull without snapshot
+    ghAutoPullOnSetup();
+  }
+}
+async function ghAutoPullOnSetup(){
+  var cfg=ghGetConfig();
+  toast('Credentials saved — pulling from GitHub…','ok');
+  try{
+    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_FILE,{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!resp.ok){toast('Auto-pull skipped: '+((await resp.json().catch(function(){return{};})).message||'HTTP '+resp.status),'err');return;}
+    var fileData=await resp.json();
+    var jsonStr;
+    if(fileData.content&&fileData.content.trim()){
+      try{jsonStr=decodeURIComponent(escape(atob(fileData.content.replace(/\n/g,''))));}catch(e){jsonStr=null;}
+    }
+    if(!jsonStr){
+      var blobSha=fileData.sha;
+      if(!blobSha){toast('Auto-pull failed: could not get blob SHA','err');return;}
+      var blobResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/blobs/'+blobSha,{
+        headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+      });
+      if(!blobResp.ok){toast('Auto-pull failed: blob fetch error','err');return;}
+      var blobData=await blobResp.json();
+      try{jsonStr=decodeURIComponent(escape(atob(blobData.content.replace(/\n/g,''))));}catch(e){toast('Auto-pull failed: decode error','err');return;}
+    }
+    var data=JSON.parse(jsonStr);
+    var importedTrades=Array.isArray(data)?data:(data.trades||[]);
+    var existing=new Set((await dbGetAll('trades')).map(function(t){return t.num+'|'+t.pair+'|'+t.entryTime;}));
+    var added=0,skipped=0;
+    for(var tr of importedTrades){
+      var key=tr.num+'|'+tr.pair+'|'+tr.entryTime;
+      if(!existing.has(key)){recomputeTradeFields(tr);await dbPut('trades',tr);added++;existing.add(key);}
+      else skipped++;
+    }
+    var imgCount=0;
+    for(var img of(data.images||[])){await dbPut('images',img);imgCount++;}
+    for(var sess of(data.sessions||[]))await dbPut('sessions',sess);
+    for(var setting of(data.settings||[]))await dbPut('settings',setting);
+    if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
+    var now=new Date().toISOString();
+    localStorage.setItem('tj-gh-last-sync',now);
+    ghRefreshStatus();
+    toast('Auto-pull complete: '+added+' trades added'+(skipped?' ('+skipped+' dupes skipped)':''),'ok');
+    loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+  }catch(e){toast('Auto-pull error: '+e.message,'err');}
 }
 function ghClearConfig(){
   if(!confirm('Remove GitHub credentials from this browser?'))return;
