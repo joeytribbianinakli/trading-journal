@@ -202,11 +202,35 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 .plan-line{display:flex;gap:7px;align-items:flex-start;margin-bottom:3px}
 .plan-kw{color:#34c97a;font-weight:700;white-space:nowrap;padding-top:1px}
 .plan-kw.then{color:#79c0ff}
+.plan-kw-code{display:inline-flex;align-items:center;background:#0d1117;border:1px solid #30363d;border-radius:5px;padding:2px 8px;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.03em;flex-shrink:0;margin-top:1px;color:#34c97a;border-color:rgba(52,201,122,.25);background:rgba(52,201,122,.05)}
+.plan-kw-code.then{color:#79c0ff;border-color:rgba(121,192,255,.25);background:rgba(121,192,255,.05)}
+.plan-kw-code.plan-kw-elseif{color:#4d7fff;border-color:rgba(77,127,255,.25);background:rgba(77,127,255,.05)}
 .plan-editable{background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:2px 3px;outline:none;width:100%;resize:none;min-height:18px;line-height:1.55}
 .plan-editable:focus{border-bottom-color:var(--accent)}
 
 /* Screenshots */
 .screenshots-group{margin-bottom:12px;padding:11px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.tf-sub-section{margin-top:10px;padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.tf-sub-label{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.tf-add-row{margin-top:8px;display:flex;align-items:center;gap:8px}
+.tf-add-btn{font-size:10px;font-weight:600;color:var(--text3);background:transparent;border:1px dashed var(--border);border-radius:var(--radius);padding:3px 10px;cursor:pointer;transition:color .15s,border-color .15s}
+.tf-add-btn:hover{color:var(--accent);border-color:var(--accent)}
+/* TF pills */
+.tf-pill{padding:5px 13px;font-size:12px;font-weight:700;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);color:var(--text2);transition:all .15s;letter-spacing:.05em;font-family:'DM Mono',monospace}
+.tf-pill:hover{border-color:var(--blue);color:var(--blue);background:rgba(77,127,255,.08)}
+.tf-pill.selected{background:var(--blue);border-color:var(--blue);color:#fff}
+/* TF bar — the prominent selected-TF display */
+.tf-bar{display:flex;align-items:center;gap:10px;padding:8px 11px;background:rgba(77,127,255,.08);border:1.5px solid rgba(77,127,255,.35);border-radius:8px;margin-bottom:10px}
+.tf-bar-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;flex-shrink:0}
+.tf-bar-value{font-size:16px;font-weight:800;color:var(--blue);font-family:'DM Mono',monospace;letter-spacing:.05em;flex:1}
+.tf-bar-change{background:none;border:1px solid rgba(77,127,255,.3);border-radius:4px;cursor:pointer;color:var(--text3);font-size:10px;padding:2px 8px;transition:all .15s}
+.tf-bar-change:hover{border-color:var(--blue);color:var(--blue)}
+.tf-pill-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+/* Inline TF label shown next to screenshot header after TF selected */
+.ss-tf-label{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--accent);letter-spacing:.04em;margin-left:auto;margin-right:8px}
+/* Skipped trade */
+.skipped-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;font-size:10px;font-weight:700;border-radius:20px;background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3);letter-spacing:.04em;text-transform:uppercase}
+.skipped-row{display:flex;align-items:center;gap:10px;padding:8px 11px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius-lg);margin-bottom:8px}
 .screenshots-group-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .screenshots-group-title{font-size:9px;font-weight:700;color:var(--text2);letter-spacing:.08em;text-transform:uppercase}
 .img-paste-zone{border:1px dashed var(--border2);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:all .15s;background:transparent;display:flex;align-items:center;justify-content:center;gap:7px;flex-direction:column;min-height:64px}
@@ -522,6 +546,13 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="dash-filter-group">
               <div class="dash-filter-label">Strategy</div>
               <select id="dash-strategy-filter" onchange="renderDashboard()"><option value="">All strategies</option></select>
+            </div>
+            <div class="dash-filter-group">
+              <div class="dash-filter-label">Trade type</div>
+              <select id="dash-skipped-filter" onchange="renderDashboard()">
+                <option value="taken">Taken trades</option>
+                <option value="skipped">Skipped trades</option>
+              </select>
             </div>
           </div>
         </div>
@@ -869,7 +900,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <button class="btn btn-sm btn-primary" onclick="addTfChip('narrative')">Add</button>
               <button class="btn btn-sm btn-ghost" onclick="hideAddTf('narrative')">Cancel</button>
             </div>
-            <div class="frow" style="margin-top:12px"><label class="flabel">Narrative notes <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="narrative-notes">1.</textarea></div>
+
           </div>
         </div>
 
@@ -881,14 +912,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
           <div class="analysis-body open">
             <div class="frow"><label class="flabel">Setup description <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="setup-notes">1. Trading within a </textarea></div>
-            <div class="screenshots-group" style="margin-top:12px">
-              <div class="screenshots-group-hdr"><span class="screenshots-group-title">Setup screenshots</span><span style="font-size:10px;color:var(--text3)"><kbd>Ctrl+V</kbd> to paste</span></div>
-              <div class="img-grid" id="imgs-setup"></div>
-              <div class="img-paste-zone" id="paste-zone-setup" tabindex="0" onclick="focusPasteZone('setup')" ondragover="onDragOver(event,'setup')" ondragleave="onDragLeave(event,'setup')" ondrop="onDrop(event,'setup')">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <p>Click here then <kbd>Ctrl+V</kbd> to paste · or drag &amp; drop</p>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -900,37 +923,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
           <div class="analysis-body open">
             <div class="plan-block">
-              <div class="plan-line"><span class="plan-kw">→ if</span><textarea class="plan-editable" id="plan-if" rows="2" placeholder="&lt;price provides a confirmation&gt;"></textarea></div>
-              <div class="plan-line" style="margin-left:18px"><span class="plan-kw then">then</span><textarea class="plan-editable" id="plan-if-then" rows="2" placeholder="enter at ..." style="border-color:rgba(77,127,255,.15)"></textarea></div>
-              <div class="plan-line" style="margin-top:6px"><span class="plan-kw">→ else if</span><textarea class="plan-editable" id="plan-elseif" rows="2" placeholder="&lt;the price breaks the zone&gt;"></textarea></div>
-              <div class="plan-line" style="margin-left:18px"><span class="plan-kw then">then</span><textarea class="plan-editable" id="plan-elseif-then" rows="2" placeholder="invalidate, wait for ..."></textarea></div>
-            </div>
-            <!-- HTF screenshots -->
-            <div class="screenshots-group" style="margin-top:14px">
-              <div class="screenshots-group-hdr"><span class="screenshots-group-title">HTF screenshots (W / D / 4H)</span><span style="font-size:10px;color:var(--text3)"><kbd>Ctrl+V</kbd></span></div>
-              <div class="img-grid" id="imgs-htf"></div>
-              <div class="img-paste-zone" id="paste-zone-htf" tabindex="0" onclick="focusPasteZone('htf')" ondragover="onDragOver(event,'htf')" ondragleave="onDragLeave(event,'htf')" ondrop="onDrop(event,'htf')">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <p>Click here then <kbd>Ctrl+V</kbd> to paste</p>
-              </div>
-            </div>
-            <!-- MTF screenshots -->
-            <div class="screenshots-group">
-              <div class="screenshots-group-hdr"><span class="screenshots-group-title">MTF screenshots (1H / 30m)</span><span style="font-size:10px;color:var(--text3)"><kbd>Ctrl+V</kbd></span></div>
-              <div class="img-grid" id="imgs-mtf"></div>
-              <div class="img-paste-zone" id="paste-zone-mtf" tabindex="0" onclick="focusPasteZone('mtf')" ondragover="onDragOver(event,'mtf')" ondragleave="onDragLeave(event,'mtf')" ondrop="onDrop(event,'mtf')">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <p>Click here then <kbd>Ctrl+V</kbd> to paste</p>
-              </div>
-            </div>
-            <!-- LTF screenshots (moved here, under plan section after MTF) -->
-            <div class="screenshots-group">
-              <div class="screenshots-group-hdr"><span class="screenshots-group-title">LTF screenshots (15m / 5m — entry)</span><span style="font-size:10px;color:var(--text3)"><kbd>Ctrl+V</kbd></span></div>
-              <div class="img-grid" id="imgs-ltf"></div>
-              <div class="img-paste-zone" id="paste-zone-ltf" tabindex="0" onclick="focusPasteZone('ltf')" ondragover="onDragOver(event,'ltf')" ondragleave="onDragLeave(event,'ltf')" ondrop="onDrop(event,'ltf')">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <p>Click here then <kbd>Ctrl+V</kbd> to paste</p>
-              </div>
+              <div class="plan-line"><span class="plan-kw plan-kw-code">if</span><textarea class="plan-editable" id="plan-if" rows="2">price provides a confirmation</textarea></div>
+              <div class="plan-line" style="margin-left:18px"><span class="plan-kw then plan-kw-code">then</span><textarea class="plan-editable" id="plan-if-then" rows="2"></textarea></div>
+              <div class="plan-line" style="margin-top:6px"><span class="plan-kw plan-kw-code plan-kw-elseif">else if</span><textarea class="plan-editable" id="plan-elseif" rows="2">the price breaks the zone</textarea></div>
+              <div class="plan-line" style="margin-left:18px"><span class="plan-kw then plan-kw-code">then</span><textarea class="plan-editable" id="plan-elseif-then" rows="2"></textarea></div>
             </div>
           </div>
         </div>
@@ -943,6 +939,109 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
           <div class="analysis-body open">
             <div class="frow"><textarea id="led-to-trade">1.</textarea></div>
+            <!-- HTF screenshots: W / D / 4h + custom -->
+            <div class="screenshots-group" style="margin-top:14px">
+              <div class="screenshots-group-hdr">
+                <span class="screenshots-group-title">HTF Screenshots</span>
+              </div>
+              <div id="tf-zones-htf">
+                <div class="tf-sub-section">
+                  <div class="tf-sub-label">W</div>
+                  <div class="img-grid" id="imgs-htf-W"></div>
+                  <div class="img-paste-zone" id="paste-zone-htf-W" tabindex="0" onclick="focusPasteZone('htf-W')" ondragover="onDragOver(event,'htf-W')" ondragleave="onDragLeave(event,'htf-W')" ondrop="onDrop(event,'htf-W')">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
+                  </div>
+                </div>
+                <div class="tf-sub-section">
+                  <div class="tf-sub-label">D</div>
+                  <div class="img-grid" id="imgs-htf-D"></div>
+                  <div class="img-paste-zone" id="paste-zone-htf-D" tabindex="0" onclick="focusPasteZone('htf-D')" ondragover="onDragOver(event,'htf-D')" ondragleave="onDragLeave(event,'htf-D')" ondrop="onDrop(event,'htf-D')">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
+                  </div>
+                </div>
+                <div class="tf-sub-section">
+                  <div class="tf-sub-label">4h</div>
+                  <div class="img-grid" id="imgs-htf-4h"></div>
+                  <div class="img-paste-zone" id="paste-zone-htf-4h" tabindex="0" onclick="focusPasteZone('htf-4h')" ondragover="onDragOver(event,'htf-4h')" ondragleave="onDragLeave(event,'htf-4h')" ondrop="onDrop(event,'htf-4h')">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tf-add-row"><button class="tf-add-btn" onclick="addCustomTfZone('htf')">+ Add TF</button></div>
+            </div>
+            <!-- MTF screenshots: 1h / 30m + custom -->
+            <div class="screenshots-group">
+              <div class="screenshots-group-hdr">
+                <span class="screenshots-group-title">MTF Screenshots</span>
+              </div>
+              <div id="tf-zones-mtf">
+                <div class="tf-sub-section">
+                  <div class="tf-sub-label">1h</div>
+                  <div class="img-grid" id="imgs-mtf-1h"></div>
+                  <div class="img-paste-zone" id="paste-zone-mtf-1h" tabindex="0" onclick="focusPasteZone('mtf-1h')" ondragover="onDragOver(event,'mtf-1h')" ondragleave="onDragLeave(event,'mtf-1h')" ondrop="onDrop(event,'mtf-1h')">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
+                  </div>
+                </div>
+                <div class="tf-sub-section">
+                  <div class="tf-sub-label">30m</div>
+                  <div class="img-grid" id="imgs-mtf-30m"></div>
+                  <div class="img-paste-zone" id="paste-zone-mtf-30m" tabindex="0" onclick="focusPasteZone('mtf-30m')" ondragover="onDragOver(event,'mtf-30m')" ondragleave="onDragLeave(event,'mtf-30m')" ondrop="onDrop(event,'mtf-30m')">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tf-add-row"><button class="tf-add-btn" onclick="addCustomTfZone('mtf')">+ Add TF</button></div>
+            </div>
+            <!-- LTF screenshots: 15m / 5m + custom -->
+            <div class="screenshots-group">
+              <div class="screenshots-group-hdr">
+                <span class="screenshots-group-title">LTF Screenshots</span>
+              </div>
+              <div id="tf-zones-ltf">
+                <div class="tf-sub-section">
+                  <div class="tf-sub-label">15m</div>
+                  <div class="img-grid" id="imgs-ltf-15m"></div>
+                  <div class="img-paste-zone" id="paste-zone-ltf-15m" tabindex="0" onclick="focusPasteZone('ltf-15m')" ondragover="onDragOver(event,'ltf-15m')" ondragleave="onDragLeave(event,'ltf-15m')" ondrop="onDrop(event,'ltf-15m')">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
+                  </div>
+                </div>
+                <div class="tf-sub-section">
+                  <div class="tf-sub-label">5m</div>
+                  <div class="img-grid" id="imgs-ltf-5m"></div>
+                  <div class="img-paste-zone" id="paste-zone-ltf-5m" tabindex="0" onclick="focusPasteZone('ltf-5m')" ondragover="onDragOver(event,'ltf-5m')" ondragleave="onDragLeave(event,'ltf-5m')" ondrop="onDrop(event,'ltf-5m')">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tf-add-row"><button class="tf-add-btn" onclick="addCustomTfZone('ltf')">+ Add TF</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4b. Skipped trade toggle -->
+        <div class="skipped-row" id="skipped-trade-row">
+          <input type="checkbox" id="f-skipped" style="width:15px;height:15px;accent-color:var(--amber);cursor:pointer;flex-shrink:0" onchange="onSkippedChange()">
+          <label for="f-skipped" style="cursor:pointer;display:flex;flex-direction:column;gap:2px">
+            <span style="font-size:12px;font-weight:600;color:var(--amber)">Trade skipped</span>
+            <span style="font-size:10px;color:var(--text3);line-height:1.4">Check this if you saw the setup but did not take the trade — log it anyway to review your decision later.</span>
+          </label>
+        </div>
+
+        <!-- 4c. Why skipped (only shown when skipped is checked) -->
+        <div class="analysis-section" id="why-skipped-section" style="display:none">
+          <div class="analysis-header open" onclick="toggleAnalysis(this)">
+            <div class="ah-bar amber"></div><span class="ah-title">Why skipped the trade</span>
+            <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="analysis-body open">
+            <div class="frow"><textarea id="why-skipped-notes" placeholder="Describe why you chose not to take this trade...">1.</textarea></div>
           </div>
         </div>
 
@@ -965,6 +1064,14 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
           <div class="analysis-body">
             <div class="frow"><textarea id="post-analysis">1.</textarea></div>
+            <div class="screenshots-group" style="margin-top:10px">
+              <div class="screenshots-group-hdr"><span class="screenshots-group-title">Screenshots (optional)</span><span style="font-size:10px;color:var(--text3)"><kbd>Ctrl+V</kbd></span></div>
+              <div class="img-grid" id="imgs-postanalysis"></div>
+              <div class="img-paste-zone" id="paste-zone-postanalysis" tabindex="0" onclick="focusPasteZone('postanalysis')" ondragover="onDragOver(event,'postanalysis')" ondragleave="onDragLeave(event,'postanalysis')" ondrop="onDrop(event,'postanalysis')">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <p>Click here then <kbd>Ctrl+V</kbd> to paste · or drag &amp; drop</p>
+              </div>
+            </div>
           </div>
         </div>
         <div class="analysis-section">
@@ -1084,6 +1191,13 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <div class="hist-filter-label">Result</div>
               <select id="flt-result" onchange="renderHistory();updateHistChips()"><option value="">Win &amp; Loss</option><option value="win">Wins</option><option value="loss">Losses</option></select>
             </div>
+            <div class="hist-filter-group">
+              <div class="hist-filter-label">Trade type</div>
+              <select id="flt-skipped" onchange="renderHistory();updateHistChips()">
+                <option value="taken">Taken trades</option>
+                <option value="skipped">Skipped trades</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -1169,8 +1283,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
     <!-- BACKUP -->
     <div class="page" id="page-backup">
-
-      <!-- ── 1. JSON / CSV Backup & Restore ── -->
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:10px">
+        <button class="btn btn-ghost btn-sm" onclick="toggleAllBkpSections(true)">↕ Expand all</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleAllBkpSections(false)">↕ Collapse all</button>
+      </div>
       <div class="card" style="margin-bottom:10px">
         <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleBkpSection('local-backup')">
           <div style="display:flex;align-items:center;gap:8px">
@@ -1352,7 +1468,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
               </div>
               <div class="bc-title">Manual Backup</div>
-              <div class="bc-desc">Push a timestamped snapshot to <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/</code> in your GitHub repo right now. File name includes <em>manual-backup</em> so it's easy to tell apart from auto-snapshots. Useful before large changes.</div>
+              <div class="bc-desc">Saves a timestamped trades snapshot to <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/trades/</code> and overwrites the single config backup at <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/config_backup.json</code> with current strategies, checklist, and pairs.</div>
               <button class="btn" style="border-color:rgba(52,201,122,.3);color:var(--green)" onclick="ghManualBackup()">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 Save manual backup
@@ -1362,8 +1478,8 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <div class="bc-icon" style="background:rgba(155,127,240,.12);color:var(--purple)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
               </div>
-              <div class="bc-title">Restore Latest Backup</div>
-              <div class="bc-desc">Replace your current data with the most recent snapshot in <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/</code>. You can also pick a specific one from the list below. <strong style="color:var(--amber)">This overwrites your current data.</strong></div>
+              <div class="bc-title">Restore Latest Trade Backup</div>
+              <div class="bc-desc">Replace your current trades, sessions and settings with the most recent snapshot in <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/trades/</code>. To restore your config (strategies/checklist/pairs), use the Snapshots list below. <strong style="color:var(--amber)">This overwrites current data.</strong></div>
               <button class="btn" style="border-color:rgba(155,127,240,.3);color:var(--purple)" onclick="ghRestoreLatestBackup()">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
                 Restore latest
@@ -1376,16 +1492,17 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleGhSnapshots()">
               <div style="display:flex;align-items:center;gap:8px">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span class="card-title">All Snapshots — bkp/ folder</span>
+                <span class="card-title">Trade Backups &amp; Config Backup</span>
               </div>
               <div style="display:flex;align-items:center;gap:10px">
-                <span style="font-size:11px;color:var(--text3)">manual-backup · session-snapshot · clear-all-snapshot</span>
+                <span style="font-size:11px;color:var(--text3)">bkp/trades/ · bkp/config_backup.json</span>
                 <svg id="gh-snapshots-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
             </div>
             <div id="gh-snapshots-body" class="card-body" style="display:none">
               <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7">
-                Snapshots are saved here manually or automatically before a session delete / clear-all. File names distinguish their origin: <code style="background:var(--bg3);padding:1px 4px;border-radius:3px">manual-backup-…</code>, <code style="background:var(--bg3);padding:1px 4px;border-radius:3px">session-snapshot-…</code>, <code style="background:var(--bg3);padding:1px 4px;border-radius:3px">clear-all-snapshot-…</code>. Use <strong style="color:var(--text2)">Restore</strong> to apply directly, or <strong style="color:var(--text2)">Download</strong> and import via JSON/CSV above.
+                <strong style="color:var(--text2)">Trade Backups</strong> — timestamped snapshots in <code style="background:var(--bg3);padding:1px 4px;border-radius:3px">bkp/trades/</code>. Created automatically before session deletes and clear-all, or manually. Multiple snapshots kept so you can roll back to any point.<br><br>
+                <strong style="color:var(--text2)">Config Backup</strong> — a single file at <code style="background:var(--bg3);padding:1px 4px;border-radius:3px">bkp/config_backup.json</code> storing strategies, checklist, and asset pairs. Auto-updated whenever you change any of those, and on Manual Backup. Only one backup kept — always the latest.
               </div>
               <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
                 <button class="btn btn-ghost btn-sm" onclick="ghListSnapshots()">
@@ -1572,8 +1689,24 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
       <div class="calc-grid">
         <!-- LEFT: Inputs -->
         <div class="calc-panel">
-          <p class="calc-ptitle">Trade Setup</p>
-          <div class="calc-field">
+          <p class="calc-ptitle" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0">
+            Trade Setup
+            <span style="display:flex;gap:3px;background:var(--bg3);padding:3px;border-radius:5px;border:1px solid var(--border)">
+              <button id="calc-mode-quick-btn" onclick="calcSetMode('quick')" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);background:var(--bg2);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3)">Quick Calc</button>
+              <button id="calc-mode-backtest-btn" onclick="calcSetMode('backtest')" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;border:1px solid transparent;background:none;color:var(--text2)">Backtest</button>
+            </span>
+          </p>
+
+          <!-- Backtest session picker (hidden by default) -->
+          <div id="calc-backtest-session-row" style="display:none;margin-top:12px;margin-bottom:4px">
+            <div style="background:rgba(77,127,255,.06);border:1px solid rgba(77,127,255,.2);border-radius:var(--radius);padding:10px 12px">
+              <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">Session</div>
+              <select id="calc-backtest-session" onchange="calcOnBacktestSessionChange()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 28px 7px 10px;outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2711%27 height=%2711%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%233d4457%27 stroke-width=%272.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 9px center"><option value="">— select session —</option></select>
+              <div id="calc-backtest-hint" style="font-size:10px;color:var(--text3);margin-top:5px;line-height:1.5;display:none">Balance and risk % auto-filled from session</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px" class="calc-field">
             <label>Instrument</label>
             <select id="calc-instrument" onchange="calcOnInstrumentChange()"></select>
           </div>
@@ -1585,7 +1718,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="calc-field">
               <label style="display:flex;align-items:center;justify-content:space-between">
                 Account Balance ($)
-                <button onclick="calcSetDefaultCapital()" title="Save as default capital" style="font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--text3);cursor:pointer;font-family:inherit;transition:all .12s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text3)';this.style.borderColor='var(--border2)'">Set default</button>
+                <button id="calc-set-default-btn" onclick="calcSetDefaultCapital()" title="Save as default capital" style="font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--text3);cursor:pointer;font-family:inherit;transition:all .12s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text3)';this.style.borderColor='var(--border2)'">Set default</button>
               </label>
               <input type="number" id="calc-balance" min="1" oninput="calcCalc()">
             </div>
@@ -1703,6 +1836,14 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="calc-srow"><span class="calc-sl2">Required ($)</span><span class="calc-sv a" id="calc-out-margin">—</span></div>
             <div class="calc-srow"><span class="calc-sl2">Used (%)</span><span class="calc-sv a" id="calc-out-margin-pct">—</span></div>
           </div>
+          <!-- Log Trade Button (backtest mode only) -->
+          <div id="calc-log-trade-box" style="display:none;margin-top:4px">
+            <button onclick="calcLogTrade()" style="width:100%;padding:10px;border-radius:var(--radius);border:1px solid rgba(77,127,255,.35);background:rgba(77,127,255,.1);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.01em" onmouseover="this.style.background='rgba(77,127,255,.18)'" onmouseout="this.style.background='rgba(77,127,255,.1)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;margin-top:-1px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Log This Trade
+            </button>
+            <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:5px">Sends session, balance, risk %, entry, SL &amp; qty to the trade form</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1747,6 +1888,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <div class="frow" style="margin-bottom:16px">
             <label class="flabel">Starting equity ($) <span style="color:var(--text3);font-weight:400">— auto-updates after each trade</span></label>
             <input type="number" id="sm-equity" value="5000" step="any" placeholder="e.g. 5000" oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
+            <div id="sm-equity-lock-note" style="display:none;align-items:center;gap:6px;margin-top:5px;padding:5px 8px;background:rgba(232,160,48,.07);border:1px solid rgba(232,160,48,.22);border-radius:4px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span style="font-size:10px;color:var(--amber);line-height:1.4">Starting equity is locked — this session already has trades. Delete all trades first to change it.</span>
+            </div>
           </div>
           <div class="frow" style="margin-bottom:16px">
             <label style="display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none">
@@ -1765,7 +1910,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <input type="checkbox" id="sm-demo" style="width:14px;height:14px;accent-color:var(--purple);cursor:pointer;flex-shrink:0" onchange="toggleDemoSessionOptions()">
                 <span>
                   <span class="flabel" style="display:block;cursor:pointer;color:var(--purple)">✦ Create demo session</span>
-                  <span style="font-size:10px;color:var(--text3);line-height:1.4">Auto-populate this session with realistic random trades for testing.</span>
+                  <span style="font-size:10px;color:var(--text3);line-height:1.4">Auto-populate with realistic trades for testing. Also generates skipped trades (≈ half of taken count).</span>
                 </span>
               </label>
             </div>
@@ -1774,8 +1919,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <div style="font-size:9px;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">Demo options</div>
               <div class="frow-inline" style="margin-bottom:12px">
                 <div class="frow" style="max-width:110px">
-                  <label class="flabel">Number of trades</label>
+                  <label class="flabel">Taken trades</label>
                   <input type="number" id="sm-demo-count" value="10" min="1" max="100" step="1" style="text-align:center;font-family:'DM Mono',monospace;font-weight:600" oninput="this.value=Math.max(1,Math.min(100,parseInt(this.value)||1))">
+                  <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4">+ ½ skipped trades auto-added</div>
                 </div>
               </div>
               <div class="frow" style="margin-bottom:12px">
@@ -1995,7 +2141,8 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 <script>
 // ══ DB ════════════════════════════════════════════
 var DB_NAME='TradingJournal',DB_VER=4,db=null;
-var pendingImages={htf:[],mtf:[],ltf:[],setup:[]};
+var SS_ZONES=['htf-W','htf-D','htf-4h','mtf-1h','mtf-30m','ltf-15m','ltf-5m','setup','postanalysis'];
+var pendingImages={'htf-W':[],'htf-D':[],'htf-4h':[],'mtf-1h':[],'mtf-30m':[],'ltf-15m':[],'ltf-5m':[],'setup':[],'postanalysis':[]};
 var editingId=null,charts={};
 var activePasteZone=null;
 var biasState={narrative:{W:'neutral',D:'neutral','4h':'neutral','1h':'neutral','15m':'neutral'}};
@@ -2049,13 +2196,34 @@ async function addStrategy(){
   var inp=document.getElementById('new-strat-inp');var name=inp.value.trim();
   if(!name){toast('Enter a name','err');return;}
   var strats=await getStrategies();if(strats.includes(name)){toast('Already exists','err');return;}
-  strats.push(name);await setSetting('strategies',strats);inp.value='';renderStrategyList();populateStrategySelect();toast('Strategy added','ok');
+  strats.push(name);await setSetting('strategies',strats);inp.value='';renderStrategyList();populateStrategySelect();toast('Strategy added','ok');ghAutoSyncConfig();
 }
 async function deleteStrategy(idx){
-  var strats=await getStrategies();if(!confirm('Delete "'+strats[idx]+'"?'))return;
-  strats.splice(idx,1);await setSetting('strategies',strats);renderStrategyList();populateStrategySelect();toast('Deleted','ok');
+  var strats=await getStrategies();
+  var name=strats[idx];
+  var trades=await dbGetAll('trades');
+  var using=trades.filter(function(t){return t.strategy===name;});
+  if(using.length){toast('Cannot delete "'+name+'" — used in '+using.length+' trade'+(using.length>1?'s':'')+' (including archived)','err');return;}
+  if(!confirm('Delete "'+name+'"?'))return;
+  strats.splice(idx,1);await setSetting('strategies',strats);renderStrategyList();populateStrategySelect();toast('Strategy deleted','ok');ghAutoSyncConfig();
 }
-async function updateStrategy(idx,name){if(!name)return;var strats=await getStrategies();strats[idx]=name;await setSetting('strategies',strats);populateStrategySelect();}
+async function updateStrategy(idx,name){
+  if(!name)return;
+  var strats=await getStrategies();
+  var oldName=strats[idx];
+  if(oldName===name)return;
+  strats[idx]=name;
+  await setSetting('strategies',strats);
+  // Update all trades that used the old name
+  var trades=await dbGetAll('trades');
+  var updated=0;
+  for(var t of trades){
+    if(t.strategy===oldName){t.strategy=name;await dbPut('trades',t);updated++;}
+  }
+  populateStrategySelect();
+  if(updated)toast('Strategy renamed — updated '+updated+' trade'+(updated>1?'s':''),'ok');
+  ghAutoSyncConfig();
+}
 async function populateStrategySelect(){
   var strats=await getStrategies();var sel=document.getElementById('f-strategy');var cur=sel.value;
   sel.innerHTML=strats.map(function(s){return'<option value="'+escHtml(s)+'">'+escHtml(s)+'</option>'}).join('');
@@ -2094,6 +2262,7 @@ function buildEditorCard(sec,idx,total){
     renderChecklistEditor();
     renderChecklist();
     toast('Block order saved','ok');
+    ghAutoSyncConfig();
   });
   div.innerHTML='<div class="cl-card-title-row">'
     +'<div class="cl-drag-handle" title="Drag to reorder"><svg viewBox="0 0 24 24"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg></div>'
@@ -2111,6 +2280,11 @@ function buildEditorCard(sec,idx,total){
   return div;
 }
 async function saveChecklistEditor(){
+  var oldCl=await getChecklist();
+  // Build old text map: "secIdx-itemIdx" -> text (before save)
+  var oldTextMap={};
+  oldCl.forEach(function(sec,si){sec.items.forEach(function(item,ii){oldTextMap[si+'-'+ii]=item;});});
+
   var cl=await getChecklist();
   cl.forEach(function(sec,idx){
     var updated=[];
@@ -2120,15 +2294,71 @@ async function saveChecklistEditor(){
     });
     sec.items=updated;
   });
-  await setSetting('checklist',cl);renderChecklist();toast('Checklist saved','ok');
+  await setSetting('checklist',cl);
+
+  // Build new text map: "secIdx-itemIdx" -> new text (after save)
+  var newTextMap={};
+  cl.forEach(function(sec,si){sec.items.forEach(function(item,ii){newTextMap[si+'-'+ii]=item;});});
+
+  // Sync all trades: rename keys where text changed, remove keys that no longer exist
+  var trades=await dbGetAll('trades');
+  var synced=0;
+  for(var t of trades){
+    if(!t.checklist)continue;
+    var newState={};
+    // For each old key, find what its text was, then find where that text ended up
+    Object.keys(t.checklist).forEach(function(k){
+      var oldText=oldTextMap[k];
+      if(!oldText)return; // key didn't exist in old config — drop it
+      // Find new key that matches this text
+      var newKey=Object.keys(newTextMap).find(function(nk){return newTextMap[nk]===oldText;});
+      if(newKey){newState[newKey]=t.checklist[k];} // text renamed/moved — remap; if not found, item was deleted — drop it
+    });
+    var changed=JSON.stringify(newState)!==JSON.stringify(t.checklist);
+    if(changed){t.checklist=newState;await dbPut('trades',t);synced++;}
+  }
+
+  renderChecklist();
+  var msg='Checklist saved';
+  if(synced)msg+=' — synced '+synced+' trade'+(synced>1?'s':'');
+  toast(msg,'ok');
+  ghAutoSyncConfig();
 }
 async function addClItem(secIdx){
   var cl=await getChecklist();
   cl[secIdx].items.push('New item');
-  await setSetting('checklist',cl);renderChecklistEditor();
+  await setSetting('checklist',cl);renderChecklistEditor();ghAutoSyncConfig();
 }
 async function removeClItem(secIdx,itemIdx){
-  var cl=await getChecklist();cl[secIdx].items.splice(itemIdx,1);await setSetting('checklist',cl);renderChecklistEditor();
+  var cl=await getChecklist();
+  var removedText=cl[secIdx].items[itemIdx];
+  cl[secIdx].items.splice(itemIdx,1);
+  await setSetting('checklist',cl);
+
+  // Remove this item's key from all trades (find by text match against old config)
+  // After splice the indices shifted, so we work from the removed text directly.
+  // We need to find the old key for this text — before splice it was secIdx+'-'+itemIdx
+  var oldKey=secIdx+'-'+itemIdx;
+  var trades=await dbGetAll('trades');
+  var synced=0;
+  for(var t of trades){
+    if(!t.checklist||!(oldKey in t.checklist))continue;
+    delete t.checklist[oldKey];
+    // Also remap all keys in this section that had index > itemIdx (they shifted down by 1)
+    var reindexed={};
+    Object.keys(t.checklist).forEach(function(k){
+      var parts=k.split('-');
+      var si=parseInt(parts[0]),ii=parseInt(parts[1]);
+      if(si===secIdx&&ii>itemIdx){reindexed[si+'-'+(ii-1)]=t.checklist[k];}
+      else{reindexed[k]=t.checklist[k];}
+    });
+    t.checklist=reindexed;
+    await dbPut('trades',t);synced++;
+  }
+
+  renderChecklistEditor();
+  if(synced)toast('Item removed — updated '+synced+' trade'+(synced>1?'s':''),'ok');
+  ghAutoSyncConfig();
 }
 
 // Render checklist in log-trade tab
@@ -2150,7 +2380,7 @@ async function renderChecklist(){
         +'<button class="btn btn-ghost btn-sm" style="font-size:11px;padding:3px 8px" onclick="checkAllInBlock('+idx+')" title="Check all items in this block">✓ All</button>'
       +'</div>'
       +sec.items.map(function(item,j){
-        return'<label class="cl-row"><input type="checkbox" class="cl" data-k="'+idx+'-'+j+'" data-sec="'+idx+'" onchange="updateClStatus()"><span>'+escHtml(item)+'</span></label>';
+        return'<label class="cl-row"><input type="checkbox" class="cl" data-k="'+escHtml(item)+'" data-sec="'+idx+'" onchange="updateClStatus()"><span>'+escHtml(item)+'</span></label>';
       }).join('')
       +'</div>';
   }
@@ -2177,8 +2407,8 @@ function updateClStatus(){
     el.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> '+checked.length+'/'+all.length+' complete';
   }
 }
-function getChecklist_state(){var cl={};document.querySelectorAll('.cl').forEach(function(c){cl[c.dataset.k]=c.checked});return cl;}
-function setChecklist_state(cl){document.querySelectorAll('.cl').forEach(function(c){c.checked=!!(cl&&cl[c.dataset.k])});updateClStatus();}
+function getChecklist_state(){var cl={};document.querySelectorAll('.cl').forEach(function(c){cl[c.dataset.k]=c.checked?'yes':'no'});return cl;}
+function setChecklist_state(cl){document.querySelectorAll('.cl').forEach(function(c){var v=cl&&cl[c.dataset.k];c.checked=v==='yes'||v===true||v===1});updateClStatus();}
 
 // ══ Pair → Asset type ═════════════════════════════
 function onPairChange(){
@@ -2259,6 +2489,10 @@ function openNewSessionModal(){
   document.getElementById('sm-start').value=new Date().toISOString().slice(0,10);
   document.getElementById('sm-end').value='';
   document.getElementById('sm-equity').value='5000';
+  var eqElN=document.getElementById('sm-equity');
+  var eqNoteN=document.getElementById('sm-equity-lock-note');
+  if(eqElN){eqElN.readOnly=false;eqElN.style.color='';eqElN.style.cursor='';eqElN.style.background='';eqElN.style.borderColor='';}
+  if(eqNoteN)eqNoteN.style.display='none';
   document.getElementById('sm-retrospective').value='';
   var ed=document.getElementById('retro-editor');if(ed)ed.innerHTML='';
   // Always hide retro panel for new sessions
@@ -2278,13 +2512,23 @@ function openNewSessionModal(){
   populateDemoAssetTypePills();
   document.getElementById('session-modal').classList.add('open');
 }
-function openEditSessionModal(sess){
+function openEditSessionModal(sess,hasTrades){
   editingSessionId=sess.id;
   document.getElementById('sm-title').textContent='Edit Session';
   document.getElementById('sm-name').value=sess.name||'';
   document.getElementById('sm-start').value=sess.startDate||'';
   document.getElementById('sm-end').value=sess.endDate||'';
   document.getElementById('sm-equity').value=sess.startingEquity||5000;
+  // Lock equity field if session already has trades
+  var eqEl=document.getElementById('sm-equity');
+  var eqNote=document.getElementById('sm-equity-lock-note');
+  if(hasTrades){
+    eqEl.readOnly=true;eqEl.style.color='var(--text3)';eqEl.style.cursor='not-allowed';eqEl.style.background='var(--bg)';eqEl.style.borderColor='var(--border)';
+    if(eqNote)eqNote.style.display='flex';
+  } else {
+    eqEl.readOnly=false;eqEl.style.color='';eqEl.style.cursor='';eqEl.style.background='';eqEl.style.borderColor='';
+    if(eqNote)eqNote.style.display='none';
+  }
   var archivedCb=document.getElementById('sm-archived');
   if(archivedCb)archivedCb.checked=!!sess.archived;
   document.getElementById('sm-retrospective').value=sess.retrospective||'';
@@ -2300,7 +2544,14 @@ function openEditSessionModal(sess){
   if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save session';}
   document.getElementById('session-modal').classList.add('open');
 }
-async function editSessionById(id){var sessions=await dbGetAll('sessions');var sess=sessions.find(function(s){return s.id===id;});if(sess)openEditSessionModal(sess);}
+async function editSessionById(id){
+  var sessions=await dbGetAll('sessions');
+  var sess=sessions.find(function(s){return s.id===id;});
+  if(!sess)return;
+  var trades=await dbGetAll('trades');
+  var hasTrades=trades.some(function(t){return t.sessionId===id;});
+  openEditSessionModal(sess,hasTrades);
+}
 function closeSessionModal(){document.getElementById('session-modal').classList.remove('open');}
 
 // ══ Demo Session ══════════════════════════════════
@@ -2308,10 +2559,15 @@ function toggleDemoSessionOptions(){
   var cb=document.getElementById('sm-demo');
   var panel=document.getElementById('demo-session-options');
   var saveBtn=document.getElementById('sm-save-btn');
+  var nameInput=document.getElementById('sm-name');
   if(!cb||!panel)return;
   var show=cb.checked&&!editingSessionId;
   panel.style.display=show?'block':'none';
   if(saveBtn)saveBtn.textContent=show?'Create demo session':'Save session';
+  if(nameInput){
+    if(show&&!nameInput.value)nameInput.value='[demo]';
+    else if(!show&&nameInput.value==='[demo]')nameInput.value='';
+  }
   if(show)populateDemoAssetTypePills();
 }
 
@@ -2353,8 +2609,25 @@ function rnd(min,max,decimals){
 
 function randChoice(arr){return arr[Math.floor(Math.random()*arr.length)];}
 
-function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEquity,count,selectedAssets){
-  // Realistic price data per asset type
+async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEquity,count,selectedAssets){
+  // Pull real user settings so demo trades match the actual form options
+  var strategies=await getStrategies();
+  var checklistTemplate=await getChecklist();
+  var userAssets=await getAssets();
+
+  // Helper: build a realistic checklist state from the user's checklist template
+  // Winning trades check most items; losing trades miss 1-2
+  function makeDemoChecklist(isWin){
+    var state={};
+    checklistTemplate.forEach(function(section){
+      section.items.forEach(function(item){
+        // Win: 85-100% checked; Loss: 60-85% checked (missed something)
+        var threshold=isWin?(Math.random()<0.9?1:0):(Math.random()<0.7?1:0);
+        state[item]=threshold?'yes':'no';
+      });
+    });
+    return state;
+  }
   var ASSET_PRICE_MAP={
     'Forex Major':{pairs:['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','USD/CAD','NZD/USD'],priceRange:[0.65,155],pipSize:0.0001,qtyRange:[0.01,2.0],decimals:5},
     'Forex Cross':{pairs:['EUR/GBP','EUR/JPY','GBP/JPY','EUR/AUD','AUD/JPY'],priceRange:[0.85,175],pipSize:0.0001,qtyRange:[0.01,2.0],decimals:5},
@@ -2365,15 +2638,31 @@ function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEq
 
   var DEFAULT_PRICE_DATA={pairs:['ASSET/USD'],priceRange:[1,100],pipSize:0.01,qtyRange:[0.01,1],decimals:2};
 
-  var strategies=['S&D - Imbalance (Limit Buy) - JeaFx','S&D - Imbalance (Liquidation candle) - Brad'];
-  var models=['S&D - Continuation','S&D - Reversals'];
-  var ltfs=['1h → 15m → 5m','4h → 1h → 15m','D → 4h → 1h','W → D → 4h'];
-  var methods=['Instant','Confirmation'];
-  var slplaces=['Below structure','Above structure','At order block','Below FVG','Above liquidity'];
-  var tpplaces=['Next structure','Previous high/low','50% extension','RR target','Order block'];
-  var exitCrits=['Full TP hit','Partial close','Manual exit','Time stop'];
-  var ratings=['1','2','3','4','5'];
-  var errors=['None','Early entry','Late entry','Oversized','Undersized','Wrong direction'];
+  // Use strategies from user settings (already fetched above)
+  if(!strategies||!strategies.length)strategies=DEFAULT_STRATEGIES.slice();
+  // Read all option values live from the DOM so demo always reflects whatever the form currently offers
+  function pillVals(groupId){
+    var g=document.getElementById(groupId);
+    if(!g)return[];
+    return Array.from(g.querySelectorAll('.opt-pill[data-val]')).map(function(p){return p.dataset.val;}).filter(Boolean);
+  }
+  function selectVals(selectId){
+    var s=document.getElementById(selectId);
+    if(!s)return[];
+    return Array.from(s.options).map(function(o){return o.value||o.text;}).filter(function(v){return v&&v!=='— select —'&&v!=='— none —';});
+  }
+  var models=pillVals('opt-model');
+  var ltfs=pillVals('opt-ltf');
+  var methods=pillVals('opt-method');
+  var slplaces=pillVals('opt-slplace');
+  var tpplaces=pillVals('opt-tpplace');
+  var allExitCrits=pillVals('opt-exit-a');
+  var winExitCrits=allExitCrits.filter(function(v){return v!=='SL';});
+  var lossExitCrits=allExitCrits.filter(function(v){return v==='SL'||v==='Manual';});
+  if(!winExitCrits.length)winExitCrits=allExitCrits;
+  if(!lossExitCrits.length)lossExitCrits=allExitCrits;
+  var ratings=selectVals('f-rating');
+  var errors=selectVals('f-error');
   var biasOptions=['bull','bear','neutral'];
   var narrativeTemplates=['Price swept liquidity at the low before reversing bullish.','Strong impulsive move away from the zone, confirmed on LTF.','Mitigation of the daily FVG with bullish reaction.','Clean break of structure to the upside after consolidation.','Price rejected the daily order block with engulfing candle.','Bearish BOS on 4h confirmed the short bias.','Premium array aligned with weekly bearish OB.'];
   var ledToTradeTemplates=['1. Clear BOS on 4H\n2. LTF confirmation via 15m engulf\n3. Volume spike at zone','1. HTF bearish bias\n2. Price in premium\n3. FVG fill entry','1. Structure aligned across all TFs\n2. Clean order block\n3. Confluence of indicators'];
@@ -2389,11 +2678,13 @@ function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEq
   var currentEquity=startingEquity;
   var trades=[];
 
-  // Build asset pool from selected asset types
+  // Build asset pool from selected asset types — use user's actual configured pairs
   var assetPool=[];
   selectedAssets.forEach(function(typeName){
     var data=ASSET_PRICE_MAP[typeName]||DEFAULT_PRICE_DATA;
-    data.pairs.forEach(function(pair){
+    var userAt=userAssets.find(function(a){return a.name===typeName;});
+    var pairs=(userAt&&userAt.pairs&&userAt.pairs.length)?userAt.pairs:data.pairs;
+    pairs.forEach(function(pair){
       assetPool.push({pair:pair,assetType:typeName,data:data});
     });
   });
@@ -2476,7 +2767,8 @@ function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEq
     var method=randChoice(methods);
     var slplace=randChoice(slplaces);
     var tpplace=randChoice(tpplaces);
-    var exitCrit=randChoice(exitCrits);
+    // Exit criteria should be consistent with the trade outcome
+    var exitCrit=isWin?randChoice(winExitCrits):randChoice(lossExitCrits);
     var rating=randChoice(ratings);
     var error=randChoice(errors);
 
@@ -2511,9 +2803,7 @@ function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEq
       exitTime:fmtDt(exitDt),
       durationMin:Math.round(durationMs/60000),
       winLoss:isWin?1:0,
-      checklist:{},
-      biasNarrative:tfBiases,
-      narrativeNotes:randChoice(narrativeTemplates),
+      checklist:makeDemoChecklist(isWin),
       setupNotes:'1. Trading within a '+asset.assetType+' context, '+pair+' at key level.',
       ledToTrade:randChoice(ledToTradeTemplates),
       issuesNotes:'1.',
@@ -2539,7 +2829,7 @@ function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEq
       mistakes:randChoice(mistakeTemplates),
       lessons:randChoice(lessonTemplates),
       good:randChoice(goodTemplates),
-      imageIds:{htf:[],mtf:[],ltf:[],setup:[]},
+      imageIds:{'htf-W':[],'htf-D':[],'htf-4h':[],'mtf-1h':[],'mtf-30m':[],'ltf-15m':[],'ltf-5m':[],'setup':[],'postanalysis':[]},
       savedAt:new Date().toISOString(),
       loggedAt:fmtDt(entryDt)+':00'
     };
@@ -2547,7 +2837,104 @@ function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEq
     currentEquity=parseFloat((currentEquity+plDollar).toFixed(2));
     trades.push(trade);
   }
-  return{trades:trades,finalEquity:currentEquity};
+  // Generate skipped trades (half of taken count)
+  var skippedCount=Math.floor(count/2);
+  var whySkippedTemplates=[
+    'Did not wait for LTF confirmation — setup was not fully formed.',
+    'HTF bias was unclear at the time; decided to stay out.',
+    'Risk/reward was not favorable enough at that price level.',
+    'News event coming up — avoided the trade to reduce risk.',
+    'Already at daily max drawdown limit for the session.',
+    'Setup appeared but entry model criteria were not met.',
+    'Hesitated due to recent losing streak — kept discipline to skip.',
+    'Price moved too fast, missed the optimal entry window.',
+    'Conflicting signals across timeframes — no clear edge.',
+    'Session time was outside my trading hours, skipped for discipline.'
+  ];
+  for(var j=0;j<skippedCount;j++){
+    var sAsset=randChoice(assetPool);
+    var sPdata=sAsset.data;
+    var sPair=sAsset.pair;
+    var sEntry,sSl;
+    if(sPair==='EUR/USD'){sEntry=rnd(1.05,1.12,5);}
+    else if(sPair==='GBP/USD'){sEntry=rnd(1.22,1.32,5);}
+    else if(sPair==='USD/JPY'){sEntry=rnd(140,158,3);}
+    else if(sPair==='XAU/USD'){sEntry=rnd(1900,2400,2);}
+    else if(sPair==='BTC/USD'){sEntry=rnd(40000,70000,0);}
+    else{sEntry=rnd(sPdata.priceRange[0],sPdata.priceRange[1],sPdata.decimals);}
+    var sIsLong=Math.random()>0.5;
+    var sSlPct=rnd(0.05,0.4)/100;
+    sSl=sIsLong?parseFloat((sEntry-sEntry*sSlPct).toFixed(sPdata.decimals)):parseFloat((sEntry+sEntry*sSlPct).toFixed(sPdata.decimals));
+    var sTradeOffset=Math.random()*dateRange;
+    var sEntryDt=new Date(startDate.getTime()+sTradeOffset);
+    function fmtDt2(d){var yr=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0');var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');return yr+'-'+mo+'-'+dy+'T'+hh+':'+mm;}
+    var sTradeId=Date.now().toString(36)+Math.random().toString(36).slice(2)+'_skip'+j;
+    var sTfBiases={W:randChoice(biasOptions),D:randChoice(biasOptions),'4h':randChoice(biasOptions),'1h':randChoice(biasOptions),'15m':randChoice(biasOptions)};
+    var skippedTrade={
+      id:sTradeId,
+      num:String(count+j+1),
+      pair:sPair,
+      assetType:sAsset.assetType,
+      sessionId:sessionId,
+      type:sIsLong?'Long':'Short',
+      strategy:randChoice(strategies),
+      model:randChoice(models),
+      method:randChoice(methods),
+      ltf:randChoice(ltfs),
+      rating:'',
+      error:'None',
+      acct:startingEquity,
+      riskpct:1,
+      riskDollar:parseFloat((startingEquity*0.01).toFixed(2)),
+      entryPrice:sEntry,
+      stopLoss:sSl,
+      exitPrice:0,
+      qty:0,
+      targetRR:rnd(1.5,3.0,1),
+      actualRR:null,
+      plDollar:0,
+      plPct:0,
+      entryTime:fmtDt2(sEntryDt),
+      exitTime:'',
+      durationMin:0,
+      winLoss:0,
+      skipped:true,
+      whySkipped:randChoice(whySkippedTemplates),
+      checklist:makeDemoChecklist(false),
+      biasNarrative:sTfBiases,
+      narrativeNotes:randChoice(narrativeTemplates),
+      setupNotes:'Setup was visible but did not fully meet entry criteria.',
+      ledToTrade:randChoice(ledToTradeTemplates),
+      issuesNotes:'',
+      postAnalysis:'',
+      news:'',
+      tpCriteria:'',
+      tpSlPlace:randChoice(slplaces),
+      tpTpPlace:randChoice(tpplaces),
+      tpExitA:'',
+      tpRrA:'',
+      tpExit:'',
+      tpTrail:'No',
+      tpTpChg:'No',
+      trailDetail:null,
+      tpChangeDetail:null,
+      planIf:'Price reaches the '+sPair+' zone around '+sEntry,
+      planIfThen:sIsLong?'Enter long if confirmation appears':'Enter short if confirmation appears',
+      planElseIf:'',
+      planElseIfThen:'',
+      emoBefore:randChoice(emotionTemplates),
+      emoAfter:'',
+      emoComplete:'',
+      mistakes:'',
+      lessons:'',
+      good:'',
+      imageIds:{'htf-W':[],'htf-D':[],'htf-4h':[],'mtf-1h':[],'mtf-30m':[],'ltf-15m':[],'ltf-5m':[],'setup':[],'postanalysis':[]},
+      savedAt:new Date().toISOString(),
+      loggedAt:fmtDt2(sEntryDt)+':00'
+    };
+    trades.push(skippedTrade);
+  }
+  return{trades:trades,finalEquity:currentEquity,skippedCount:skippedCount};
 }
 async function saveSession(){
   var startDate=document.getElementById('sm-start').value;
@@ -2559,6 +2946,12 @@ async function saveSession(){
   var startingEquity=parseFloat(document.getElementById('sm-equity').value)||5000;
   var archived=document.getElementById('sm-archived').checked;
   var existing=editingSessionId?sessions.find(function(s){return s.id===editingSessionId;}):null;
+  // Block equity change if session has trades
+  if(existing&&existing.startingEquity!==startingEquity){
+    var allTrades=await dbGetAll('trades');
+    var sessHasTrades=allTrades.some(function(t){return t.sessionId===editingSessionId;});
+    if(sessHasTrades){toast('Starting equity cannot be changed once trades exist','err');return;}
+  }
 
   // Check if demo session requested (only for new sessions)
   var isDemoSession=!editingSessionId&&document.getElementById('sm-demo')&&document.getElementById('sm-demo').checked;
@@ -2579,7 +2972,12 @@ async function saveSession(){
     id:editingSessionId||(Date.now().toString(36)+Math.random().toString(36).slice(2)),
     name,startDate,endDate,
     startingEquity:startingEquity,
-    currentEquity:existing?existing.currentEquity:startingEquity,
+    currentEquity:(function(){
+      if(!existing)return startingEquity;
+      // If startingEquity changed and there are no trades yet, keep currentEquity in sync
+      var startChanged=existing.startingEquity!==startingEquity;
+      return startChanged&&existing.currentEquity===existing.startingEquity?startingEquity:existing.currentEquity;
+    }()),
     notes:(existing&&existing.notes)||'',
     retrospective:(function(){var ed=document.getElementById('retro-editor');return ed?ed.innerHTML:document.getElementById('sm-retrospective').value||'';}()),
     archived:archived,
@@ -2594,7 +2992,7 @@ async function saveSession(){
     if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Generating trades…';}
     try{
       // Fetch available strategies for demo
-      var result=generateDemoTrades(sess.id,startDate,endDate,startingEquity,demoCount,selectedDemoAssets);
+      var result=await generateDemoTrades(sess.id,startDate,endDate,startingEquity,demoCount,selectedDemoAssets);
       var trades=result.trades;
       var allExistingTrades=await dbGetAll('trades');
       var baseNum=allExistingTrades.length;
@@ -2607,7 +3005,7 @@ async function saveSession(){
       await dbPut('sessions',sess);
       closeSessionModal();renderSessionsList();populateSessionSelects();renderDashboard();updateSidebarStats();
       var hiddenMsg=archived?' (hidden from dashboard)':'';
-      toast('Demo session created with '+demoCount+' trades'+hiddenMsg+' ✓','ok');
+      toast('Demo session created: '+demoCount+' trades + '+result.skippedCount+' skipped'+hiddenMsg+' ✓','ok');
     }catch(e){
       toast('Error generating demo trades: '+e.message,'err');
       if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Create demo session';}
@@ -2696,42 +3094,62 @@ async function populateSessionSelects(restoreSessionId){
   // Find currently active session (date-based)
   var activeSession=activeSessions.find(function(s){return isSessionActive(s);})||null;
 
-  var tradeOpts='<option value="">— select session —</option>'+activeSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
+  var tradeOpts='<option value="">— select session —</option>'+activeSessions.filter(function(s){return !s.isDemo;}).map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
   document.getElementById('f-session').innerHTML=tradeOpts;
 
   if(restoreSessionId){
     // Editing a trade — restore its original session (could be archived or inactive)
     // If not in select list, add a disabled option so it shows correctly
-    var inList=activeSessions.find(function(s){return s.id===restoreSessionId;});
+    var inList=activeSessions.find(function(s){return s.id===restoreSessionId&&!s.isDemo;});
     if(!inList){
       var orig=sessions.find(function(s){return s.id===restoreSessionId;});
       if(orig){
         var extraOpt=document.createElement('option');
-        extraOpt.value=orig.id;extraOpt.textContent=orig.name+(orig.archived?' (archived)':'');
+        extraOpt.value=orig.id;extraOpt.textContent=orig.name+(orig.isDemo?' ✦ demo':'')+(orig.archived?' (archived)':'');
         document.getElementById('f-session').appendChild(extraOpt);
       }
     }
     document.getElementById('f-session').value=restoreSessionId;
     onSessionChange();
   } else if(!editingId){
-    // New trade: auto-select active session if exists, otherwise most recent non-archived
-    var targetId=activeSession?activeSession.id:(activeSessions.length?activeSessions[0].id:'');
+    // New trade: auto-select most recent active non-demo session, or most recent non-demo session
+    var nonDemoSessions=activeSessions.filter(function(s){return !s.isDemo;});
+    var activeNonDemo=nonDemoSessions.find(function(s){return isSessionActive(s);})||nonDemoSessions[0]||null;
+    var targetId=activeNonDemo?activeNonDemo.id:'';
     document.getElementById('f-session').value=targetId;
     onSessionChange();
   }
 
+  // Non-demo sessions for all filters (demos only show if user explicitly picks them)
+  var filterSessions=activeSessions.filter(function(s){return !s.isDemo;});
+  // Most recent active non-demo session for auto-defaulting filters
+  var defaultFilterSession=filterSessions.find(function(s){return isSessionActive(s);})||filterSessions[0]||null;
+
   var dashF=document.getElementById('dash-session-filter');
   var dv=dashF.value;
-  dashF.innerHTML='<option value="">All sessions</option>'+activeSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
-  // Auto-select active session in dashboard if no filter was previously set
-  if(!dv&&activeSession){dashF.value=activeSession.id;}
-  else{dashF.value=dv;}
+  dashF.innerHTML='<option value="">All sessions</option>'+filterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
+  // Auto-select most recent active non-demo session if no filter was previously set
+  if(!dv&&defaultFilterSession){dashF.value=defaultFilterSession.id;}
+  else if(dv){dashF.value=dv;}
 
   var hF=document.getElementById('flt-session');
-  if(hF){var hv=hF.value;hF.innerHTML='<option value="">All sessions</option>'+activeSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');hF.value=hv;}
+  if(hF){
+    var hv=hF.value;
+    hF.innerHTML='<option value="">All sessions</option>'+filterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
+    if(!hv&&defaultFilterSession){hF.value=defaultFilterSession.id;}
+    else if(hv){hF.value=hv;}
+  }
   // Monte Carlo session select
   var mcF=document.getElementById('mc-session');
-  if(mcF){var mcv=mcF.value;mcF.innerHTML='<option value="">All sessions</option>'+activeSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');mcF.value=mcv;}
+  if(mcF){
+    var mcv=mcF.value;
+    mcF.innerHTML='<option value="">All sessions</option>'+filterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
+    if(!mcv&&defaultFilterSession){mcF.value=defaultFilterSession.id;}
+    else if(mcv){mcF.value=mcv;}
+  }
+  // Calculator backtest session select
+  var cbF=document.getElementById('calc-backtest-session');
+  if(cbF){var cbv=cbF.value;cbF.innerHTML='<option value="">— select session —</option>'+activeSessions.filter(function(s){return !s.isDemo;}).map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');cbF.value=cbv;}
 }
 
 // ══ Navigation ════════════════════════════════════
@@ -2771,6 +3189,117 @@ function switchTab(idx,btn){
 }
 
 // ══ Analysis accordion ════════════════════════════
+// ── TF Pill selector (HTF/MTF/LTF) ────────────────────────────
+var TF_SEQUENCE=['W','D','4h','1h','15m','5m'];
+var tfState={htf:null,mtf:null,ltf:null};
+
+function selectTfPill(btn){
+  var role=btn.dataset.role;
+  var tf=btn.dataset.tf;
+  var idx=TF_SEQUENCE.indexOf(tf);
+  tfState[role]=tf;
+  // Autofill the other two based on sequence
+  var roles=['htf','mtf','ltf'];
+  var offsets=[0,1,2];
+  // Find the offset for current role
+  var roleIdx=roles.indexOf(role);
+  // Assign MTF = idx+1, LTF = idx+2 for HTF selection, etc.
+  var baseIdx=idx-roleIdx; // index of HTF in sequence
+  roles.forEach(function(r,ri){
+    var seqI=baseIdx+ri;
+    if(r!==role && seqI>=0 && seqI<TF_SEQUENCE.length){
+      tfState[r]=TF_SEQUENCE[seqI];
+      applyTfPillUI(r,TF_SEQUENCE[seqI]);
+    } else if(r!==role){
+      // out of range, leave as-is unless unset
+    }
+  });
+  applyTfPillUI(role,tf);
+}
+
+function applyTfPillUI(role,tf){
+  tfState[role]=tf;
+  var selector=document.getElementById(role+'-tf-selector');
+  var bar=document.getElementById(role+'-tf-bar');
+  var label=document.getElementById(role+'-tf-label');
+  if(!selector) return;
+  // Hide pill row; keep tf-bar hidden — TF shown inline next to header title
+  selector.style.display='none';
+  if(label) label.textContent=tf;
+  if(bar) bar.style.display='none';
+  // Keep group title plain (TF shown in inline span)
+  var titleEl=document.getElementById(role+'-group-title');
+  if(titleEl) titleEl.textContent=role.toUpperCase()+' Screenshots';
+  // Show inline TF label
+  var inlineEl=document.getElementById(role+'-tf-inline');
+  if(inlineEl){inlineEl.textContent=tf;inlineEl.style.display='inline';}
+}
+
+function clearTfPill(role){
+  tfState[role]=null;
+  var selector=document.getElementById(role+'-tf-selector');
+  var bar=document.getElementById(role+'-tf-bar');
+  if(!selector) return;
+  if(bar) bar.style.display='none';
+  selector.style.display='flex';
+  selector.querySelectorAll('.tf-pill').forEach(function(p){p.classList.remove('selected');});
+  var titleEl=document.getElementById(role+'-group-title');
+  if(titleEl) titleEl.textContent=role.toUpperCase()+' Screenshots';
+  var inlineEl=document.getElementById(role+'-tf-inline');
+  if(inlineEl){inlineEl.textContent='';inlineEl.style.display='none';}
+}
+
+function resetTfPills(){
+  ['htf','mtf','ltf'].forEach(function(r){clearTfPill(r);});
+  tfState={htf:null,mtf:null,ltf:null};
+}
+
+// ── Custom TF zone adder ────────────────────────────────────────
+function addCustomTfZone(group){
+  var name=prompt('Enter timeframe label (e.g. 2h, 3m, 45m):');
+  if(!name)return;
+  name=name.trim().replace(/[^a-zA-Z0-9]/g,'');
+  if(!name){toast('Invalid label','err');return;}
+  var zone=group+'-'+name;
+  if(document.getElementById('paste-zone-'+zone)){toast('TF already exists','err');return;}
+  // Register zone in SS_ZONES and pendingImages
+  if(!SS_ZONES.includes(zone))SS_ZONES.push(zone);
+  if(!pendingImages[zone])pendingImages[zone]=[];
+  // Build DOM
+  var container=document.getElementById('tf-zones-'+group);
+  if(!container)return;
+  var sec=document.createElement('div');
+  sec.className='tf-sub-section';
+  sec.dataset.customZone=zone;
+  sec.innerHTML='<div class="tf-sub-label" style="justify-content:space-between">'
+    +'<span>'+escHtml(name)+'</span>'
+    +'<button style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:0" onclick="removeCustomTfZone(\''+zone+'\',this)" title="Remove">✕</button>'
+    +'</div>'
+    +'<div class="img-grid" id="imgs-'+zone+'"></div>'
+    +'<div class="img-paste-zone" id="paste-zone-'+zone+'" tabindex="0"'
+    +' onclick="focusPasteZone(\''+zone+'\')"'
+    +' ondragover="onDragOver(event,\''+zone+'\')"'
+    +' ondragleave="onDragLeave(event,\''+zone+'\')"'
+    +' ondrop="onDrop(event,\''+zone+'\')">'
+    +'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
+    +'<p>Click then <kbd>Ctrl+V</kbd> / drop</p>'
+    +'</div>';
+  container.appendChild(sec);
+}
+function removeCustomTfZone(zone,btn){
+  var sec=btn.closest('[data-custom-zone]');
+  if(sec)sec.remove();
+  SS_ZONES=SS_ZONES.filter(function(z){return z!==zone;});
+  delete pendingImages[zone];
+}
+
+
+function onSkippedChange(){
+  var isSkipped=document.getElementById('f-skipped').checked;
+  var whySection=document.getElementById('why-skipped-section');
+  if(whySection) whySection.style.display=isSkipped?'':'none';
+}
+
 function toggleAnalysis(hdr){hdr.classList.toggle('open');hdr.nextElementSibling.classList.toggle('open');}
 function analysisExpandAll(){
   document.querySelectorAll('#tab-2 .analysis-header').forEach(function(hdr){
@@ -3132,7 +3661,9 @@ function deleteStoredImg(imgId,zone,btn){
 // ══ Trade # auto-gen ══════════════════════════════
 async function generateTradeNum(){
   var trades=await dbGetAll('trades');
-  return String(trades.length+1);
+  if(!trades.length)return'1';
+  var max=trades.reduce(function(m,t){var n=parseInt(t.num)||0;return n>m?n:m;},0);
+  return String(max+1);
 }
 
 // ══ Save trade ════════════════════════════════════
@@ -3182,9 +3713,7 @@ async function saveTrade(){
   if(!exitCritVal){toast('Exit criteria is required','err');switchTab(0,null);return;}
   var tpplaceVal=document.getElementById('tp-tpplace-val').value;
   if(!tpplaceVal){toast('TP placement is required','err');switchTab(0,null);return;}
-  // Tab 2 (Analysis) — mandatory: narrative notes, setup notes, led-to-trade, plan if/then
-  var narrativeNotes=document.getElementById('narrative-notes').value.trim();
-  if(!narrativeNotes){toast('Narrative notes are required (Analysis tab)','err');switchTab(2,null);return;}
+  // Tab 2 (Analysis) — mandatory: setup notes, led-to-trade, plan if/then
   var setupNotes=document.getElementById('setup-notes').value.trim();
   if(!setupNotes){toast('Setup description is required (Analysis tab)','err');switchTab(2,null);return;}
   var ledToTrade=document.getElementById('led-to-trade').value.trim();
@@ -3242,16 +3771,17 @@ async function saveTrade(){
   var winLoss=wlVal!==''?parseFloat(wlVal):(pl>=0?1:0);
 
   // Images
-  var imageIds={htf:[],mtf:[],ltf:[],setup:[]};
+  var _emptyIds={'htf-W':[],'htf-D':[],'htf-4h':[],'mtf-1h':[],'mtf-30m':[],'ltf-15m':[],'ltf-5m':[],'setup':[],'postanalysis':[]};
+  var imageIds=JSON.parse(JSON.stringify(_emptyIds));
   if(editingId){
     var old=await dbGet('trades',editingId);
-    if(old)imageIds=JSON.parse(JSON.stringify(old.imageIds||{htf:[],mtf:[],ltf:[],setup:[]}));
+    if(old)imageIds=JSON.parse(JSON.stringify(old.imageIds||_emptyIds));
     if(pendingImages._deleted){
       for(var z2 in imageIds)imageIds[z2]=(imageIds[z2]||[]).filter(function(id){return!pendingImages._deleted.includes(id)});
       for(var did of pendingImages._deleted)await dbDelete('images',did);
     }
   }
-  for(var zone of['htf','mtf','ltf','setup']){
+  for(var zone of SS_ZONES){
     for(var img of(pendingImages[zone]||[])){
       await dbPut('images',{id:img.id,dataUrl:img.dataUrl||null,cloudUrl:img.cloudUrl||null,publicId:img.publicId||null,deleteToken:img.deleteToken||null,name:img.name,zone:zone});
       if(!imageIds[zone])imageIds[zone]=[];imageIds[zone].push(img.id);
@@ -3275,7 +3805,6 @@ async function saveTrade(){
     winLoss,
     checklist:getChecklist_state(),
     biasNarrative:JSON.parse(JSON.stringify(biasState.narrative||{})),
-    narrativeNotes:document.getElementById('narrative-notes').value,
     setupNotes:document.getElementById('setup-notes').value,
     ledToTrade:document.getElementById('led-to-trade').value,
     issuesNotes:document.getElementById('issues-notes').value,
@@ -3296,6 +3825,9 @@ async function saveTrade(){
     emoBefore:document.getElementById('emo-before').value,emoAfter:document.getElementById('emo-after').value,emoComplete:document.getElementById('emo-complete').value,
     mistakes:document.getElementById('l-mistakes').value,lessons:document.getElementById('l-lessons').value,good:document.getElementById('l-good').value,
     imageIds,savedAt:new Date().toISOString(),
+    skipped:document.getElementById('f-skipped')?document.getElementById('f-skipped').checked:false,
+    whySkipped:document.getElementById('why-skipped-notes')?document.getElementById('why-skipped-notes').value:'',
+    htfTf:tfState.htf,mtfTf:tfState.mtf,ltfTf:tfState.ltf,
     loggedAt:editingId?((await dbGet('trades',editingId)).loggedAt||new Date().toISOString()):new Date().toISOString()
   };
 
@@ -3333,7 +3865,7 @@ async function clearForm(skipCancelEdit){
     'plan-if','plan-if-then','plan-elseif','plan-elseif-then','tp-rr-a'];
   textIds.forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   // Restore pre-filled defaults for analysis/reflection textareas
-  var prefilledDefaults={'narrative-notes':'1.','led-to-trade':'1.','issues-notes':'1.','post-analysis':'1.','f-news':'1.',
+  var prefilledDefaults={'led-to-trade':'1.','issues-notes':'1.','post-analysis':'1.','f-news':'1.',
     'emo-before':'1.','emo-after':'1.','emo-complete':'1.','l-mistakes':'1.','l-lessons':'1.','l-good':'1.'};
   Object.keys(prefilledDefaults).forEach(function(id){var el=document.getElementById(id);if(el)el.value=prefilledDefaults[id];});
   var setupEl=document.getElementById('setup-notes');if(setupEl)setupEl.value='1. Trading within a ';
@@ -3364,9 +3896,17 @@ async function clearForm(skipCancelEdit){
   document.getElementById('trail-box').classList.remove('visible');
   document.getElementById('tp-change-box').classList.remove('visible');
   setChecklist_state(null);setBiasFromData(null);
-  pendingImages={htf:[],mtf:[],ltf:[],setup:[]};
-  ['htf','mtf','ltf','setup'].forEach(function(z){var g=document.getElementById('imgs-'+z);if(g)g.innerHTML='';});
+  // Remove custom TF zones added this session
+  document.querySelectorAll('[data-custom-zone]').forEach(function(el){el.remove();});
+  SS_ZONES=['htf-W','htf-D','htf-4h','mtf-1h','mtf-30m','ltf-15m','ltf-5m','setup','postanalysis'];
+  pendingImages={'htf-W':[],'htf-D':[],'htf-4h':[],'mtf-1h':[],'mtf-30m':[],'ltf-15m':[],'ltf-5m':[],'setup':[],'postanalysis':[]};
+  SS_ZONES.forEach(function(z){var g=document.getElementById('imgs-'+z);if(g)g.innerHTML='';});
   activePasteZone=null;
+  // Reset skipped trade
+  var skippedCb=document.getElementById('f-skipped');if(skippedCb){skippedCb.checked=false;onSkippedChange();}
+  var whyEl=document.getElementById('why-skipped-notes');if(whyEl)whyEl.value='1.';
+  // Reset TF pills
+  resetTfPills();
   recalc();switchTab(0,null);
   generateTradeNum().then(function(n){var el=document.getElementById('f-num');if(el)el.value=n;});
   // Show the "will be set on save" placeholder for a new trade
@@ -3406,14 +3946,21 @@ async function editTrade(id){
   setOptPill('opt-tpplace',trade.tpTpPlace||'');s('tp-tpplace-val',trade.tpTpPlace||'');
   setOptPill('opt-exit-a',trade.tpExitA||'');s('tp-exit-a-val',trade.tpExitA||'');
   s('tp-rr-a',trade.tpRrA);
-  s('narrative-notes',trade.narrativeNotes);s('setup-notes',trade.setupNotes);
+  s('setup-notes',trade.setupNotes);
   s('led-to-trade',trade.ledToTrade);s('issues-notes',trade.issuesNotes);
   s('post-analysis',trade.postAnalysis);s('f-news',trade.news);
   s('plan-if',trade.planIf);s('plan-if-then',trade.planIfThen);s('plan-elseif',trade.planElseIf);s('plan-elseif-then',trade.planElseIfThen);
   s('emo-before',trade.emoBefore);s('emo-after',trade.emoAfter);s('emo-complete',trade.emoComplete);
   s('l-mistakes',trade.mistakes);s('l-lessons',trade.lessons);s('l-good',trade.good);
   setChecklist_state(trade.checklist);setBiasFromData(trade.biasNarrative);
-  if(trade.imageIds)['htf','mtf','ltf','setup'].forEach(function(z){renderStoredImages(trade.imageIds[z]||[],z);});
+  if(trade.imageIds)SS_ZONES.forEach(function(z){renderStoredImages(trade.imageIds[z]||[],z);});
+  // Restore skipped state
+  var skippedCb=document.getElementById('f-skipped');
+  if(skippedCb){skippedCb.checked=!!trade.skipped;onSkippedChange();}
+  s('why-skipped-notes',trade.whySkipped||'');
+  // Restore TF pills (legacy — no-op if elements absent)
+  resetTfPills();
+  if(trade.imageIds)SS_ZONES.forEach(function(z){renderStoredImages(trade.imageIds[z]||[],z);});
   recalc();
   var eb=document.getElementById('edit-banner');eb.classList.add('visible');
   document.getElementById('edit-banner-text').textContent='Editing: #'+trade.num+' — '+trade.pair;
@@ -3447,7 +3994,7 @@ var ALL_HISTORY_COLS=[
   {key:'pair',      label:'Pair',      sortVal:function(t){return t.pair||'';},                   render:function(t){return'<td style="font-weight:600;color:var(--text)">'+escHtml(t.pair||'')+'</td>';}},
   {key:'assetType', label:'Asset',     sortVal:function(t){return t.assetType||'';},              render:function(t){return'<td style="color:var(--text2)">'+escHtml(t.assetType||'—')+'</td>';}},
   {key:'type',      label:'Direction', sortVal:function(t){return t.type||'';},                   render:function(t){var typ=t.type||'';return'<td>'+(typ?'<span class="badge '+(typ==='Long'?'badge-green':'badge-red')+'">'+typ+'</span>':'—')+'</td>';}},
-  {key:'result',    label:'Result',    sortVal:function(t){return t.winLoss||0;},                 render:function(t){var win=t.winLoss===1;return'<td><span class="badge '+(win?'badge-green':'badge-red')+'">'+(win?'Win':'Loss')+'</span></td>';}},
+  {key:'result',    label:'Result',    sortVal:function(t){return t.winLoss||0;},                 render:function(t){if(t.skipped)return'<td><span class="skipped-badge">Skipped</span></td>';var win=t.winLoss===1;return'<td><span class="badge '+(win?'badge-green':'badge-red')+'">'+(win?'Win':'Loss')+'</span></td>';}},
   {key:'plDollar',  label:'P/L ($)',   sortVal:function(t){return parseFloat(t.plDollar)||0;},    render:function(t){var pl=parseFloat(t.plDollar)||0;return'<td class="mono" style="color:'+(pl>=0?'var(--green)':'var(--red)')+'">'+((pl>=0?'+':'')+pl.toFixed(2))+'</td>';}},
   {key:'plPct',     label:'P/L (%)',   sortVal:function(t){return parseFloat(t.plPct)||0;},       render:function(t){var p=parseFloat(t.plPct)||0;return'<td class="mono" style="color:'+(p>=0?'var(--green)':'var(--red)')+'">'+((p>=0?'+':'')+p.toFixed(2))+'%</td>';}},
   {key:'actualRR',  label:'RR',        sortVal:function(t){return t.actualRR!=null?parseFloat(t.actualRR):-999;},render:function(t){return'<td class="mono">'+(t.actualRR!=null?parseFloat(t.actualRR).toFixed(2)+'R':'—')+'</td>';}},
@@ -3563,12 +4110,15 @@ async function renderHistory(){
       fs=document.getElementById('flt-strategy').value,fr=document.getElementById('flt-result').value,
       fses=document.getElementById('flt-session').value,
       fat=(document.getElementById('flt-asset-type')||{}).value||'',
+      fskip=(document.getElementById('flt-skipped')||{}).value||'taken',
       fsrch=(document.getElementById('flt-search').value||'').toLowerCase();
   var filtered=trades.filter(function(t){
     if(fp&&t.pair!==fp)return false;if(ft&&t.type!==ft)return false;if(fs&&t.strategy!==fs)return false;
     if(fr==='win'&&t.winLoss!==1)return false;if(fr==='loss'&&t.winLoss!==0)return false;
     if(fses&&t.sessionId!==fses)return false;
     if(fat&&t.assetType!==fat)return false;
+    if(fskip==='skipped'&&!t.skipped)return false;
+    if(fskip==='taken'&&t.skipped)return false;
     if(fsrch&&!((t.pair||'').toLowerCase().includes(fsrch)||(t.num||'').toLowerCase().includes(fsrch)||(t.lessons||'').toLowerCase().includes(fsrch)))return false;
     return true;
   });
@@ -3640,14 +4190,16 @@ async function populateFilters(){
   if(datf){var datv=datf.value;datf.innerHTML='<option value="">All asset types</option>'+assetTypes.map(function(a){return'<option value="'+escHtml(a)+'">'+escHtml(a)+'</option>'}).join('');datf.value=datv;}
   updateHistChips();
 }
-function resetFilters(){var ids=['flt-pair','flt-type','flt-strategy','flt-result','flt-session','flt-asset-type'];ids.forEach(function(id){var el=document.getElementById(id);if(el)el.selectedIndex=0});document.getElementById('flt-search').value='';updateHistChips();renderHistory();}
+function resetFilters(){var ids=['flt-pair','flt-type','flt-strategy','flt-result','flt-session','flt-asset-type'];ids.forEach(function(id){var el=document.getElementById(id);if(el)el.selectedIndex=0});var fsk=document.getElementById('flt-skipped');if(fsk)fsk.value='taken';document.getElementById('flt-search').value='';updateHistChips();renderHistory();}
 
 // ══ Detail modal ══════════════════════════════════
 async function openDetail(id){
   var trade=await dbGet('trades',id);if(!trade)return;
+  var _clTemplateForDetail=await getChecklist();
   document.getElementById('dm-title').textContent='#'+trade.num+' — '+trade.pair;
   var win=trade.winLoss===1;
   document.getElementById('dm-badges').innerHTML=
+    (trade.skipped?'<span class="skipped-badge">⊘ Skipped</span>':'')+
     '<span class="badge '+(win?'badge-green':'badge-red')+'">'+(win?'Win':'Loss')+'</span>'+
     '<span class="badge '+(trade.type==='Long'?'badge-green':'badge-red')+'">'+trade.type+'</span>'+
     (trade.strategy?'<span class="badge badge-gray">'+escHtml(trade.strategy)+'</span>':'')+
@@ -3660,10 +4212,11 @@ async function openDetail(id){
   var imgSections='';
   if(trade.imageIds){
     var allImgHtml=[];
-    for(var zone of['htf','mtf','ltf','setup']){
+    var _zoneLabel=function(z){var m={'htf-W':'HTF — W','htf-D':'HTF — D','htf-4h':'HTF — 4h','mtf-1h':'MTF — 1h','mtf-30m':'MTF — 30m','ltf-15m':'LTF — 15m','ltf-5m':'LTF — 5m','setup':'Setup','postanalysis':'Post-journal'};return m[z]||z.toUpperCase();};
+    for(var zone of SS_ZONES){
       var zImgs=[];
       for(var imgId of(trade.imageIds[zone]||[])){var img=await dbGet('images',imgId);if(img){var src=img.cloudUrl||img.dataUrl;zImgs.push('<div class="img-thumb" style="aspect-ratio:16/10"><img src="'+src+'" onclick="openLightbox(\''+src+'\')"></div>');}}
-      if(zImgs.length)allImgHtml.push('<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">'+zone.toUpperCase()+'</div><div class="img-grid">'+zImgs.join('')+'</div></div>');
+      if(zImgs.length){allImgHtml.push('<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">'+_zoneLabel(zone)+'</div><div class="img-grid">'+zImgs.join('')+'</div></div>');}
     }
     if(allImgHtml.length)imgSections='<div class="detail-section-title">Screenshots</div>'+allImgHtml.join('');
   }
@@ -3672,33 +4225,75 @@ async function openDetail(id){
   var planHtml='';
   if(trade.planIf||trade.planElseIf){planHtml='<div class="detail-section-title">Trade plan</div><div class="plan-block" style="pointer-events:none">'+(trade.planIf?'<div class="plan-line"><span class="plan-kw">→ if</span><span style="color:var(--text2);font-size:12px;padding-left:6px;white-space:pre-wrap">'+escHtml(trade.planIf)+'</span></div>':'')+(trade.planIfThen?'<div class="plan-line" style="margin-left:18px"><span class="plan-kw then">then</span><span style="color:var(--text2);font-size:12px;padding-left:6px;white-space:pre-wrap">'+escHtml(trade.planIfThen)+'</span></div>':'')+(trade.planElseIf?'<div class="plan-line" style="margin-top:6px"><span class="plan-kw">→ else if</span><span style="color:var(--text2);font-size:12px;padding-left:6px;white-space:pre-wrap">'+escHtml(trade.planElseIf)+'</span></div>':'')+(trade.planElseIfThen?'<div class="plan-line" style="margin-left:18px"><span class="plan-kw then">then</span><span style="color:var(--text2);font-size:12px;padding-left:6px;white-space:pre-wrap">'+escHtml(trade.planElseIfThen)+'</span></div>':'')+'</div>';}
   var noteRow=function(lbl,val){return val?'<div class="detail-item"><div class="di-label">'+lbl+'</div><div class="di-val" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(val)+'</div></div>':'';};
+  // Build unmet checklist HTML (only items marked 'no', grouped by section)
+  var checklistUnmetHtml=(function(){
+    var cl=trade.checklist||{};
+    var clTemplate=_clTemplateForDetail||DEFAULT_CHECKLIST;
+    var sections=[];
+    clTemplate.forEach(function(sec){
+      var unmet=sec.items.filter(function(item){var v=cl[item];return v!=null&&v!==undefined&&v!=='yes'&&v!==true&&v!==1;});
+      if(unmet.length)sections.push({header:sec.section,items:unmet});
+    });
+    var templateItems=clTemplate.reduce(function(a,s){return a.concat(s.items);},[]);
+    var legacyUnmet=Object.keys(cl).filter(function(k){var v=cl[k];return !templateItems.includes(k)&&v!=='yes'&&v!==true&&v!==1;});
+    if(legacyUnmet.length)sections.push({header:'Other',items:legacyUnmet});
+    if(!sections.length)return '';
+    var html='';
+    sections.forEach(function(sec){
+      html+='<div style="margin-bottom:10px">'
+        +'<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">'+escHtml(sec.header)+'</div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:5px">'
+        +sec.items.map(function(item){return'<span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(239,83,80,.1);border:1px solid rgba(239,83,80,.3);color:var(--red)">\u2717 '+escHtml(item)+'</span>';}).join('')
+        +'</div></div>';
+    });
+    return html;
+  }());
   document.getElementById('dm-body').innerHTML=
     '<div class="detail-grid">'
     +'<div class="detail-item"><div class="di-label">Entry</div><div class="di-val mono">'+trade.entryPrice+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Exit</div><div class="di-val mono">'+trade.exitPrice+'</div></div>'
     +'<div class="detail-item"><div class="di-label">SL</div><div class="di-val mono">'+(trade.stopLoss||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Target RR</div><div class="di-val mono">'+(trade.targetRR?trade.targetRR+'R':'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">P/L ($)</div><div class="di-val mono" style="color:'+plColor+'">'+plStr+'</div></div>'
     +'<div class="detail-item"><div class="di-label">P/L (%)</div><div class="di-val mono" style="color:'+plColor+'">'+(trade.plPct>=0?'+':'')+trade.plPct.toFixed(2)+'%</div></div>'
     +'<div class="detail-item"><div class="di-label">Actual RR</div><div class="di-val mono">'+(trade.actualRR!=null?trade.actualRR.toFixed(2)+'R':'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Risk</div><div class="di-val mono">$'+trade.riskDollar+' / '+trade.riskpct+'%</div></div>'
+    +'<div class="detail-item"><div class="di-label">Qty / Size</div><div class="di-val mono">'+(trade.qty||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Acct balance</div><div class="di-val mono">'+(trade.acct?'$'+parseFloat(trade.acct).toLocaleString():'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Duration</div><div class="di-val">'+(trade.durationMin?Math.floor(trade.durationMin/60)+'h '+trade.durationMin%60+'m':'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">LTF entry</div><div class="di-val">'+(trade.ltf||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Asset type</div><div class="di-val">'+(trade.assetType||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Entry date/time</div><div class="di-val mono">'+(trade.entryTime?trade.entryTime.slice(0,10)+(trade.entryTime.length>10?' '+to12h(trade.entryTime.slice(11,16)):''):'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Exit date/time</div><div class="di-val mono">'+(trade.exitTime?trade.exitTime.slice(0,10)+(trade.exitTime.length>10?' '+to12h(trade.exitTime.slice(11,16)):''):'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Model</div><div class="di-val">'+(trade.model||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Entry method</div><div class="di-val">'+(trade.method||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">SL placed at</div><div class="di-val">'+(trade.tpSlPlace||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">TP placed at</div><div class="di-val">'+(trade.tpTpPlace||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Exit criteria</div><div class="di-val">'+(trade.tpExitA||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">TP criteria</div><div class="di-val">'+(trade.tpCriteria||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">SL trailing</div><div class="di-val">'+(trade.tpTrail||'No')+(trade.trailDetail?' ('+trade.trailDetail.trigger+')':'')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">TP changed</div><div class="di-val">'+(trade.tpTpChg||'No')+(trade.tpChangeDetail?' → '+trade.tpChangeDetail.dir:'')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Mistake/error</div><div class="di-val">'+(trade.error||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Rating</div><div class="di-val">'+(trade.rating?'★ '+trade.rating:'—')+'</div></div>'
     +'</div>'
     +biasHtml
+    +checklistUnmetHtml
+    +(trade.emoBefore||trade.emoAfter||trade.emoComplete?
+      '<div class="detail-section-title">Emotions</div><div class="detail-grid">'
+      +(trade.emoBefore?'<div class="detail-item"><div class="di-label">Before trade</div><div class="di-val" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.emoBefore)+'</div></div>':'')
+      +(trade.emoAfter?'<div class="detail-item"><div class="di-label">After trade</div><div class="di-val" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.emoAfter)+'</div></div>':'')
+      +(trade.emoComplete?'<div class="detail-item"><div class="di-label">Session complete</div><div class="di-val" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.emoComplete)+'</div></div>':'')
+      +'</div>':'')
     +(trade.narrativeNotes?'<div class="detail-section-title">Narrative</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.narrativeNotes)+'</div>':'')
     +(trade.setupNotes?'<div class="detail-section-title">Setup</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.setupNotes)+'</div>':'')
     +planHtml
     +(trade.ledToTrade?'<div class="detail-section-title">What led to the trade</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.ledToTrade)+'</div>':'')
-    +(trade.issuesNotes?'<div class="detail-section-title">Issues</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.issuesNotes)+'</div>':'')
+    +(trade.skipped&&trade.whySkipped?'<div class="detail-section-title" style="color:var(--amber)">Why skipped</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.whySkipped)+'</div>':'')
+    +(trade.issuesNotes&&trade.issuesNotes!='1.'?'<div class="detail-section-title">Issues</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.issuesNotes)+'</div>':'')
     +imgSections
     +(trade.mistakes||trade.lessons||trade.good?'<div class="detail-section-title">Lessons</div><div class="detail-grid">'+noteRow('Mistakes',trade.mistakes)+noteRow('Lessons learned',trade.lessons)+noteRow('What went well',trade.good)+'</div>':'')
-    +(trade.postAnalysis?'<div class="detail-section-title">Post-journal</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.postAnalysis)+'</div>':'')
-    +(trade.news?'<div class="detail-section-title">News</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.news)+'</div>':'')
+    +(trade.postAnalysis&&trade.postAnalysis!='1.'?'<div class="detail-section-title">Post-journal</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.postAnalysis)+'</div>':'')
+    +(trade.news&&trade.news!='1.'?'<div class="detail-section-title">News</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.news)+'</div>':'')
     +'<div style="height:16px"></div>';
   document.getElementById('detail-overlay').classList.add('open');
 }
@@ -3718,12 +4313,15 @@ async function renderDashboard(){
   var atF=(document.getElementById('dash-asset-type-filter')||{}).value||'';
   var pairF=(document.getElementById('dash-pair-filter')||{}).value||'';
   var stratF=(document.getElementById('dash-strategy-filter')||{}).value||'';
+  var skipF=(document.getElementById('dash-skipped-filter')||{}).value||'taken';
   var trades=allTrades.filter(function(t){
     if(archivedIds.has(t.sessionId))return false; // exclude archived sessions always
     if(sesF&&t.sessionId!==sesF)return false;
     if(atF&&t.assetType!==atF)return false;
     if(pairF&&t.pair!==pairF)return false;
     if(stratF&&t.strategy!==stratF)return false;
+    if(skipF==='skipped'&&!t.skipped)return false;
+    if(skipF==='taken'&&t.skipped)return false;
     return true;
   });
   updateDashFilterBadge();
@@ -3878,6 +4476,13 @@ function recomputeTradeFields(t){
   return t;
 }
 
+// ── Shared UI refresh after any import / restore / pull ──────────────────
+// Single point of truth: call this instead of repeating the chain everywhere.
+async function refreshUI(){
+  loadSavedTheme();
+  await Promise.all([renderDashboard(),updateSidebarStats(),populateSessionSelects(),renderHistory(),populatePairSelect(),populateStrategySelect()]);
+}
+
 async function importBackup(input){
   var file=input.files[0];if(!file)return;
   try{
@@ -3901,7 +4506,7 @@ async function importBackup(input){
     if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
     var msg='Imported '+added+' trades, '+imgCount+' images'+(skipped?' ('+skipped+' dupes skipped)':'');
     toast(msg,'ok');
-    loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+    await refreshUI();
     ghAutoSync();
   }catch(e){toast('Invalid file: '+e.message,'err');}
   input.value='';
@@ -3942,6 +4547,7 @@ function toggleDashFilters(){
 }
 function resetDashFilters(){
   ['dash-session-filter','dash-asset-type-filter','dash-pair-filter','dash-strategy-filter'].forEach(function(id){var el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  var dsk=document.getElementById('dash-skipped-filter');if(dsk)dsk.value='taken';
   updateDashFilterBadge();
   document.getElementById('dash-reset-btn').style.display='none';
   renderDashboard();
@@ -3965,7 +4571,7 @@ function toggleHistFilters(){
 function updateHistChips(){
   var labels={
     'flt-session':'Session','flt-asset-type':'Type','flt-pair':'Pair',
-    'flt-type':'Dir','flt-strategy':'Strategy','flt-result':'Result'
+    'flt-type':'Dir','flt-strategy':'Strategy','flt-result':'Result','flt-skipped':'Type'
   };
   var chips='';var count=0;
   Object.keys(labels).forEach(function(id){
@@ -4237,6 +4843,7 @@ async function runMonteCarlo(){
   var histAvgWin=histWinReturns.length?histWinReturns.reduce(function(a,b){return a+b},0)/histWinReturns.length*100:0;
   var histAvgLoss=histLossReturns.length?Math.abs(histLossReturns.reduce(function(a,b){return a+b},0)/histLossReturns.length*100):0;
   var histPF=histAvgLoss>0?((histWins*histAvgWin)/((returns.length-histWins)*histAvgLoss)).toFixed(2):'∞';
+  var histRR=histAvgLoss>0?(histAvgWin/histAvgLoss):null;
   var histExpect=returns.length?(returns.reduce(function(a,b){return a+b},0)/returns.length*100).toFixed(2):'0';
 
   // Max drawdown per simulation path
@@ -4280,14 +4887,15 @@ async function runMonteCarlo(){
 
   // ── Info block: 7 metrics (median/50th pct path) ──────────────
   var mc=document.getElementById('mc-info-block');
-  if(mc)mc.innerHTML=
+  if(mc){mc.style.gridTemplateColumns='repeat(4,1fr)';mc.innerHTML=
     '<div class="stat-card"><div class="stat-label">Initial balance</div><div class="stat-value mono" style="font-size:18px">$'+startingEquity.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</div><div class="stat-sub">Starting equity</div></div>'+
     '<div class="stat-card '+(medianFinal>=startingEquity?'green':'red')+'"><div class="stat-label">Result balance</div><div class="stat-value '+(medianFinal>=startingEquity?'pos':'neg')+'" style="font-size:18px">$'+medianFinal.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</div><div class="stat-sub">Median (50th pct)</div></div>'+
     '<div class="stat-card '+(medianReturn>=0?'green':'red')+'"><div class="stat-label">Return % (full period)</div><div class="stat-value '+(medianReturn>=0?'pos':'neg')+'" style="font-size:18px">'+(medianReturn>=0?'+':'')+medianReturn.toFixed(2)+'%</div><div class="stat-sub">Median outcome</div></div>'+
     '<div class="stat-card red"><div class="stat-label">Max drawdown</div><div class="stat-value neg" style="font-size:18px">−'+medianDD.toFixed(1)+'%</div><div class="stat-sub">Median · worst: −'+worstDD.toFixed(1)+'%</div></div>'+
     '<div class="stat-card amber"><div class="stat-label">Max consec. losses</div><div class="stat-value" style="font-size:18px;color:var(--red)">'+maxConsecLosses+'</div><div class="stat-sub">From sample data</div></div>'+
     '<div class="stat-card amber"><div class="stat-label">Max consec. wins</div><div class="stat-value" style="font-size:18px;color:var(--green)">'+maxConsecWins+'</div><div class="stat-sub">From sample data</div></div>'+
-    '<div class="stat-card '+(winPct>=50?'green':'red')+'"><div class="stat-label">Win rate</div><div class="stat-value '+(winPct>=50?'pos':'neg')+'" style="font-size:18px">'+winPct.toFixed(1)+'%</div><div class="stat-sub">'+histWins+' W · '+(returns.length-histWins)+' L · PF: '+histPF+'</div></div>';
+    '<div class="stat-card '+(winPct>=50?'green':'red')+'"><div class="stat-label">Win rate</div><div class="stat-value '+(winPct>=50?'pos':'neg')+'" style="font-size:18px">'+winPct.toFixed(1)+'%</div><div class="stat-sub">'+histWins+' W · '+(returns.length-histWins)+' L · PF: '+histPF+'</div></div>'+
+    '<div class="stat-card '+(histRR!=null&&histRR>=1?'green':'red')+'"><div class="stat-label">Risk / Reward</div><div class="stat-value '+(histRR!=null&&histRR>=1?'pos':'neg')+'" style="font-size:18px">'+(histRR!=null?'1 : '+histRR.toFixed(2):'N/A')+'</div><div class="stat-sub">Avg win: '+(histAvgWin.toFixed(2))+'% · Avg loss: '+(histAvgLoss.toFixed(2))+'%</div></div>';}
 
   var label=document.getElementById('mc-chart-label');
   if(label)label.textContent=runs+' simulations · '+returns.length+' sample trades · starting $'+startingEquity.toLocaleString();
@@ -4376,14 +4984,43 @@ async function addAssetType(){
   var assets=await getAssets();
   if(assets.find(function(a){return a.name===name})){toast('Already exists','err');return;}
   assets.push({name,pairs:[]});await saveAssetsData(assets);inp.value='';
-  await renderAssetTypeList();await renderPairList();
+  await renderAssetTypeList();await renderPairList();ghAutoSyncConfig();
 }
 async function deleteAssetType(idx){
-  var assets=await getAssets();if(!confirm('Delete "'+assets[idx].name+'" and all its pairs?'))return;
-  assets.splice(idx,1);await saveAssetsData(assets);await renderAssetTypeList();await renderPairList();
+  var assets=await getAssets();
+  var at=assets[idx];
+  var trades=await dbGetAll('trades');
+  var usingType=trades.filter(function(t){return t.assetType===at.name;});
+  var usingPair=trades.filter(function(t){return at.pairs.includes(t.pair);});
+  var total=new Set([...usingType.map(function(t){return t.id;}), ...usingPair.map(function(t){return t.id;})]).size;
+  if(total){toast('Cannot delete "'+at.name+'" — used in '+total+' trade'+(total>1?'s':'')+' (including archived)','err');return;}
+  if(!confirm('Delete "'+at.name+'" and all its pairs?'))return;
+  assets.splice(idx,1);await saveAssetsData(assets);await renderAssetTypeList();await renderPairList();ghAutoSyncConfig();
 }
 async function updateAssetTypeName(idx,name){
-  if(!name)return;var assets=await getAssets();assets[idx].name=name;await saveAssetsData(assets);await renderAssetTypeList();
+  if(!name)return;
+  var assets=await getAssets();
+  var oldName=assets[idx].name;
+  if(oldName===name)return;
+  assets[idx].name=name;
+  await saveAssetsData(assets);
+  // Update all trades that used old asset type name
+  var trades=await dbGetAll('trades');
+  var updated=0;
+  for(var t of trades){
+    if(t.assetType===oldName){t.assetType=name;await dbPut('trades',t);updated++;}
+  }
+  await renderAssetTypeList();
+  if(updated)toast('Asset type renamed — updated '+updated+' trade'+(updated>1?'s':''),'ok');
+  ghAutoSyncConfig();
+}
+async function deletePair(typeIdx,pairIdx){
+  var assets=await getAssets();
+  var pair=assets[typeIdx].pairs[pairIdx];
+  var trades=await dbGetAll('trades');
+  var using=trades.filter(function(t){return t.pair===pair;});
+  if(using.length){toast('Cannot delete "'+pair+'" — used in '+using.length+' trade'+(using.length>1?'s':'')+' (including archived)','err');return;}
+  assets[typeIdx].pairs.splice(pairIdx,1);await saveAssetsData(assets);await renderPairList();ghAutoSyncConfig();
 }
 async function addPair(){
   var pInp=document.getElementById('new-pair-inp');var pair=pInp.value.trim().toUpperCase();
@@ -4393,10 +5030,7 @@ async function addPair(){
   var assets=await getAssets();var at=assets.find(function(a){return a.name===typeName;});
   if(!at){toast('Asset type not found','err');return;}
   if(at.pairs.includes(pair)){toast('Pair already exists','err');return;}
-  at.pairs.push(pair);await saveAssetsData(assets);pInp.value='';await renderPairList();
-}
-async function deletePair(typeIdx,pairIdx){
-  var assets=await getAssets();assets[typeIdx].pairs.splice(pairIdx,1);await saveAssetsData(assets);await renderPairList();
+  at.pairs.push(pair);await saveAssetsData(assets);pInp.value='';await renderPairList();ghAutoSyncConfig();
 }
 async function saveAssets(){
   await populatePairSelect();
@@ -4590,7 +5224,129 @@ function calcSetDefaultCapital(){
   toast('Default capital set to $'+v.toLocaleString(),'ok');
 }
 
+// ── Calculator mode: quick / backtest ─────────────────────────────
+var _calcMode='quick';
+
+function calcSetMode(mode){
+  _calcMode=mode;
+  var qBtn=document.getElementById('calc-mode-quick-btn');
+  var bBtn=document.getElementById('calc-mode-backtest-btn');
+  var sessionRow=document.getElementById('calc-backtest-session-row');
+  var logBox=document.getElementById('calc-log-trade-box');
+  var setDefaultBtn=document.getElementById('calc-set-default-btn');
+  if(mode==='backtest'){
+    // Activate backtest button style
+    if(bBtn){bBtn.style.background='var(--bg2)';bBtn.style.color='var(--text)';bBtn.style.border='1px solid var(--border2)';bBtn.style.boxShadow='0 1px 3px rgba(0,0,0,.3)';}
+    if(qBtn){qBtn.style.background='none';qBtn.style.color='var(--text2)';qBtn.style.border='1px solid transparent';qBtn.style.boxShadow='none';}
+    if(sessionRow)sessionRow.style.display='block';
+    if(logBox)logBox.style.display='block';
+    if(setDefaultBtn)setDefaultBtn.style.display='none';
+    // Populate session dropdown
+    calcPopulateBacktestSessions();
+  } else {
+    // Quick mode
+    if(qBtn){qBtn.style.background='var(--bg2)';qBtn.style.color='var(--text)';qBtn.style.border='1px solid var(--border2)';qBtn.style.boxShadow='0 1px 3px rgba(0,0,0,.3)';}
+    if(bBtn){bBtn.style.background='none';bBtn.style.color='var(--text2)';bBtn.style.border='1px solid transparent';bBtn.style.boxShadow='none';}
+    if(sessionRow)sessionRow.style.display='none';
+    if(logBox)logBox.style.display='none';
+    if(setDefaultBtn)setDefaultBtn.style.display='';
+    // Restore balance to default capital
+    var bal=document.getElementById('calc-balance');
+    if(bal)bal.value=calcGetDefaultCapital();
+    var riskEl=document.getElementById('calc-risk-pct');
+    if(riskEl)riskEl.value=1;
+    calcCalc();
+  }
+}
+
+async function calcPopulateBacktestSessions(){
+  var sel=document.getElementById('calc-backtest-session');
+  if(!sel)return;
+  var sessions=await dbGetAll('sessions');
+  sessions.sort(function(a,b){return new Date(b.startDate)-new Date(a.startDate);});
+  var active=sessions.filter(function(s){return !s.archived&&!s.isDemo;});
+  sel.innerHTML='<option value="">— select session —</option>'+active.map(function(s){
+    return '<option value="'+s.id+'">'+escHtml(s.name)+'</option>';
+  }).join('');
+  // Auto-select the currently active session if any
+  var today=new Date().toISOString().slice(0,10);
+  var cur=active.find(function(s){return s.startDate<=today&&(!s.endDate||s.endDate>=today);});
+  if(cur){sel.value=cur.id;calcOnBacktestSessionChange();}
+}
+
+async function calcOnBacktestSessionChange(){
+  var sel=document.getElementById('calc-backtest-session');
+  var hint=document.getElementById('calc-backtest-hint');
+  if(!sel||!sel.value){if(hint)hint.style.display='none';return;}
+  var sessions=await dbGetAll('sessions');
+  var sess=sessions.find(function(s){return s.id===sel.value;});
+  if(!sess){return;}
+  var equity=sess.currentEquity||sess.startingEquity||5000;
+  var riskPct=sess.defaultRisk||1;
+  var balEl=document.getElementById('calc-balance');
+  var riskEl=document.getElementById('calc-risk-pct');
+  if(balEl){balEl.value=equity;}
+  if(riskEl){riskEl.value=riskPct;}
+  if(hint){hint.textContent='Balance $'+equity.toLocaleString()+' · Risk '+riskPct+'% auto-filled';hint.style.display='block';}
+  calcCalc();
+}
+
+async function calcLogTrade(){
+  // Validate we have minimum required values
+  var entry=parseFloat((document.getElementById('calc-entry')||{}).value)||0;
+  var sl=parseFloat((document.getElementById('calc-sl')||{}).value)||0;
+  var size=document.getElementById('calc-out-size');
+  var sizeVal=size?size.textContent.replace(/[^0-9.]/g,''):'';
+  var qty=parseFloat(sizeVal)||0;
+  if(!entry||!sl){toast('Enter entry and stop loss prices first','err');return;}
+  if(!qty){toast('Calculate a position size first','err');return;}
+
+  var sessSel=document.getElementById('calc-backtest-session');
+  var sessId=sessSel?sessSel.value:'';
+  if(!sessId){toast('Select a session first','err');return;}
+
+  var balance=parseFloat((document.getElementById('calc-balance')||{}).value)||5000;
+  var riskPct=parseFloat((document.getElementById('calc-risk-pct')||{}).value)||1;
+  var tp=parseFloat((document.getElementById('calc-tp')||{}).value)||0;
+
+  // Navigate to log page and pre-fill
+  var logBtn=document.querySelector('.nav-item:nth-of-type(2)');
+  nav('log',logBtn);
+
+  // Wait a tick for the page to render and session selects to populate
+  setTimeout(async function(){
+    // Set session
+    await populateSessionSelects(sessId);
+    // Overwrite account size and risk (populateSessionSelects + onSessionChange will set them from session,
+    // but we use the live calculator values which already reflect the session)
+    var acctEl=document.getElementById('f-acct');
+    var riskEl=document.getElementById('f-riskpct');
+    var entryEl=document.getElementById('f-entry');
+    var slEl=document.getElementById('f-sl-price');
+    var qtyEl=document.getElementById('f-qty');
+    if(acctEl)acctEl.value=balance;
+    if(riskEl)riskEl.value=riskPct;
+    if(entryEl)entryEl.value=entry;
+    if(slEl)slEl.value=sl;
+    if(qtyEl)qtyEl.value=qty;
+    recalc();
+    toast('Trade pre-filled from calculator','ok');
+  },150);
+}
+
 function calcReset(){
+  // Reset mode to quick
+  _calcMode='quick';
+  var qBtn=document.getElementById('calc-mode-quick-btn');
+  var bBtn=document.getElementById('calc-mode-backtest-btn');
+  var sessionRow=document.getElementById('calc-backtest-session-row');
+  var logBox=document.getElementById('calc-log-trade-box');
+  var setDefaultBtn=document.getElementById('calc-set-default-btn');
+  if(qBtn){qBtn.style.background='var(--bg2)';qBtn.style.color='var(--text)';qBtn.style.border='1px solid var(--border2)';qBtn.style.boxShadow='0 1px 3px rgba(0,0,0,.3)';}
+  if(bBtn){bBtn.style.background='none';bBtn.style.color='var(--text2)';bBtn.style.border='1px solid transparent';bBtn.style.boxShadow='none';}
+  if(sessionRow)sessionRow.style.display='none';
+  if(logBox)logBox.style.display='none';
+  if(setDefaultBtn)setDefaultBtn.style.display='';
   // Balance — restore to saved default
   var bal=document.getElementById('calc-balance');
   if(bal)bal.value=calcGetDefaultCapital();
@@ -4791,6 +5547,51 @@ function calcCalc(){
 
 // ══ GitHub Sync ═══════════════════════════════════
 var GH_FILE='tj_data.json';
+var GH_CONFIG_FILE='tj_config.json';       // live config (always overwritten)
+var GH_BKP_CONFIG_FILE='bkp/config_backup.json'; // single config backup (always overwritten)
+
+// ── Config file helpers (checklist, strategies, assets & pairs) ──
+async function ghBuildConfigPayload(){
+  var checklist=await getChecklist();
+  var strategies=await getStrategies();
+  var assets=await getAssets();
+  return{version:1,exportedAt:new Date().toISOString(),checklist:checklist,strategies:strategies,assets:assets};
+}
+async function ghGetFileSHAByPath(cfg,path){
+  try{
+    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+path,{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(resp.ok){var d=await resp.json();return d.sha||null;}
+    return null;
+  }catch(e){return null;}
+}
+async function ghPushConfigFile(cfg){
+  try{
+    var payload=await ghBuildConfigPayload();
+    var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+    var sha=await ghGetFileSHAByPath(cfg,GH_CONFIG_FILE);
+    var body={message:'TJ config — '+new Date().toISOString().slice(0,16).replace('T',' '),content:content};
+    if(sha)body.sha=sha;
+    await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_CONFIG_FILE,{
+      method:'PUT',
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+  }catch(e){console.warn('Config file push error:',e.message);}
+}
+async function ghApplyConfigData(data){
+  if(data.checklist)await setSetting('checklist',data.checklist);
+  if(data.strategies)await setSetting('strategies',data.strategies);
+  if(data.assets)await setSetting('assets',data.assets);
+}
+// Silently push tj_config.json after any checklist/strategies/assets change
+// Note: bkp/config_backup.json is only updated on Manual Backup — not here
+async function ghAutoSyncConfig(){
+  var cfg=ghGetConfig();
+  if(!cfg.user||!cfg.repo||!cfg.token)return;
+  await ghPushConfigFile(cfg);
+}
 
 function ghGetConfig(){
   return{
@@ -4875,11 +5676,16 @@ async function ghAutoPullOnSetup(){
     for(var sess of(data.sessions||[]))await dbPut('sessions',sess);
     for(var setting of(data.settings||[]))await dbPut('settings',setting);
     if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
+    // Pull config file (checklist, strategies, assets)
+    try{
+      var cfgStr=await ghFetchFileContent(cfg,GH_CONFIG_FILE);
+      if(cfgStr){var cfgData=JSON.parse(cfgStr);await ghApplyConfigData(cfgData);}
+    }catch(ce){console.warn('Config pull error:',ce.message);}
     var now=new Date().toISOString();
     localStorage.setItem('tj-gh-last-sync',now);
     ghRefreshStatus();
     toast('Auto-pull complete: '+added+' trades added'+(skipped?' ('+skipped+' dupes skipped)':''),'ok');
-    loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+    await refreshUI();
   }catch(e){toast('Auto-pull error: '+e.message,'err');}
 }
 function ghClearConfig(){
@@ -4968,15 +5774,7 @@ async function ghBuildPayload(){
 }
 
 // Get existing file SHA (needed for updates)
-async function ghGetFileSHA(cfg){
-  try{
-    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_FILE,{
-      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(resp.ok){var d=await resp.json();return d.sha||null;}
-    return null;
-  }catch(e){return null;}
-}
+async function ghGetFileSHA(cfg){return ghGetFileSHAByPath(cfg,GH_FILE);}
 
 async function ghPushManual(){
   if(!confirm('Push to GitHub? This will overwrite the remote backup with your current local data.'))return;
@@ -5003,6 +5801,8 @@ async function ghPush(showToast){
       var now=new Date().toISOString();
       localStorage.setItem('tj-gh-last-sync',now);
       ghRefreshStatus();
+      // Also push config (checklist, strategies, assets) on every sync
+      await ghPushConfigFile(cfg);
       if(showToast)toast('Synced to GitHub ('+payload.trades.length+' trades, '+payload.images.length+' images)','ok');
     } else {
       var err=await resp.json().catch(function(){return{};});
@@ -5048,12 +5848,17 @@ async function ghPull(){
     for(var setting of(data.settings||[]))await dbPut('settings',setting);
     // Restore localStorage prefs
     if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
+    // Pull config file (checklist, strategies, assets)
+    try{
+      var cfgStr=await ghFetchFileContent(cfg,GH_CONFIG_FILE);
+      if(cfgStr){var cfgData=JSON.parse(cfgStr);await ghApplyConfigData(cfgData);}
+    }catch(ce){console.warn('Config pull error:',ce.message);}
     var now=new Date().toISOString();
     localStorage.setItem('tj-gh-last-sync',now);
     ghRefreshStatus();
     var msg='Synced from GitHub: '+added+' added, '+updated+' updated'+(removed?' '+removed+' removed':'');
     toast(msg,'ok');
-    loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+    await refreshUI();
   }catch(e){toast('GitHub pull error: '+e.message,'err');}
 }
 
@@ -5064,37 +5869,54 @@ async function ghAutoSync(){
   await ghPush(false); // no toast on auto-sync to avoid noise
 }
 
-// Push a timestamped snapshot to bkp/ (flat folder, descriptive filename)
-// type: 'session' | 'manual' | 'clear-all'   name: optional label (e.g. session name)
+// Push a timestamped snapshot to bkp/ subfolders.
+// type: 'session' | 'manual' | 'clear-all'   name: optional label
+// - session / clear-all: only trades+sessions go to bkp/trades/
+// - manual: trades+sessions to bkp/trades/ AND config files to bkp/strategies/, bkp/checklist/, bkp/assets/
 async function ghSnapshot(type,name){
   var cfg=ghGetConfig();
   if(!cfg.user||!cfg.repo||!cfg.token)return;
   try{
-    var payload=await ghBuildPayload();
     var ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+    var label=name?name.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,40):'';
     var prefix=type==='session'?'session-snapshot'
                :type==='manual'?'manual-backup'
                :'clear-all-snapshot';
-    var label=name?name.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,40):'';
-    var filename='bkp/'+(label?prefix+'-'+label+'-'+ts:prefix+'-'+ts)+'.json';
-    var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
-    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+filename,{
+    var fileLabel=label?prefix+'-'+label+'-'+ts:prefix+'-'+ts;
+
+    // Always push a trades+sessions snapshot to bkp/trades/
+    var tradesPayload=await ghBuildPayload();
+    var tradesContent=btoa(unescape(encodeURIComponent(JSON.stringify(tradesPayload,null,2))));
+    var tradesFile='bkp/trades/'+fileLabel+'.json';
+    await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+tradesFile,{
       method:'PUT',
       headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify({message:'TJ snapshot ['+prefix+(label?' '+label:'')+'] — '+ts,content:content})
+      body:JSON.stringify({message:'TJ snapshot ['+prefix+(label?' '+label:'')+'] — '+ts,content:tradesContent})
     });
-    if(resp.ok){
-      toast('Snapshot saved to GitHub bkp/','ok');
+
+    // Manual backup only: also overwrite the single config backup file
+    if(type==='manual'){
+      var cfgPayload=await ghBuildConfigPayload();
+      var cfgContent=btoa(unescape(encodeURIComponent(JSON.stringify(cfgPayload,null,2))));
+      var cfgSha=await ghGetFileSHAByPath(cfg,GH_BKP_CONFIG_FILE);
+      var cfgBody={message:'TJ config backup — '+ts,content:cfgContent};
+      if(cfgSha)cfgBody.sha=cfgSha;
+      await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_BKP_CONFIG_FILE,{
+        method:'PUT',
+        headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+        body:JSON.stringify(cfgBody)
+      });
+      toast('Manual backup saved — trades snapshot + config backup updated','ok');
     } else {
-      var err=await resp.json().catch(function(){return{};});
-      console.warn('Snapshot failed:',err.message||resp.status);
+      toast('Snapshot saved to GitHub bkp/trades/','ok');
     }
   }catch(e){
-    console.warn('Snapshot error:',e.message);
+    toast('Snapshot error: '+e.message,'err');
+    console.error('Snapshot error:',e);
   }
 }
 
-// List snapshot files in the bkp/ folder (supports subfolders: sessions/, clear-all/)
+// List snapshot files in the bkp/ folder — tabbed: Trade Backups | Config Backup
 async function ghListSnapshots(){
   var cfg=ghGetConfig();
   var el=document.getElementById('gh-snapshot-list');
@@ -5110,62 +5932,145 @@ async function ghListSnapshots(){
     var branchData=await branchResp.json();
     var treeSha=branchData.object&&branchData.object.sha;
     if(!treeSha){el.innerHTML='<div style="font-size:11px;color:var(--red)">Error: could not resolve branch.</div>';return;}
-    // Use recursive Trees API — returns ALL files, no truncation issues
+    // Use recursive Trees API
     var treeResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/trees/'+treeSha+'?recursive=1&_='+Date.now(),{
       headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
     });
     if(!treeResp.ok){el.innerHTML='<div style="font-size:11px;color:var(--red)">Error loading snapshots.</div>';return;}
     var treeData=await treeResp.json();
-    var files=(treeData.tree||[])
-      .filter(function(f){return f.type==='blob'&&f.path.startsWith('bkp/')&&f.path.endsWith('.json');})
+    var allFiles=(treeData.tree||[]).filter(function(f){return f.type==='blob'&&f.path.startsWith('bkp/')&&f.path.endsWith('.json');});
+
+    // ── Trade snapshots: bkp/trades/ ──
+    var tradeFiles=allFiles
+      .filter(function(f){return f.path.startsWith('bkp/trades/');})
       .map(function(f){
-        // path: bkp/session-snapshot-NAME-TIMESTAMP.json  or  bkp/manual-backup-TIMESTAMP.json
-        var fname=f.path.slice(4); // strip 'bkp/'
+        var fname=f.path.split('/').pop();
         var tsRaw=fname.replace('.json','').replace(/^.*?(\d{4}-\d{2}-\d{2}T)/,'$1');
-        // Derive friendly label from filename prefix
-        var folderLabel=fname.startsWith('session-snapshot')?'Session snapshot'
-                       :fname.startsWith('manual-backup')?'Manual backup'
-                       :fname.startsWith('clear-all-snapshot')?'Clear all — full journal'
-                       :'Snapshot';
+        var typeLabel=fname.startsWith('session-snapshot')?'Session snapshot'
+                     :fname.startsWith('manual-backup')?'Manual backup'
+                     :fname.startsWith('clear-all-snapshot')?'Clear-all snapshot'
+                     :'Snapshot';
         var tsDisplay=tsRaw.replace('T',' ').replace(/-/g,function(m,i){return i<10?'-':':'});
-        return{folderLabel:folderLabel,tsRaw:tsRaw,tsDisplay:tsDisplay,path:f.path,sha:f.sha,
+        return{tsRaw:tsRaw,tsDisplay:tsDisplay,path:f.path,typeLabel:typeLabel,
           download_url:'https://raw.githubusercontent.com/'+cfg.user+'/'+cfg.repo+'/main/'+f.path};
-      });
-    if(!files.length){el.innerHTML='<div style="font-size:11px;color:var(--text3)">No snapshots yet. They appear here automatically before a session delete or clear all.</div>';return;}
-    // Sort newest first
-    files.sort(function(a,b){return b.tsRaw.localeCompare(a.tsRaw);});
-    var shown=files.slice(0,50);
-    // Store files on element for bulk-delete access
-    el._snapshotFiles=shown;
-    var rows=shown.map(function(f,i){
-      return'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px">'
-        +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;min-width:0">'
-        +'<input type="checkbox" class="snap-chk" data-idx="'+i+'" style="width:13px;height:13px;accent-color:var(--accent);cursor:pointer;flex-shrink:0" onchange="ghSnapshotSelectionChanged()">'
-        +'<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">'+escHtml(f.tsDisplay)+'</div>'
-        +'<div style="font-size:10px;color:var(--text3);margin-top:1px">'+escHtml(f.folderLabel)+'</div></div>'
-        +'</label>'
-        +'<div style="display:flex;gap:5px;flex-shrink:0">'
-        +'<button class="btn btn-ghost btn-sm" style="color:var(--purple)" title="Restore this backup" onclick="ghRestoreSnapshot(\''+escHtml(f.download_url)+'\',\''+escHtml(f.path)+'\')">'
-        +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restore</button>'
-        +'<a href="'+escHtml(f.download_url)+'" download="'+escHtml(f.path.split('/').pop())+'" class="btn btn-ghost btn-sm" style="text-decoration:none">'
-        +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</a>'
-        +'<button class="btn btn-danger btn-sm" title="Delete this snapshot" onclick="ghDeleteSnapshot(\''+escHtml(f.path)+'\',\''+escHtml(f.sha)+'\')">'
-        +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>'
-        +'</div></div>';
-    }).join('');
-    // Bulk-delete toolbar (hidden until selections made)
-    var toolbar='<div id="snap-bulk-bar" style="display:none;align-items:center;gap:8px;padding:8px 10px;background:rgba(232,85,85,.06);border:1px solid rgba(232,85,85,.2);border-radius:var(--radius);margin-bottom:10px">'
-      +'<span id="snap-bulk-count" style="font-size:12px;font-weight:600;color:var(--red);flex:1">0 selected</span>'
-      +'<button class="btn btn-ghost btn-sm" onclick="ghSnapshotSelectAll()">Select all</button>'
-      +'<button class="btn btn-ghost btn-sm" onclick="ghSnapshotClearSelection()">Clear</button>'
-      +'<button class="btn btn-danger btn-sm" onclick="ghDeleteSelectedSnapshots()">'
-      +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>'
-      +'Delete selected</button>'
-      +'</div>';
-    el.innerHTML=toolbar+rows+(files.length>50?'<div style="font-size:11px;color:var(--text3);margin-top:8px">Showing 50 most recent of '+files.length+' snapshots.</div>':'');
-  }catch(e){
-    el.innerHTML='<div style="font-size:11px;color:var(--red)">Error: '+escHtml(e.message)+'</div>';
-  }
+      })
+      .sort(function(a,b){return b.tsRaw.localeCompare(a.tsRaw);})
+      .slice(0,50);
+    el._snapshotFiles=tradeFiles;
+
+    // ── Config backup: single bkp/config_backup.json ──
+    var cfgFile=allFiles.find(function(f){return f.path==='bkp/config_backup.json';});
+
+    // Build tabbed UI
+    el.innerHTML=
+      '<div style="display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:3px;margin-bottom:14px" id="snap-tab-bar">'
+      +'<button id="snap-tab-trades" class="form-tab active" onclick="ghSnapTabSwitch(\'trades\')" style="flex:1">📈 Trade Backups</button>'
+      +'<button id="snap-tab-config" class="form-tab" onclick="ghSnapTabSwitch(\'config\')" style="flex:1">⚙️ Config Backup</button>'
+      +'</div>'
+      +'<div id="snap-pane-trades"></div>'
+      +'<div id="snap-pane-config" style="display:none"></div>';
+
+    // ── Trade pane ──
+    var tradePane=document.getElementById('snap-pane-trades');
+    if(!tradeFiles.length){
+      tradePane.innerHTML='<div style="font-size:11px;color:var(--text3);padding:10px 0">No trade snapshots yet. They are created automatically before session delete / clear-all, or via Manual Backup.</div>';
+    } else {
+      var rows=tradeFiles.map(function(f,i){
+        return'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px">'
+          +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;min-width:0">'
+          +'<input type="checkbox" class="snap-chk" data-idx="'+i+'" style="width:13px;height:13px;accent-color:var(--accent);cursor:pointer;flex-shrink:0" onchange="ghSnapshotSelectionChanged()">'
+          +'<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">'+escHtml(f.tsDisplay)+'</div>'
+          +'<div style="font-size:10px;color:var(--text3);margin-top:1px">'+escHtml(f.typeLabel)+'</div></div>'
+          +'</label>'
+          +'<div style="display:flex;gap:5px;flex-shrink:0">'
+          +'<button class="btn btn-ghost btn-sm" style="color:var(--purple)" onclick="ghRestoreSnapshot(\''+escHtml(f.download_url)+'\',\''+escHtml(f.path)+'\')">'
+          +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restore</button>'
+          +'</div></div>';
+      }).join('');
+      var bulkBar='<div id="snap-bulk-bar" style="display:none;align-items:center;gap:8px;margin-bottom:10px;padding:7px 10px;background:rgba(232,85,85,.06);border:1px solid rgba(232,85,85,.2);border-radius:var(--radius)">'
+        +'<span id="snap-sel-count" style="font-size:11px;color:var(--text2);flex:1">0 selected</span>'
+        +'<button class="btn btn-danger btn-sm" onclick="ghDeleteSelectedSnapshots()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Delete selected</button>'
+        +'<button class="btn btn-ghost btn-sm" onclick="ghSnapDeselectAll()">Deselect all</button>'
+        +'</div>';
+      tradePane.innerHTML=bulkBar+rows;
+    }
+
+    // ── Config pane ──
+    var cfgPane=document.getElementById('snap-pane-config');
+    if(!cfgFile){
+      cfgPane.innerHTML='<div style="font-size:11px;color:var(--text3);padding:10px 0">No config backup yet. Use <strong>Manual Backup</strong> above to create one. Config is backed up as a single file — it is overwritten each time.</div>';
+    } else {
+      cfgPane.innerHTML='<div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7">'
+        +'Config backup stores your <strong style="color:var(--text2)">strategies, checklist, and asset pairs</strong> in a single file that is overwritten each time you run a Manual Backup or change a config setting. '
+        +'<code style="background:var(--bg3);padding:1px 5px;border-radius:3px">bkp/config_backup.json</code>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)">'
+        +'<div>'
+        +'<div style="font-size:12px;font-weight:600;color:var(--text)">config_backup.json</div>'
+        +'<div style="font-size:10px;color:var(--text3);margin-top:2px">Strategies · Checklist · Asset pairs — last updated when config changed</div>'
+        +'</div>'
+        +'<button class="btn btn-ghost btn-sm" style="color:var(--purple);flex-shrink:0" onclick="ghRestoreConfigBackup()">'
+        +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restore config'
+        +'</button></div>';
+    }
+
+  }catch(e){el.innerHTML='<div style="font-size:11px;color:var(--red)">Error: '+escHtml(e.message)+'</div>';}
+}
+
+function ghSnapTabSwitch(tab){
+  document.getElementById('snap-tab-trades').classList.toggle('active',tab==='trades');
+  document.getElementById('snap-tab-config').classList.toggle('active',tab==='config');
+  document.getElementById('snap-pane-trades').style.display=tab==='trades'?'':'none';
+  document.getElementById('snap-pane-config').style.display=tab==='config'?'':'none';
+}
+
+// Restore the single config backup from bkp/config_backup.json
+async function ghRestoreConfigBackup(){
+  var cfg=ghGetConfig();
+  if(!cfg.user||!cfg.repo||!cfg.token){toast('GitHub not configured','err');return;}
+  try{
+    toast('Fetching config backup…','ok');
+    var rawContent=await ghFetchFileContent(cfg,GH_BKP_CONFIG_FILE);
+    if(!rawContent){toast('Config backup not found. Run a Manual Backup first.','err');return;}
+    var data=JSON.parse(rawContent);
+
+    // Warn if incoming config is missing strategies or pairs used by current trades
+    var trades=await dbGetAll('trades');
+    var incomingStrats=data.strategies||[];
+    var incomingAssets=data.assets||[];
+    var incomingPairs=incomingAssets.reduce(function(acc,at){return acc.concat(at.pairs);;},[]);
+    var missingStrats=[...new Set(trades.map(function(t){return t.strategy;}).filter(function(s){return s&&!incomingStrats.includes(s);}))];
+    var missingPairs=[...new Set(trades.map(function(t){return t.pair;}).filter(function(p){return p&&!incomingPairs.includes(p);}))];
+
+    if(missingStrats.length||missingPairs.length){
+      var warn='WARNING: This config backup is missing items used by your current trades:\n\n';
+      if(missingStrats.length)warn+='Strategies: '+missingStrats.join(', ')+'\n';
+      if(missingPairs.length)warn+='Pairs: '+missingPairs.join(', ')+'\n';
+      warn+='\nThese will be added back to config automatically after restore.\n\nType RESTORE to continue:';
+      var answer=prompt(warn);
+      if(!answer||answer.trim().toUpperCase()!=='RESTORE'){toast('Restore cancelled','ok');return;}
+    } else {
+      var answer2=prompt('RESTORE config backup?\n\nThis will replace your current strategies, checklist, and asset pairs.\n\nType RESTORE to confirm:');
+      if(!answer2||answer2.trim().toUpperCase()!=='RESTORE'){toast('Restore cancelled','ok');return;}
+    }
+
+    await ghApplyConfigData(data);
+
+    // Re-add any missing items that current trades still need
+    if(missingStrats.length||missingPairs.length)await syncConfigFromTrades(trades);
+
+    toast('Config restored','ok');
+    await populateStrategySelect();
+    await populatePairSelect();
+    if(typeof renderChecklistEditor==='function')renderChecklistEditor();
+    if(typeof renderChecklist==='function')renderChecklist();
+    await ghAutoSync();
+  }catch(e){toast('Restore error: '+e.message,'err');}
+}
+
+function ghSnapDeselectAll(){
+  document.querySelectorAll('.snap-chk').forEach(function(c){c.checked=false;});
+  ghSnapshotSelectionChanged();
 }
 
 // ── Generic collapsible toggle for bkp page sections ──
@@ -5177,8 +6082,17 @@ function toggleBkpSection(id){
   body.style.display=open?'none':'block';
   if(chevron)chevron.style.transform=open?'':'rotate(180deg)';
 }
+function toggleAllBkpSections(expand){
+  ['local-backup','github-sync-section','bkp-snapshots-section','danger-zone-section'].forEach(function(id){
+    var body=document.getElementById(id+'-body');
+    var chevron=document.getElementById(id+'-chevron');
+    if(!body)return;
+    body.style.display=expand?'block':'none';
+    if(chevron)chevron.style.transform=expand?'rotate(180deg)':'';
+  });
+}
 
-// ── Unified import: detects JSON vs CSV automatically ──
+
 async function importAuto(input){
   var file=input.files[0];if(!file)return;
   var name=file.name.toLowerCase();
@@ -5238,10 +6152,15 @@ async function ghRestoreLatestBackup(){
     if(!treeResp.ok){toast('Could not list backup files','err');return;}
     var treeData=await treeResp.json();
     var files=(treeData.tree||[])
-      .filter(function(f){return f.type==='blob'&&f.path.startsWith('bkp/')&&f.path.endsWith('.json');})
+      .filter(function(f){
+        // Only trade snapshots — config_backup.json is restored separately
+        return f.type==='blob'&&f.path.endsWith('.json')&&
+               (f.path.startsWith('bkp/trades/')||
+                (f.path.startsWith('bkp/')&&!f.path.match(/^bkp\/(config_backup|strategies|checklist|assets)\b/)));
+      })
       .map(function(f){
         var parts=f.path.split('/');
-        var tsRaw=parts[parts.length-1].replace('.json','');
+        var tsRaw=parts[parts.length-1].replace('.json','').replace(/^.*?(\d{4}-\d{2}-\d{2}T)/,'$1');
         return{path:f.path,tsRaw:tsRaw,download_url:'https://raw.githubusercontent.com/'+cfg.user+'/'+cfg.repo+'/main/'+f.path};
       });
     if(!files.length){toast('No backups found in bkp/ folder','err');return;}
@@ -5258,7 +6177,6 @@ async function ghRestoreLatestBackup(){
     );
     if(!answer||answer.trim().toUpperCase()!=='RESTORE'){toast('Restore cancelled','ok');return;}
     toast('Fetching backup file…','ok');
-    toast('Fetching backup file…','ok');
     var rawContent=await ghFetchFileContent(cfg,latest.path);
     if(!rawContent){toast('Failed to fetch or decode backup file','err');return;}
     var data=JSON.parse(rawContent);
@@ -5270,24 +6188,54 @@ async function ghRestoreLatestBackup(){
     for(var sess of(data.sessions||[]))await dbPut('sessions',sess);
     for(var setting of(data.settings||[]))await dbPut('settings',setting);
     if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
+    await syncConfigFromTrades(importedTrades);
     toast('Restored from '+latest.path,'ok');
-    loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+    await refreshUI();
+    await ghAutoSync();
   }catch(e){toast('Restore error: '+e.message,'err');}
+}
+
+// ── After restoring trades, ensure config has all strategies/pairs/asset types referenced ──
+async function syncConfigFromTrades(importedTrades){
+  var addedStrats=[],addedPairs=[],addedTypes=[];
+  var strats=await getStrategies();
+  var assets=await getAssets();
+
+  for(var t of importedTrades){
+    // Strategy
+    if(t.strategy&&!strats.includes(t.strategy)){strats.push(t.strategy);addedStrats.push(t.strategy);}
+    // Asset type
+    if(t.assetType){
+      var at=assets.find(function(a){return a.name===t.assetType;});
+      if(!at){at={name:t.assetType,pairs:[]};assets.push(at);addedTypes.push(t.assetType);}
+      // Pair
+      if(t.pair&&!at.pairs.includes(t.pair)){at.pairs.push(t.pair);addedPairs.push(t.pair);}
+    } else if(t.pair){
+      // No asset type — add pair to a catch-all type
+      var def=assets.find(function(a){return a.name==='Restored';});
+      if(!def){def={name:'Restored',pairs:[]};assets.push(def);addedTypes.push('Restored');}
+      if(!def.pairs.includes(t.pair)){def.pairs.push(t.pair);addedPairs.push(t.pair);}
+    }
+  }
+
+  if(addedStrats.length)await setSetting('strategies',strats);
+  if(addedTypes.length||addedPairs.length)await saveAssetsData(assets);
+
+  var parts=[];
+  if(addedStrats.length)parts.push(addedStrats.length+' strateg'+(addedStrats.length>1?'ies':'y'));
+  if(addedTypes.length)parts.push(addedTypes.length+' asset type'+(addedTypes.length>1?'s':''));
+  if(addedPairs.length)parts.push(addedPairs.length+' pair'+(addedPairs.length>1?'s':''));
+  if(parts.length)toast('Config updated: added '+parts.join(', ')+' from restored trades','ok');
 }
 
 // ── Restore a specific snapshot by path ──
 async function ghRestoreSnapshot(downloadUrl,filePath){
-  var answer=prompt(
-    'RESTORE this specific backup?\n\n'+
-    'File: '+filePath+'\n\n'+
-    'This will REPLACE your current data entirely.\n\n'+
-    'Type RESTORE to confirm:'
-  );
+  var confirmMsg='RESTORE this trade backup?\n\nFile: '+filePath+'\n\nThis will REPLACE your current trades, sessions, and settings.\n\nType RESTORE to confirm:';
+  var answer=prompt(confirmMsg);
   if(!answer||answer.trim().toUpperCase()!=='RESTORE'){toast('Restore cancelled','ok');return;}
   var cfg=ghGetConfig();
   try{
     toast('Fetching backup…','ok');
-    // Use authenticated API to support private repos
     var rawContent=await ghFetchFileContent(cfg,filePath);
     if(!rawContent){toast('Failed to fetch or decode backup file','err');return;}
     var data=JSON.parse(rawContent);
@@ -5298,15 +6246,17 @@ async function ghRestoreSnapshot(downloadUrl,filePath){
     for(var sess of(data.sessions||[]))await dbPut('sessions',sess);
     for(var setting of(data.settings||[]))await dbPut('settings',setting);
     if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
-    toast('Restored from '+filePath,'ok');
-    loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+    await syncConfigFromTrades(importedTrades);
+    toast('Trades restored from '+filePath,'ok');
+    await refreshUI();
+    await ghAutoSync();
   }catch(e){toast('Restore error: '+e.message,'err');}
 }
 
 function ghSnapshotSelectionChanged(){
   var el=document.getElementById('gh-snapshot-list');
   var bar=document.getElementById('snap-bulk-bar');
-  var countEl=document.getElementById('snap-bulk-count');
+  var countEl=document.getElementById('snap-sel-count');
   if(!el||!bar)return;
   var checked=el.querySelectorAll('.snap-chk:checked');
   if(checked.length>0){bar.style.display='flex';countEl.textContent=checked.length+' selected';}
