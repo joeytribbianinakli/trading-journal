@@ -256,9 +256,51 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.open{display:flex}
 .modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xl);width:100%;max-width:500px;overflow:hidden}
+.modal-box.modal-box-wide{max-width:1040px;height:90vh;display:flex;flex-direction:column}
+.modal-box.modal-box-wide .modal-body{flex:1;overflow:hidden;padding:0;display:flex;flex-direction:column}
 .modal-header{display:flex;align-items:center;justify-content:space-between;padding:13px 17px;border-bottom:1px solid var(--border)}
 .modal-header h3{font-size:13px;font-weight:600}
 .modal-body{padding:16px;max-height:75vh;overflow-y:auto}
+
+/* Session modal two-col layout */
+.sess-modal-layout{display:flex;height:100%;overflow:hidden}
+.sess-modal-left{width:100%;padding:18px;overflow-y:auto;flex-shrink:0}
+.sess-modal-right{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.sess-modal-right-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+
+/* Rich text editor */
+.retro-toolbar{display:flex;flex-wrap:wrap;gap:3px;padding:7px 10px;border-bottom:1px solid var(--border);background:var(--bg3);flex-shrink:0}
+.retro-toolbar button,.retro-toolbar select{background:var(--bg4);border:1px solid var(--border2);border-radius:4px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;padding:3px 7px;line-height:1.4;transition:all .12s}
+.retro-toolbar button:hover,.retro-toolbar select:hover{background:var(--bg2);color:var(--text)}
+.retro-toolbar button.active{background:rgba(77,127,255,.15);border-color:var(--accent);color:var(--accent)}
+.retro-toolbar .tb-sep{width:1px;background:var(--border2);margin:2px 3px;flex-shrink:0}
+.retro-editor{flex:1;overflow-y:auto;padding:16px 20px;outline:none;font-size:13px;line-height:1.7;color:var(--text);caret-color:var(--accent)}
+.retro-editor:empty:before{content:attr(data-placeholder);color:var(--text3);pointer-events:none}
+.retro-editor h1{font-size:20px;font-weight:700;color:var(--text);margin:14px 0 8px;border-bottom:1px solid var(--border);padding-bottom:5px}
+.retro-editor h2{font-size:16px;font-weight:700;color:var(--text);margin:12px 0 6px}
+.retro-editor h3{font-size:13px;font-weight:700;color:var(--text2);margin:10px 0 5px;text-transform:uppercase;letter-spacing:.05em}
+.retro-editor ul{padding-left:20px;margin:5px 0}
+.retro-editor ol{padding-left:20px;margin:5px 0}
+.retro-editor li{margin-bottom:3px}
+.retro-editor strong{color:var(--text);font-weight:700}
+.retro-editor em{font-style:italic;color:var(--text2)}
+.retro-editor u{text-decoration:underline}
+.retro-editor blockquote{border-left:3px solid var(--accent);padding:6px 12px;margin:8px 0;background:rgba(77,127,255,.04);border-radius:0 var(--radius) var(--radius) 0;color:var(--text2);font-style:italic}
+.retro-editor hr{border:none;border-top:1px solid var(--border2);margin:12px 0}
+
+/* Retro view overlay */
+/* retro-view-overlay now reuses .modal-overlay styles */
+.retro-view-body h1{font-size:22px;font-weight:700;color:var(--text);margin:18px 0 10px;border-bottom:1px solid var(--border);padding-bottom:7px}
+.retro-view-body h2{font-size:17px;font-weight:700;color:var(--text);margin:14px 0 7px}
+.retro-view-body h3{font-size:13px;font-weight:700;color:var(--text2);margin:12px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.retro-view-body ul{padding-left:22px;margin:6px 0;line-height:1.75}
+.retro-view-body ol{padding-left:22px;margin:6px 0;line-height:1.75}
+.retro-view-body li{margin-bottom:4px}
+.retro-view-body strong{color:var(--text);font-weight:700}
+.retro-view-body em{font-style:italic;color:var(--text2)}
+.retro-view-body blockquote{border-left:3px solid var(--accent);padding:8px 14px;margin:10px 0;background:rgba(77,127,255,.05);border-radius:0 var(--radius) var(--radius) 0;color:var(--text2);font-style:italic}
+.retro-view-body hr{border:none;border-top:1px solid var(--border2);margin:14px 0}
+.retro-view-body p{margin-bottom:6px}
 
 /* ── Session items ── */
 .session-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border);transition:background .1s}
@@ -1687,77 +1729,170 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
 <!-- Session modal -->
 <div class="modal-overlay" id="session-modal">
-  <div class="modal-box">
-    <div class="modal-header"><h3 id="sm-title">New Session</h3>
+  <div class="modal-box" style="max-width:500px;transition:max-width .25s ease">
+    <div class="modal-header">
+      <h3 id="sm-title">New Session</h3>
       <button class="btn btn-ghost btn-icon btn-sm" onclick="closeSessionModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
-      <div class="frow" style="margin-bottom:12px"><label class="flabel">Session name <span style="color:var(--text3);font-weight:400">(optional)</span></label><input type="text" id="sm-name" placeholder="e.g. Session 8 — or leave blank for auto-name"></div>
-      <div class="frow-inline" style="margin-bottom:12px">
-        <div class="frow"><label class="flabel">Start date</label><input type="date" id="sm-start"></div>
-        <div class="frow"><label class="flabel">End date</label><input type="date" id="sm-end"></div>
-      </div>
-      <div class="frow" style="margin-bottom:12px">
-        <label class="flabel">Starting equity ($) <span style="color:var(--text3);font-weight:400">— auto-updates after each trade</span></label>
-        <input type="number" id="sm-equity" value="5000" step="any" placeholder="e.g. 5000" oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
-      </div>
-      <div class="frow" style="margin-bottom:16px"><label class="flabel">Notes <span style="color:var(--text3);font-weight:400">(optional)</span></label><textarea id="sm-notes" placeholder="Session goals, improvements..." style="min-height:60px"></textarea></div>
-      <div class="frow" style="margin-bottom:16px">
-        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none">
-          <input type="checkbox" id="sm-archived" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
-          <span>
-            <span class="flabel" style="display:block;cursor:pointer">Archive this session</span>
-            <span style="font-size:10px;color:var(--text3);line-height:1.4">Archived sessions and their trades are hidden from all filters, charts, and the dashboard.</span>
-          </span>
-        </label>
-      </div>
+      <div class="sess-modal-layout" style="display:block;height:auto">
 
-      <!-- Demo session option -->
-      <div id="demo-session-section" style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:16px">
-        <div class="frow" style="margin-bottom:0">
-          <label style="display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none">
-            <input type="checkbox" id="sm-demo" style="width:14px;height:14px;accent-color:var(--purple);cursor:pointer;flex-shrink:0" onchange="toggleDemoSessionOptions()">
-            <span>
-              <span class="flabel" style="display:block;cursor:pointer;color:var(--purple)">✦ Create demo session</span>
-              <span style="font-size:10px;color:var(--text3);line-height:1.4">Auto-populate this session with realistic random trades for testing.</span>
-            </span>
-          </label>
-        </div>
-        <!-- Demo options panel -->
-        <div id="demo-session-options" style="display:none;margin-top:12px;background:rgba(155,127,240,.04);border:1px solid rgba(155,127,240,.2);border-radius:var(--radius-lg);padding:13px">
-          <div style="font-size:9px;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">Demo options</div>
+        <!-- LEFT: session fields -->
+        <div class="sess-modal-left">
+          <div class="frow" style="margin-bottom:12px"><label class="flabel">Session name <span style="color:var(--text3);font-weight:400">(optional)</span></label><input type="text" id="sm-name" placeholder="e.g. Session 8 — or leave blank for auto-name"></div>
           <div class="frow-inline" style="margin-bottom:12px">
-            <div class="frow" style="max-width:110px">
-              <label class="flabel">Number of trades</label>
-              <input type="number" id="sm-demo-count" value="10" min="1" max="100" step="1" style="text-align:center;font-family:'DM Mono',monospace;font-weight:600" oninput="this.value=Math.max(1,Math.min(100,parseInt(this.value)||1))">
+            <div class="frow"><label class="flabel">Start date</label><input type="date" id="sm-start"></div>
+            <div class="frow"><label class="flabel">End date</label><input type="date" id="sm-end"></div>
+          </div>
+          <div class="frow" style="margin-bottom:16px">
+            <label class="flabel">Starting equity ($) <span style="color:var(--text3);font-weight:400">— auto-updates after each trade</span></label>
+            <input type="number" id="sm-equity" value="5000" step="any" placeholder="e.g. 5000" oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
+          </div>
+          <div class="frow" style="margin-bottom:16px">
+            <label style="display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none">
+              <input type="checkbox" id="sm-archived" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
+              <span>
+                <span class="flabel" style="display:block;cursor:pointer">Archive this session</span>
+                <span style="font-size:10px;color:var(--text3);line-height:1.4">Archived sessions and their trades are hidden from all filters, charts, and the dashboard.</span>
+              </span>
+            </label>
+          </div>
+
+          <!-- Demo session option -->
+          <div id="demo-session-section" style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:16px">
+            <div class="frow" style="margin-bottom:0">
+              <label style="display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none">
+                <input type="checkbox" id="sm-demo" style="width:14px;height:14px;accent-color:var(--purple);cursor:pointer;flex-shrink:0" onchange="toggleDemoSessionOptions()">
+                <span>
+                  <span class="flabel" style="display:block;cursor:pointer;color:var(--purple)">✦ Create demo session</span>
+                  <span style="font-size:10px;color:var(--text3);line-height:1.4">Auto-populate this session with realistic random trades for testing.</span>
+                </span>
+              </label>
+            </div>
+            <!-- Demo options panel -->
+            <div id="demo-session-options" style="display:none;margin-top:12px;background:rgba(155,127,240,.04);border:1px solid rgba(155,127,240,.2);border-radius:var(--radius-lg);padding:13px">
+              <div style="font-size:9px;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">Demo options</div>
+              <div class="frow-inline" style="margin-bottom:12px">
+                <div class="frow" style="max-width:110px">
+                  <label class="flabel">Number of trades</label>
+                  <input type="number" id="sm-demo-count" value="10" min="1" max="100" step="1" style="text-align:center;font-family:'DM Mono',monospace;font-weight:600" oninput="this.value=Math.max(1,Math.min(100,parseInt(this.value)||1))">
+                </div>
+              </div>
+              <div class="frow" style="margin-bottom:12px">
+                <label class="flabel" style="margin-bottom:6px">Asset types <span style="color:var(--text3);font-weight:400">(select one or more)</span></label>
+                <div id="demo-asset-type-pills" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+              </div>
+              <div class="frow" style="margin-bottom:0;padding-top:10px;border-top:1px solid rgba(155,127,240,.15)">
+                <label class="flabel" style="margin-bottom:7px">Show this session in dashboard, dropdowns &amp; filters?</label>
+                <div style="display:flex;gap:7px">
+                  <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);flex:1;justify-content:center;transition:all .12s" id="demo-vis-yes-lbl">
+                    <input type="radio" name="demo-visibility" id="demo-vis-yes" value="yes" checked style="accent-color:var(--green);cursor:pointer" onchange="onDemoVisibilityChange()">
+                    <span style="font-size:12px;font-weight:500;color:var(--green)">Yes — show everywhere</span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);flex:1;justify-content:center;transition:all .12s" id="demo-vis-no-lbl">
+                    <input type="radio" name="demo-visibility" id="demo-vis-no" value="no" style="accent-color:var(--text3);cursor:pointer" onchange="onDemoVisibilityChange()">
+                    <span style="font-size:12px;font-weight:500;color:var(--text3)">No — hide from everywhere</span>
+                  </label>
+                </div>
+                <div id="demo-vis-hint" style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5">Session will appear in the dashboard, history filters, session dropdowns, and trade form.</div>
+              </div>
             </div>
           </div>
-          <div class="frow" style="margin-bottom:12px">
-            <label class="flabel" style="margin-bottom:6px">Asset types <span style="color:var(--text3);font-weight:400">(select one or more)</span></label>
-            <div id="demo-asset-type-pills" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+
+          <!-- Retro toggle button -->
+          <div id="sess-retro-toggle-row" style="margin-bottom:12px">
+            <button class="btn btn-ghost btn-sm" id="sess-retro-open-btn" onclick="toggleRetroPanel()" style="width:100%;justify-content:center;border-style:dashed;color:var(--purple);border-color:rgba(155,127,240,.3)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span id="sess-retro-btn-label">Add Retrospective</span>
+            </button>
           </div>
-          <div class="frow" style="margin-bottom:0;padding-top:10px;border-top:1px solid rgba(155,127,240,.15)">
-            <label class="flabel" style="margin-bottom:7px">Show this session in dashboard, dropdowns &amp; filters?</label>
-            <div style="display:flex;gap:7px">
-              <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);flex:1;justify-content:center;transition:all .12s" id="demo-vis-yes-lbl">
-                <input type="radio" name="demo-visibility" id="demo-vis-yes" value="yes" checked style="accent-color:var(--green);cursor:pointer" onchange="onDemoVisibilityChange()">
-                <span style="font-size:12px;font-weight:500;color:var(--green)">Yes — show everywhere</span>
-              </label>
-              <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);flex:1;justify-content:center;transition:all .12s" id="demo-vis-no-lbl">
-                <input type="radio" name="demo-visibility" id="demo-vis-no" value="no" style="accent-color:var(--text3);cursor:pointer" onchange="onDemoVisibilityChange()">
-                <span style="font-size:12px;font-weight:500;color:var(--text3)">No — hide from everywhere</span>
-              </label>
-            </div>
-            <div id="demo-vis-hint" style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5">Session will appear in the dashboard, history filters, session dropdowns, and trade form.</div>
+
+          <div style="display:flex;justify-content:flex-end;gap:7px;padding-top:8px;border-top:1px solid var(--border)">
+            <button class="btn btn-ghost" onclick="closeSessionModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveSession()" id="sm-save-btn">Save session</button>
           </div>
         </div>
-      </div>
 
-      <div style="display:flex;justify-content:flex-end;gap:7px">
-        <button class="btn btn-ghost" onclick="closeSessionModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveSession()" id="sm-save-btn">Save session</button>
+        <!-- RIGHT: Retrospective rich editor (hidden by default) -->
+        <div class="sess-modal-right" id="sess-retro-panel" style="display:none">
+          <div class="sess-modal-right-header" style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.06em;text-transform:uppercase">Retrospective</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">Post-session analysis — key patterns, rule violations, psychology</div>
+            </div>
+            <button class="btn btn-ghost btn-icon btn-sm" onclick="toggleRetroPanel()" title="Close retrospective">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <!-- Toolbar -->
+          <div class="retro-toolbar" id="retro-toolbar">
+            <select id="retro-block" onchange="retroBlock(this.value)" title="Paragraph style" style="padding:3px 6px;min-width:90px">
+              <option value="p">Normal</option>
+              <option value="h1">Heading 1</option>
+              <option value="h2">Heading 2</option>
+              <option value="h3">Heading 3</option>
+              <option value="blockquote">Quote</option>
+            </select>
+            <select id="retro-fontsize" onchange="retroFontSize(this.value)" title="Font size" style="padding:3px 6px;min-width:60px">
+              <option value="">Size</option>
+              <option value="10px">10</option>
+              <option value="11px">11</option>
+              <option value="12px">12</option>
+              <option value="13px" selected>13</option>
+              <option value="14px">14</option>
+              <option value="16px">16</option>
+              <option value="18px">18</option>
+              <option value="20px">20</option>
+              <option value="24px">24</option>
+            </select>
+            <div class="tb-sep"></div>
+            <button onclick="retroCmd('bold')" title="Bold (Ctrl+B)" id="tb-bold"><b>B</b></button>
+            <button onclick="retroCmd('italic')" title="Italic (Ctrl+I)" id="tb-italic"><i>I</i></button>
+            <button onclick="retroCmd('underline')" title="Underline (Ctrl+U)" id="tb-underline"><u>U</u></button>
+            <button onclick="retroCmd('strikeThrough')" title="Strikethrough" id="tb-strike"><s>S</s></button>
+            <div class="tb-sep"></div>
+            <button onclick="retroCmd('insertUnorderedList')" title="Bullet list" id="tb-ul">• List</button>
+            <button onclick="retroCmd('insertOrderedList')" title="Numbered list" id="tb-ol">1. List</button>
+            <button onclick="retroIndent()" title="Indent">→</button>
+            <button onclick="retroOutdent()" title="Outdent">←</button>
+            <div class="tb-sep"></div>
+            <button onclick="retroInsertHr()" title="Horizontal rule">─</button>
+            <button onclick="retroCmd('removeFormat')" title="Clear formatting" style="color:var(--text3)">✕ fmt</button>
+          </div>
+          <!-- Editor -->
+          <div id="retro-editor" class="retro-editor" contenteditable="true"
+               data-placeholder="Start writing your retrospective… Use headings to organise sections, bullets for key points."
+               oninput="retroOnInput()"
+               onkeydown="retroKeydown(event)"
+               onmouseup="retroUpdateToolbar()"
+               onkeyup="retroUpdateToolbar()">
+          </div>
+          <!-- hidden textarea to store HTML -->
+          <textarea id="sm-retrospective" style="display:none"></textarea>
+        </div>
+
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Retrospective modal view -->
+<div class="modal-overlay" id="retro-view-overlay" onclick="closeRetroView(event)">
+  <div class="modal-box" style="max-width:760px;max-height:85vh;display:flex;flex-direction:column" onclick="event.stopPropagation()">
+    <div class="modal-header" style="flex-shrink:0">
+      <div>
+        <div id="retro-view-title" style="font-size:13px;font-weight:600"></div>
+        <div id="retro-view-meta" style="font-size:11px;color:var(--text3);margin-top:2px"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-ghost btn-sm" onclick="retroViewEdit()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit
+        </button>
+        <button class="btn btn-ghost btn-icon btn-sm" onclick="closeRetroView()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div id="retro-view-body" class="retro-view-body" style="flex:1;overflow-y:auto;padding:20px 24px"></div>
   </div>
 </div>
 
@@ -2069,6 +2204,54 @@ function setOptPill(groupId,val){
 
 // ══ Sessions ══════════════════════════════════════
 var editingSessionId=null;
+
+// ── Retro panel toggle ─────────────────────────────────────────────────
+function _syncRetroButtonLabel(){
+  var ed=document.getElementById('retro-editor');
+  var hasContent=ed&&ed.innerHTML.replace(/<[^>]*>/g,'').trim().length>0;
+  var btnLabel=document.getElementById('sess-retro-btn-label');
+  if(btnLabel)btnLabel.textContent=hasContent?'Edit Retrospective':'Add Retrospective';
+}
+function toggleRetroPanel(forceOpen){
+  var panel=document.getElementById('sess-retro-panel');
+  var modal=document.querySelector('#session-modal .modal-box');
+  var modalBody=document.querySelector('#session-modal .modal-body');
+  var layout=document.querySelector('#session-modal .sess-modal-layout');
+  if(!panel)return;
+  var willOpen=(forceOpen===true)||(forceOpen!==false&&panel.style.display==='none');
+  panel.style.display=willOpen?'':'none';
+  if(modal){
+    modal.style.maxWidth=willOpen?'1040px':'500px';
+    modal.style.height=willOpen?'90vh':'auto';
+    modal.style.display=willOpen?'flex':'';
+    modal.style.flexDirection=willOpen?'column':'';
+  }
+  if(modalBody){
+    modalBody.style.flex=willOpen?'1':'';
+    modalBody.style.overflow=willOpen?'hidden':'';
+    modalBody.style.padding=willOpen?'0':'16px';
+    modalBody.style.maxHeight=willOpen?'':'75vh';
+    modalBody.style.display=willOpen?'flex':'';
+    modalBody.style.flexDirection=willOpen?'column':'';
+  }
+  if(layout){
+    layout.style.display=willOpen?'flex':'block';
+    layout.style.height=willOpen?'100%':'auto';
+  }
+  var leftPanel=document.querySelector('#session-modal .sess-modal-left');
+  if(leftPanel){
+    leftPanel.style.width=willOpen?'320px':'100%';
+    leftPanel.style.minWidth=willOpen?'280px':'';
+    leftPanel.style.borderRight=willOpen?'1px solid var(--border)':'';
+  }
+  _syncRetroButtonLabel();
+  var openBtn=document.getElementById('sess-retro-open-btn');
+  if(openBtn){
+    openBtn.style.borderStyle=willOpen?'solid':'dashed';
+    openBtn.style.background=willOpen?'rgba(155,127,240,.08)':'transparent';
+  }
+}
+
 function openNewSessionModal(){
   editingSessionId=null;
   document.getElementById('sm-title').textContent='New Session';
@@ -2076,8 +2259,10 @@ function openNewSessionModal(){
   document.getElementById('sm-start').value=new Date().toISOString().slice(0,10);
   document.getElementById('sm-end').value='';
   document.getElementById('sm-equity').value='5000';
-  document.getElementById('sm-notes').value='';
-  document.getElementById('sm-archived').checked=false;
+  document.getElementById('sm-retrospective').value='';
+  var ed=document.getElementById('retro-editor');if(ed)ed.innerHTML='';
+  // Always hide retro panel for new sessions
+  toggleRetroPanel(false);
   // Reset demo options
   var demoCb=document.getElementById('sm-demo');
   if(demoCb){demoCb.checked=false;}
@@ -2100,8 +2285,14 @@ function openEditSessionModal(sess){
   document.getElementById('sm-start').value=sess.startDate||'';
   document.getElementById('sm-end').value=sess.endDate||'';
   document.getElementById('sm-equity').value=sess.startingEquity||5000;
-  document.getElementById('sm-notes').value=sess.notes||'';
-  document.getElementById('sm-archived').checked=!!(sess.archived);
+  var archivedCb=document.getElementById('sm-archived');
+  if(archivedCb)archivedCb.checked=!!sess.archived;
+  document.getElementById('sm-retrospective').value=sess.retrospective||'';
+  var ed=document.getElementById('retro-editor');
+  if(ed)ed.innerHTML=sess.retrospective||'';
+  // Auto-open retro panel if session already has retrospective content
+  var shouldOpen=!!(sess.retrospective&&sess.retrospective.replace(/<[^>]*>/g,'').trim().length>0);
+  toggleRetroPanel(shouldOpen);
   // Hide demo section when editing
   var demoSection=document.getElementById('demo-session-section');
   if(demoSection)demoSection.style.display='none';
@@ -2389,7 +2580,8 @@ async function saveSession(){
     name,startDate,endDate,
     startingEquity:startingEquity,
     currentEquity:existing?existing.currentEquity:startingEquity,
-    notes:document.getElementById('sm-notes').value,
+    notes:(existing&&existing.notes)||'',
+    retrospective:(function(){var ed=document.getElementById('retro-editor');return ed?ed.innerHTML:document.getElementById('sm-retrospective').value||'';}()),
     archived:archived,
     isDemo:isDemoSession||false,
     createdAt:(existing&&existing.createdAt)||new Date().toISOString()
@@ -2474,6 +2666,7 @@ async function deleteSession(id){
   await dbDelete('sessions',id);
   renderSessionsList();populateSessionSelects();renderDashboard();updateSidebarStats();
   toast('Session and its trades deleted','ok');
+  await ghAutoSync();
 }
 async function renderSessionsList(){
   var sessions=await dbGetAll('sessions');
@@ -2488,8 +2681,10 @@ async function renderSessionsList(){
     var active=isSessionActive(s);
     var activeBadge=active&&!s.archived?'<span class="sess-badge sess-badge-active">● Active</span>':'';
     var archivedBadge=s.archived?'<span class="sess-badge sess-badge-archived">Archived</span>':'';
-    return'<div class="session-item'+(s.archived?' archived':'')+'"><div><div style="font-size:13px;font-weight:600">'+escHtml(s.name)+activeBadge+archivedBadge+'</div><div class="session-meta">'+escHtml(dateStr)+' · '+count+' trades'+equityStr+(s.notes?' · '+escHtml(s.notes.slice(0,50)):'')+'</div></div>'
-      +'<div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editSessionById(\''+s.id+'\')">Edit</button>'
+    return'<div class="session-item'+(s.archived?' archived':'')+'" style="cursor:pointer" onclick="editSessionById(\''+s.id+'\')"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">'+escHtml(s.name)+activeBadge+archivedBadge+'</div><div class="session-meta">'+escHtml(dateStr)+' · '+count+' trades'+equityStr+(s.notes?' · '+escHtml(s.notes.slice(0,50)):'')+'</div>'+'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="btn btn-ghost btn-sm" style="color:var(--purple)" onclick="event.stopPropagation();openRetroView(\''+s.id+'\')" title="View/add retrospective">Retro</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editSessionById(\''+s.id+'\')">Edit</button>'
       +'<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteSession(\''+s.id+'\')">Delete</button></div></div>';
   }).join('');
 }
@@ -3725,6 +3920,7 @@ async function clearAll(){
   await ghSnapshot('clear-all',null);
   await dbClear('trades');await dbClear('images');await dbClear('sessions');
   toast('All data cleared','ok');renderDashboard();updateSidebarStats();renderSessionsList();
+  await ghAutoSync();
 }
 
 // ══ Toast ═════════════════════════════════════════
@@ -3884,6 +4080,7 @@ document.addEventListener('keydown',function(e){
   // Close in priority order: lightbox → detail → modals
   if(document.getElementById('lightbox').classList.contains('open')){closeLightbox();return;}
   if(document.getElementById('detail-overlay').classList.contains('open')){document.getElementById('detail-overlay').classList.remove('open');return;}
+  if(document.getElementById('retro-view-overlay').classList.contains('open')){closeRetroView();return;}
   var modalIds=['theme-modal','col-manager-modal','session-modal','strategy-modal','asset-modal'];
   for(var i=0;i<modalIds.length;i++){
     var m=document.getElementById(modalIds[i]);
@@ -4937,10 +5134,16 @@ async function ghListSnapshots(){
     if(!files.length){el.innerHTML='<div style="font-size:11px;color:var(--text3)">No snapshots yet. They appear here automatically before a session delete or clear all.</div>';return;}
     // Sort newest first
     files.sort(function(a,b){return b.tsRaw.localeCompare(a.tsRaw);});
-    el.innerHTML=files.slice(0,20).map(function(f){
+    var shown=files.slice(0,50);
+    // Store files on element for bulk-delete access
+    el._snapshotFiles=shown;
+    var rows=shown.map(function(f,i){
       return'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px">'
+        +'<label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;min-width:0">'
+        +'<input type="checkbox" class="snap-chk" data-idx="'+i+'" style="width:13px;height:13px;accent-color:var(--accent);cursor:pointer;flex-shrink:0" onchange="ghSnapshotSelectionChanged()">'
         +'<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">'+escHtml(f.tsDisplay)+'</div>'
         +'<div style="font-size:10px;color:var(--text3);margin-top:1px">'+escHtml(f.folderLabel)+'</div></div>'
+        +'</label>'
         +'<div style="display:flex;gap:5px;flex-shrink:0">'
         +'<button class="btn btn-ghost btn-sm" style="color:var(--purple)" title="Restore this backup" onclick="ghRestoreSnapshot(\''+escHtml(f.download_url)+'\',\''+escHtml(f.path)+'\')">'
         +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restore</button>'
@@ -4949,7 +5152,17 @@ async function ghListSnapshots(){
         +'<button class="btn btn-danger btn-sm" title="Delete this snapshot" onclick="ghDeleteSnapshot(\''+escHtml(f.path)+'\',\''+escHtml(f.sha)+'\')">'
         +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>'
         +'</div></div>';
-    }).join('')+(files.length>20?'<div style="font-size:11px;color:var(--text3);margin-top:8px">Showing 20 most recent of '+files.length+' snapshots.</div>':'');
+    }).join('');
+    // Bulk-delete toolbar (hidden until selections made)
+    var toolbar='<div id="snap-bulk-bar" style="display:none;align-items:center;gap:8px;padding:8px 10px;background:rgba(232,85,85,.06);border:1px solid rgba(232,85,85,.2);border-radius:var(--radius);margin-bottom:10px">'
+      +'<span id="snap-bulk-count" style="font-size:12px;font-weight:600;color:var(--red);flex:1">0 selected</span>'
+      +'<button class="btn btn-ghost btn-sm" onclick="ghSnapshotSelectAll()">Select all</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="ghSnapshotClearSelection()">Clear</button>'
+      +'<button class="btn btn-danger btn-sm" onclick="ghDeleteSelectedSnapshots()">'
+      +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>'
+      +'Delete selected</button>'
+      +'</div>';
+    el.innerHTML=toolbar+rows+(files.length>50?'<div style="font-size:11px;color:var(--text3);margin-top:8px">Showing 50 most recent of '+files.length+' snapshots.</div>':'');
   }catch(e){
     el.innerHTML='<div style="font-size:11px;color:var(--red)">Error: '+escHtml(e.message)+'</div>';
   }
@@ -5088,6 +5301,60 @@ async function ghRestoreSnapshot(downloadUrl,filePath){
     toast('Restored from '+filePath,'ok');
     loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
   }catch(e){toast('Restore error: '+e.message,'err');}
+}
+
+function ghSnapshotSelectionChanged(){
+  var el=document.getElementById('gh-snapshot-list');
+  var bar=document.getElementById('snap-bulk-bar');
+  var countEl=document.getElementById('snap-bulk-count');
+  if(!el||!bar)return;
+  var checked=el.querySelectorAll('.snap-chk:checked');
+  if(checked.length>0){bar.style.display='flex';countEl.textContent=checked.length+' selected';}
+  else{bar.style.display='none';}
+}
+function ghSnapshotSelectAll(){
+  var el=document.getElementById('gh-snapshot-list');
+  if(!el)return;
+  el.querySelectorAll('.snap-chk').forEach(function(c){c.checked=true;});
+  ghSnapshotSelectionChanged();
+}
+function ghSnapshotClearSelection(){
+  var el=document.getElementById('gh-snapshot-list');
+  if(!el)return;
+  el.querySelectorAll('.snap-chk').forEach(function(c){c.checked=false;});
+  ghSnapshotSelectionChanged();
+}
+async function ghDeleteSelectedSnapshots(){
+  var el=document.getElementById('gh-snapshot-list');
+  if(!el||!el._snapshotFiles)return;
+  var checked=el.querySelectorAll('.snap-chk:checked');
+  if(!checked.length)return;
+  var indices=Array.from(checked).map(function(c){return parseInt(c.dataset.idx);});
+  var toDelete=indices.map(function(i){return el._snapshotFiles[i];}).filter(Boolean);
+  if(!confirm('Delete '+toDelete.length+' snapshot'+(toDelete.length>1?'s':'')+' from GitHub? This cannot be undone.'))return;
+  var cfg=ghGetConfig();
+  if(!cfg.user||!cfg.repo||!cfg.token){toast('GitHub not configured','err');return;}
+  toast('Deleting '+toDelete.length+' snapshots…','ok');
+  var failed=0;
+  for(var f of toDelete){
+    try{
+      // Need fresh SHA for each file in case batch changes commit tree
+      var shaResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+f.path,{
+        headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+      });
+      var shaData=shaResp.ok?await shaResp.json():{};
+      var sha=shaData.sha||f.sha;
+      var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+f.path,{
+        method:'DELETE',
+        headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+        body:JSON.stringify({message:'Remove TJ snapshot',sha:sha})
+      });
+      if(!resp.ok)failed++;
+    }catch(e){failed++;}
+  }
+  if(failed)toast((toDelete.length-failed)+' deleted, '+failed+' failed','err');
+  else toast('Deleted '+toDelete.length+' snapshots','ok');
+  ghListSnapshots();
 }
 
 async function ghDeleteSnapshot(filePath,sha){
@@ -5273,6 +5540,133 @@ function toggleCloudinarySetup(){
 (function(){
   cloudinaryRefreshStatus();
 })();
+
+function retroCmd(cmd,val){
+  var ed=document.getElementById('retro-editor');
+  if(!ed)return;
+  ed.focus();
+  document.execCommand(cmd,false,val||null);
+  retroUpdateToolbar();
+}
+
+function retroBlock(tag){
+  var ed=document.getElementById('retro-editor');
+  if(!ed)return;
+  ed.focus();
+  if(tag==='blockquote'){
+    document.execCommand('formatBlock',false,'blockquote');
+  } else {
+    document.execCommand('formatBlock',false,tag);
+  }
+  retroUpdateToolbar();
+  // Reset select back to show current after change
+  var sel=document.getElementById('retro-block');
+  if(sel)sel.value=tag;
+}
+
+function retroFontSize(sz){
+  if(!sz)return;
+  var ed=document.getElementById('retro-editor');
+  if(!ed)return;
+  ed.focus();
+  // execCommand fontSize only accepts 1-7; use a workaround with span
+  var sel=window.getSelection();
+  if(!sel||sel.rangeCount===0)return;
+  var range=sel.getRangeAt(0);
+  if(range.collapsed){
+    // Set style on editor for new typing
+    document.execCommand('fontSize',false,'7');
+    var spans=ed.querySelectorAll('font[size="7"]');
+    spans.forEach(function(sp){sp.style.fontSize=sz;sp.removeAttribute('size');});
+  } else {
+    document.execCommand('fontSize',false,'7');
+    var spans2=ed.querySelectorAll('font[size="7"]');
+    spans2.forEach(function(sp){sp.style.fontSize=sz;sp.removeAttribute('size');});
+  }
+  retroUpdateToolbar();
+}
+
+function retroIndent(){document.execCommand('indent',false,null);}
+function retroOutdent(){document.execCommand('outdent',false,null);}
+
+function retroInsertHr(){
+  var ed=document.getElementById('retro-editor');
+  if(!ed)return;
+  ed.focus();
+  document.execCommand('insertHTML',false,'<hr>');
+}
+
+function retroOnInput(){
+  var ed=document.getElementById('retro-editor');
+  var ta=document.getElementById('sm-retrospective');
+  if(ed&&ta)ta.value=ed.innerHTML;
+}
+
+function retroKeydown(e){
+  // Ctrl+B/I/U shortcuts
+  if(e.ctrlKey||e.metaKey){
+    if(e.key==='b'){e.preventDefault();retroCmd('bold');}
+    else if(e.key==='i'){e.preventDefault();retroCmd('italic');}
+    else if(e.key==='u'){e.preventDefault();retroCmd('underline');}
+  }
+  // Tab to indent lists
+  if(e.key==='Tab'){
+    e.preventDefault();
+    if(e.shiftKey)retroOutdent();else retroIndent();
+  }
+}
+
+function retroUpdateToolbar(){
+  var cmds=['bold','italic','underline','strikeThrough'];
+  var ids={bold:'tb-bold',italic:'tb-italic',underline:'tb-underline',strikeThrough:'tb-strike'};
+  cmds.forEach(function(cmd){
+    var btn=document.getElementById(ids[cmd]);
+    if(btn)btn.classList.toggle('active',document.queryCommandState(cmd));
+  });
+  // Update block select
+  var sel=document.getElementById('retro-block');
+  if(sel){
+    var val=document.queryCommandValue('formatBlock').toLowerCase().replace(/[<>]/g,'');
+    if(['h1','h2','h3','blockquote'].includes(val))sel.value=val;
+    else sel.value='p';
+  }
+}
+
+// ══ Retrospective Full-Screen View ═══════════════════════════════════════
+
+var _retroViewSessionId=null;
+
+function openRetroView(sessId){
+  _retroViewSessionId=sessId;
+  dbGetAll('sessions').then(function(sessions){
+    var s=sessions.find(function(x){return x.id===sessId;});
+    if(!s)return;
+    document.getElementById('retro-view-title').textContent=(s.name||'Session')+' — Retrospective';
+    var trades_count='';
+    dbGetAll('trades').then(function(trades){
+      var cnt=trades.filter(function(t){return t.sessionId===sessId;}).length;
+      document.getElementById('retro-view-meta').textContent=s.startDate+(s.endDate?' → '+s.endDate:'')+(cnt?' · '+cnt+' trades':'');
+    });
+    var body=document.getElementById('retro-view-body');
+    if(s.retrospective){
+      body.innerHTML=s.retrospective;
+    } else {
+      body.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding-top:60px">No retrospective written yet for this session.<br><br><button class="btn btn-primary btn-sm" onclick="closeRetroView();editSessionById(\''+sessId+'\')">Write retrospective</button></div>';
+    }
+    document.getElementById('retro-view-overlay').classList.add('open');
+  });
+}
+
+function closeRetroView(e){
+  document.getElementById('retro-view-overlay').classList.remove('open');
+}
+
+function retroViewEdit(){
+  closeRetroView();
+  if(_retroViewSessionId)editSessionById(_retroViewSessionId);
+}
+
+
 
 </script>
 </body>
