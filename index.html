@@ -1127,223 +1127,294 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
     <!-- BACKUP -->
     <div class="page" id="page-backup">
-      <div class="backup-grid">
-        <div class="backup-card">
-          <div class="bc-icon" style="background:rgba(79,142,247,.12);color:var(--accent)"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-          <div class="bc-title">Export JSON backup</div>
-          <div class="bc-desc">Full backup of all trades, images (as base64), sessions, settings and preferences. Import to fully restore your journal on any device or browser.</div>
-          <button class="btn btn-primary" onclick="exportBackup()"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download backup</button>
+
+      <!-- ── 1. JSON / CSV Backup & Restore ── -->
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleBkpSection('local-backup')">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="card-title">JSON / CSV Backup &amp; Restore</span>
+          </div>
+          <svg id="local-backup-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="backup-card">
-          <div class="bc-icon" style="background:rgba(62,207,142,.12);color:var(--green)"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-          <div class="bc-title">Import JSON backup</div>
-          <div class="bc-desc">Restore from a previous backup. All trades, images, sessions, settings and your theme are restored. Duplicate trades are skipped automatically.</div>
-          <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importBackup(this)">
-          <button class="btn" onclick="document.getElementById('imp-file').click()"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Choose file</button>
-        </div>
-        <div class="backup-card">
-          <div class="bc-icon" style="background:rgba(246,173,85,.12);color:var(--amber)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-          <div class="bc-title">Export CSV</div>
-          <div class="bc-desc">Download trade data as a spreadsheet. Useful for analysis in Excel or Google Sheets.</div>
-          <button class="btn" onclick="exportCSV()"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download CSV</button>
-        </div>
-        <div class="backup-card">
-          <div class="bc-icon" style="background:rgba(100,212,252,.12);color:#64d4fc"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-          <div class="bc-title">Import CSV</div>
-          <div class="bc-desc">Import trades from a CSV file. Columns: num, pair, assetType, type, strategy, entryPrice, exitPrice, qty, riskpct, entryTime, exitTime, plDollar, plPct, winLoss.</div>
-          <input type="file" id="imp-csv-file" accept=".csv" style="display:none" onchange="importCSV(this)">
-          <button class="btn" onclick="document.getElementById('imp-csv-file').click()"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Choose CSV file</button>
-        </div>
-        <div class="backup-card" style="border-color:rgba(245,101,101,.3)">
-          <div class="bc-icon" style="background:rgba(245,101,101,.12);color:var(--red)"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
-          <div class="bc-title" style="color:var(--red)">Clear all data</div>
-          <div class="bc-desc">Permanently delete every trade and image. Export a backup first!</div>
-          <button class="btn btn-danger" onclick="clearAll()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Clear all trades</button>
+        <div id="local-backup-body" class="card-body" style="display:none">
+          <div class="backup-grid" style="margin-bottom:0">
+            <div class="backup-card">
+              <div class="bc-icon" style="background:rgba(79,142,247,.12);color:var(--accent)"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+              <div class="bc-title">Export JSON</div>
+              <div class="bc-desc">Full export of all trades, images, sessions, settings and preferences. Keep this as your portable data file — import it on any device or browser.</div>
+              <button class="btn btn-primary" onclick="exportBackup()"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download JSON</button>
+            </div>
+            <div class="backup-card">
+              <div class="bc-icon" style="background:rgba(246,173,85,.12);color:var(--amber)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="bc-title">Export CSV</div>
+              <div class="bc-desc">Download trade data as a spreadsheet. Useful for analysis in Excel or Google Sheets. Does not include images or settings.</div>
+              <button class="btn" onclick="exportCSV()"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download CSV</button>
+            </div>
+            <div class="backup-card">
+              <div class="bc-icon" style="background:rgba(62,207,142,.12);color:var(--green)"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+              <div class="bc-title">Import (JSON or CSV)</div>
+              <div class="bc-desc">Upload a <strong>JSON data file</strong> or <strong>CSV</strong> — format is detected automatically. JSON restores everything; CSV imports trades only. Duplicates are skipped.</div>
+              <input type="file" id="imp-file" accept=".json,.csv" style="display:none" onchange="importAuto(this)">
+              <button class="btn" onclick="document.getElementById('imp-file').click()"><svg viewBox="0 0 24 24"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Choose file</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- GitHub Sync Section -->
-      <div style="margin-top:22px">
-        <div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
-          GitHub Auto-Sync
-          <span id="gh-status-dot" style="width:7px;height:7px;border-radius:50%;background:var(--border2);display:inline-block;margin-left:2px" title="Not configured"></span>
-          <span id="gh-status-label" style="font-size:10px;font-weight:500;color:var(--text3);text-transform:none;letter-spacing:0">Not configured</span>
-        </div>
-
-        <div class="card" style="margin-bottom:12px">
-          <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleGhSetup()">
-            <span class="card-title">Setup — GitHub Repository</span>
-            <svg id="gh-setup-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
+      <!-- ── 2. GitHub ── -->
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleBkpSection('github-sync-section')">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            <span class="card-title">GitHub</span>
+            <span id="gh-status-dot" style="width:7px;height:7px;border-radius:50%;background:var(--border2);display:inline-block;margin-left:2px" title="Not configured"></span>
+            <span id="gh-status-label" style="font-size:10px;font-weight:500;color:var(--text3);text-transform:none;letter-spacing:0">Not configured</span>
           </div>
-          <div id="gh-setup-body" class="card-body" style="display:none">
-            <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7">
-              Create a <strong style="color:var(--text2)">private GitHub repo</strong> (e.g. <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px">my-trading-journal</code>), then generate a
-              <strong style="color:var(--text2)">Personal Access Token</strong> at
-              <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">github.com/settings/tokens</a>
-              with <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px">repo</code> scope. Your token is stored only in this browser.
+          <svg id="github-sync-section-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div id="github-sync-section-body" class="card-body" style="display:none">
+
+          <!-- Setup -->
+          <div style="margin-top:4px">
+            <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleGhSetup()">
+              <span class="card-title">Repository Setup</span>
+              <svg id="gh-setup-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
-            <div class="frow-inline" style="margin-bottom:12px">
-              <div class="frow" style="flex:1;min-width:160px">
-                <label class="flabel">GitHub Username</label>
-                <input type="text" id="gh-user" placeholder="your-username" oninput="ghSaveConfig()">
+            <div id="gh-setup-body" class="card-body" style="display:none">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7">
+                Create a <strong style="color:var(--text2)">private GitHub repo</strong> (e.g. <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px">my-trading-journal</code>), then generate a
+                <strong style="color:var(--text2)">Personal Access Token</strong> at
+                <a href="https://github.com/settings/tokens/new" target="_blank" style="color:var(--accent)">github.com/settings/tokens</a>
+                with <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px">repo</code> scope. Your token is stored only in this browser.
               </div>
-              <div class="frow" style="flex:1;min-width:160px">
-                <label class="flabel">Repository Name</label>
-                <input type="text" id="gh-repo" placeholder="my-trading-journal" oninput="ghSaveConfig()">
+              <div class="frow-inline" style="margin-bottom:12px">
+                <div class="frow" style="flex:1;min-width:160px">
+                  <label class="flabel">GitHub Username</label>
+                  <input type="text" id="gh-user" placeholder="your-username" oninput="ghSaveConfig()">
+                </div>
+                <div class="frow" style="flex:1;min-width:160px">
+                  <label class="flabel">Repository Name</label>
+                  <input type="text" id="gh-repo" placeholder="my-trading-journal" oninput="ghSaveConfig()">
+                </div>
+              </div>
+              <div class="frow" style="margin-bottom:14px">
+                <label class="flabel">Personal Access Token</label>
+                <div style="display:flex;gap:6px">
+                  <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="ghSaveConfig()" style="flex:1">
+                  <button class="btn btn-ghost btn-sm" onclick="ghToggleTokenVis()" id="gh-token-eye" title="Show/hide token" style="flex-shrink:0;padding:5px 9px">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <button class="btn btn-primary btn-sm" onclick="ghTestConnection()">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Test connection
+                </button>
+                <button class="btn btn-ghost btn-sm" onclick="ghClearConfig()">Clear credentials</button>
+                <span id="gh-test-result" style="font-size:11px;color:var(--text3)"></span>
               </div>
             </div>
-            <div class="frow" style="margin-bottom:14px">
-              <label class="flabel">Personal Access Token</label>
-              <div style="display:flex;gap:6px">
-                <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="ghSaveConfig()" style="flex:1">
-                <button class="btn btn-ghost btn-sm" onclick="ghToggleTokenVis()" id="gh-token-eye" title="Show/hide token" style="flex-shrink:0;padding:5px 9px">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+
+          <!-- Push / Pull / Last sync -->
+          <div class="backup-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px;margin-top:12px">
+            <div class="backup-card">
+              <div class="bc-icon" style="background:rgba(52,201,122,.12);color:var(--green)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+              <div class="bc-title">Push to GitHub</div>
+              <div class="bc-desc">Manually push your full journal (trades, images, sessions, settings) to your GitHub repo right now.</div>
+              <button class="btn btn-primary" onclick="ghPushManual()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+                Push now
+              </button>
+            </div>
+            <div class="backup-card">
+              <div class="bc-icon" style="background:rgba(77,127,255,.12);color:var(--accent)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div class="bc-title">Pull from GitHub</div>
+              <div class="bc-desc">Restore your journal from GitHub. Use this on a new browser or device. Existing data is merged (no duplicates).</div>
+              <button class="btn" onclick="ghPull()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+                Pull now
+              </button>
+            </div>
+            <div class="backup-card">
+              <div class="bc-icon" style="background:rgba(155,127,240,.12);color:var(--purple)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="bc-title">Last sync</div>
+              <div class="bc-desc" id="gh-last-sync-desc">Never synced yet. Auto-sync runs after every trade save once configured.</div>
+              <div id="gh-last-sync-time" style="font-size:11px;color:var(--text3);margin-top:6px"></div>
+            </div>
+          </div>
+
+          <!-- GitHub Pages Deploy -->
+          <div class="card" style="margin-bottom:0">
+            <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleGhPages()">
+              <div style="display:flex;align-items:center;gap:8px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                <span class="card-title">Deploy to GitHub Pages</span>
+              </div>
+              <svg id="gh-pages-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div id="gh-pages-body" class="card-body" style="display:none">
+              <div style="font-size:11px;background:rgba(232,160,48,.06);border:1px solid rgba(232,160,48,.2);border-radius:6px;padding:10px 12px;margin-bottom:12px;color:var(--amber);line-height:1.6">
+                <strong>⚠ Use a separate public repo for Pages.</strong> GitHub Pages requires a public repo on free accounts. Your data repo must stay private — it contains your full trade history. Create a second repo (e.g. <code style="background:rgba(0,0,0,.2);padding:1px 5px;border-radius:3px">trading-journal-app</code>) that holds only this HTML file. Your GitHub sync credentials still point at your private data repo — nothing changes there.
+              </div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7">
+                Steps to deploy:
+                <ol style="margin:8px 0 0 16px;display:flex;flex-direction:column;gap:5px">
+                  <li>Create a <strong style="color:var(--text2)">new public repo</strong> on GitHub (e.g. <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">trading-journal-app</code>) — <em>not</em> your data repo</li>
+                  <li>Add this <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">index.html</code> file to your repo root</li>
+                  <li>Download the workflow file below and commit it to <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">.github/workflows/deploy.yml</code></li>
+                  <li>In that repo's Settings → Pages, set source to <strong style="color:var(--text2)">GitHub Actions</strong></li>
+                  <li>Push — your journal will be live at <span id="gh-pages-url" style="color:var(--accent)">https://&lt;user&gt;.github.io/trading-journal-app</span></li>
+                  <li>On any new device, open the URL, go to Backup &amp; Restore, enter your <strong style="color:var(--text2)">private data repo</strong> credentials and hit Pull</li>
+                </ol>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <button class="btn btn-primary btn-sm" onclick="ghDownloadPagesWorkflow()">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download deploy.yml
+                </button>
+                <button class="btn btn-ghost btn-sm" onclick="ghOpenNewRepo()">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Create new repo on GitHub
                 </button>
               </div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-              <button class="btn btn-primary btn-sm" onclick="ghTestConnection()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                Test connection
-              </button>
-              <button class="btn btn-ghost btn-sm" onclick="ghClearConfig()">Clear credentials</button>
-              <span id="gh-test-result" style="font-size:11px;color:var(--text3)"></span>
-            </div>
           </div>
-        </div>
 
-        <div class="backup-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
-          <div class="backup-card">
-            <div class="bc-icon" style="background:rgba(52,201,122,.12);color:var(--green)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            </div>
-            <div class="bc-title">Push to GitHub</div>
-            <div class="bc-desc">Manually push your full journal (trades, images, sessions, settings) to your GitHub repo right now.</div>
-            <button class="btn btn-primary" onclick="ghPushManual()">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
-              Push now
-            </button>
-          </div>
-          <div class="backup-card">
-            <div class="bc-icon" style="background:rgba(77,127,255,.12);color:var(--accent)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            </div>
-            <div class="bc-title">Pull from GitHub</div>
-            <div class="bc-desc">Restore your journal from GitHub. Use this on a new browser or device. Existing data is merged (no duplicates).</div>
-            <button class="btn" onclick="ghPull()">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
-              Pull now
-            </button>
-          </div>
-          <div class="backup-card">
-            <div class="bc-icon" style="background:rgba(155,127,240,.12);color:var(--purple)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </div>
-            <div class="bc-title">Last sync</div>
-            <div class="bc-desc" id="gh-last-sync-desc">Never synced yet. Auto-sync runs after every trade save once configured.</div>
-            <div id="gh-last-sync-time" style="font-size:11px;color:var(--text3);margin-top:6px"></div>
-          </div>
-        </div>
+        </div><!-- /github-sync-section-body -->
+      </div><!-- /github-sync-section card -->
 
-        <!-- Snapshots collapsible -->
-        <div class="card" style="margin-top:12px">
-          <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleGhSnapshots()">
-            <div style="display:flex;align-items:center;gap:8px">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span class="card-title">Safety Snapshots — bkp/ folder</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:11px;color:var(--text3)">Auto-created before every delete</span>
-              <svg id="gh-snapshots-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
+      <!-- ── 3. Backup & Snapshots ── -->
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleBkpSection('bkp-snapshots-section')">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="card-title">Backup &amp; Snapshots</span>
           </div>
-          <div id="gh-snapshots-body" class="card-body" style="display:none">
-            <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7">
-              Before every session delete or clear-all, a full snapshot is automatically pushed to <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">bkp/sessions/</code> or <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">bkp/clear-all/</code> in your repo. Download any snapshot below and use <strong style="color:var(--text2)">Import JSON backup</strong> above to restore it.
-            </div>
-            <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
-              <button class="btn btn-ghost btn-sm" onclick="ghListSnapshots()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-                Refresh
-              </button>
-            </div>
-            <div id="gh-snapshot-list"></div>
-          </div>
+          <svg id="bkp-snapshots-section-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <!-- Cloudinary Image Hosting -->
-        <div class="card" style="margin-top:12px">
-          <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleCloudinarySetup()">
-            <div style="display:flex;align-items:center;gap:8px">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-              <span class="card-title">Cloudinary — Image Hosting</span>
-              <span id="cloudinary-status-dot" style="width:7px;height:7px;border-radius:50%;background:var(--border2);display:inline-block;margin-left:2px"></span>
-              <span id="cloudinary-status-label" style="font-size:10px;font-weight:500;color:var(--text3);text-transform:none;letter-spacing:0">Not configured</span>
-            </div>
-            <svg id="cloudinary-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-          <div id="cloudinary-setup-body" class="card-body" style="display:none">
-            <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7">
-              When configured, screenshots are uploaded to <strong style="color:var(--text2)">Cloudinary</strong> (free tier: 25GB) instead of being stored as base64. Your <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">tj_backup.json</code> stays tiny — only image URLs are saved, not the image data itself.
-              <br><br>
-              Sign up free at <a href="https://cloudinary.com" target="_blank" style="color:var(--accent)">cloudinary.com</a>, then go to <strong style="color:var(--text2)">Settings → Upload → Upload presets</strong> and create an <strong style="color:var(--text2)">unsigned</strong> preset. Copy your Cloud Name from the dashboard.<br><br>
-              <strong style="color:var(--amber)">⚠ Required for screenshot deletion:</strong> In your upload preset settings, under <strong style="color:var(--text2)">Upload Control</strong>, set <strong style="color:var(--text2)">Return delete token</strong> to <strong style="color:var(--text2)">Yes</strong>. Without this, removed screenshots will not be deleted from Cloudinary.
-            </div>
-            <div class="frow-inline" style="margin-bottom:12px">
-              <div class="frow" style="flex:1;min-width:160px">
-                <label class="flabel">Cloud Name</label>
-                <input type="text" id="cld-cloud-name" placeholder="your-cloud-name" oninput="cloudinarySaveConfig()">
+        <div id="bkp-snapshots-section-body" class="card-body" style="display:none">
+
+          <!-- Manual backup + Restore latest -->
+          <div class="backup-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+            <div class="backup-card" style="border-color:rgba(52,201,122,.25)">
+              <div class="bc-icon" style="background:rgba(52,201,122,.12);color:var(--green)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
               </div>
-              <div class="frow" style="flex:1;min-width:160px">
-                <label class="flabel">Upload Preset (unsigned)</label>
-                <input type="text" id="cld-upload-preset" placeholder="ml_default" oninput="cloudinarySaveConfig()">
+              <div class="bc-title">Manual Backup</div>
+              <div class="bc-desc">Push a timestamped snapshot to <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/</code> in your GitHub repo right now. File name includes <em>manual-backup</em> so it's easy to tell apart from auto-snapshots. Useful before large changes.</div>
+              <button class="btn" style="border-color:rgba(52,201,122,.3);color:var(--green)" onclick="ghManualBackup()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Save manual backup
+              </button>
+            </div>
+            <div class="backup-card" style="border-color:rgba(155,127,240,.25)">
+              <div class="bc-icon" style="background:rgba(155,127,240,.12);color:var(--purple)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+              </div>
+              <div class="bc-title">Restore Latest Backup</div>
+              <div class="bc-desc">Replace your current data with the most recent snapshot in <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/</code>. You can also pick a specific one from the list below. <strong style="color:var(--amber)">This overwrites your current data.</strong></div>
+              <button class="btn" style="border-color:rgba(155,127,240,.3);color:var(--purple)" onclick="ghRestoreLatestBackup()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                Restore latest
+              </button>
+            </div>
+          </div>
+
+          <!-- All snapshots collapsible list -->
+          <div class="card" style="margin-bottom:0">
+            <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleGhSnapshots()">
+              <div style="display:flex;align-items:center;gap:8px">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span class="card-title">All Snapshots — bkp/ folder</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:11px;color:var(--text3)">manual-backup · session-snapshot · clear-all-snapshot</span>
+                <svg id="gh-snapshots-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
             </div>
-            <div style="font-size:11px;padding:10px 12px;background:rgba(77,127,255,.05);border:1px solid rgba(77,127,255,.15);border-radius:var(--radius);margin-bottom:12px;line-height:1.7">
-              <strong style="color:var(--text2)">How it works:</strong> When you paste or drop a screenshot, it's uploaded instantly to Cloudinary. The image URL is stored in your trade. Your GitHub backup stays lean — no base64 blobs. Existing trades with base64 images continue to work normally.
+            <div id="gh-snapshots-body" class="card-body" style="display:none">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7">
+                Snapshots are saved here manually or automatically before a session delete / clear-all. File names distinguish their origin: <code style="background:var(--bg3);padding:1px 4px;border-radius:3px">manual-backup-…</code>, <code style="background:var(--bg3);padding:1px 4px;border-radius:3px">session-snapshot-…</code>, <code style="background:var(--bg3);padding:1px 4px;border-radius:3px">clear-all-snapshot-…</code>. Use <strong style="color:var(--text2)">Restore</strong> to apply directly, or <strong style="color:var(--text2)">Download</strong> and import via JSON/CSV above.
+              </div>
+              <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+                <button class="btn btn-ghost btn-sm" onclick="ghListSnapshots()">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                  Refresh
+                </button>
+              </div>
+              <div id="gh-snapshot-list"></div>
             </div>
-            <div id="cloudinary-config-status" style="font-size:11px;color:var(--text3)"></div>
           </div>
-        </div>
 
-        <!-- GitHub Pages Deploy -->
-        <div class="card" style="margin-top:12px">
-          <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleGhPages()">
-            <div style="display:flex;align-items:center;gap:8px">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-              <span class="card-title">Deploy to GitHub Pages</span>
-            </div>
-            <svg id="gh-pages-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
+        </div><!-- /bkp-snapshots-section-body -->
+      </div><!-- /bkp-snapshots card -->
+
+      <!-- ── 4. Cloudinary — Image Hosting ── -->
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleCloudinarySetup()">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+            <span class="card-title">Cloudinary — Image Hosting</span>
+            <span id="cloudinary-status-dot" style="width:7px;height:7px;border-radius:50%;background:var(--border2);display:inline-block;margin-left:2px"></span>
+            <span id="cloudinary-status-label" style="font-size:10px;font-weight:500;color:var(--text3);text-transform:none;letter-spacing:0">Not configured</span>
           </div>
-          <div id="gh-pages-body" class="card-body" style="display:none">
-            <div style="font-size:11px;background:rgba(232,160,48,.06);border:1px solid rgba(232,160,48,.2);border-radius:6px;padding:10px 12px;margin-bottom:12px;color:var(--amber);line-height:1.6">
-              <strong>⚠ Use a separate public repo for Pages.</strong> GitHub Pages requires a public repo on free accounts. Your data repo must stay private — it contains your full trade history. Create a second repo (e.g. <code style="background:rgba(0,0,0,.2);padding:1px 5px;border-radius:3px">trading-journal-app</code>) that holds only this HTML file. Your GitHub sync credentials still point at your private data repo — nothing changes there.
+          <svg id="cloudinary-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div id="cloudinary-setup-body" class="card-body" style="display:none">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7">
+            When configured, screenshots are uploaded to <strong style="color:var(--text2)">Cloudinary</strong> (free tier: 25 GB) instead of being stored as base64. Your <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">tj_data.json</code> stays tiny — only image URLs are saved, not the image data itself.
+            <br><br>
+            Sign up free at <a href="https://cloudinary.com" target="_blank" style="color:var(--accent)">cloudinary.com</a>, then go to <strong style="color:var(--text2)">Settings → Upload → Upload presets</strong> and create an <strong style="color:var(--text2)">unsigned</strong> preset. Copy your Cloud Name from the dashboard.<br><br>
+            <strong style="color:var(--amber)">⚠ Required for screenshot deletion:</strong> In your upload preset settings, under <strong style="color:var(--text2)">Upload Control</strong>, set <strong style="color:var(--text2)">Return delete token</strong> to <strong style="color:var(--text2)">Yes</strong>. Without this, removed screenshots will not be deleted from Cloudinary.
+          </div>
+          <div class="frow-inline" style="margin-bottom:12px">
+            <div class="frow" style="flex:1;min-width:160px">
+              <label class="flabel">Cloud Name</label>
+              <input type="text" id="cld-cloud-name" placeholder="your-cloud-name" oninput="cloudinarySaveConfig()">
             </div>
-            <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7">
-              Steps to deploy:
-              <ol style="margin:8px 0 0 16px;display:flex;flex-direction:column;gap:5px">
-                <li>Create a <strong style="color:var(--text2)">new public repo</strong> on GitHub (e.g. <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">trading-journal-app</code>) — <em>not</em> your data repo</li>
-                <li>Add this <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">index.html</code> file to your repo root</li>
-                <li>Download the workflow file below and commit it to <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">.github/workflows/deploy.yml</code></li>
-                <li>In that repo's Settings → Pages, set source to <strong style="color:var(--text2)">GitHub Actions</strong></li>
-                <li>Push — your journal will be live at <span id="gh-pages-url" style="color:var(--accent)">https://&lt;user&gt;.github.io/trading-journal-app</span></li>
-                <li>On any new device, open the URL, go to Backup &amp; Restore, enter your <strong style="color:var(--text2)">private data repo</strong> credentials and hit Pull</li>
-              </ol>
+            <div class="frow" style="flex:1;min-width:160px">
+              <label class="flabel">Upload Preset (unsigned)</label>
+              <input type="text" id="cld-upload-preset" placeholder="ml_default" oninput="cloudinarySaveConfig()">
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-              <button class="btn btn-primary btn-sm" onclick="ghDownloadPagesWorkflow()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Download deploy.yml
-              </button>
-              <button class="btn btn-ghost btn-sm" onclick="ghOpenNewRepo()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                Create new repo on GitHub
-              </button>
+          </div>
+          <div style="font-size:11px;padding:10px 12px;background:rgba(77,127,255,.05);border:1px solid rgba(77,127,255,.15);border-radius:var(--radius);margin-bottom:12px;line-height:1.7">
+            <strong style="color:var(--text2)">How it works:</strong> When you paste or drop a screenshot, it's uploaded instantly to Cloudinary. The image URL is stored in your trade. Your GitHub backup stays lean — no base64 blobs. Existing trades with base64 images continue to work normally.
+          </div>
+          <div id="cloudinary-config-status" style="font-size:11px;color:var(--text3)"></div>
+        </div>
+      </div>
+
+      <!-- ── 5. Danger Zone ── -->
+      <div class="card" style="margin-bottom:10px;border-color:rgba(232,85,85,.2)">
+        <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleBkpSection('danger-zone-section')">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+            <span class="card-title" style="color:var(--red)">Danger Zone</span>
+          </div>
+          <svg id="danger-zone-section-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div id="danger-zone-section-body" class="card-body" style="display:none">
+          <div class="backup-grid" style="grid-template-columns:1fr;margin-bottom:0">
+            <div class="backup-card" style="border-color:rgba(245,101,101,.3)">
+              <div class="bc-icon" style="background:rgba(245,101,101,.12);color:var(--red)"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
+              <div class="bc-title" style="color:var(--red)">Clear all data</div>
+              <div class="bc-desc">Permanently delete every trade and image. Export a backup above first! If GitHub is configured, a snapshot is auto-saved before deletion.</div>
+              <button class="btn btn-danger" onclick="clearAll()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Clear all trades</button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+    </div><!-- /page-backup -->
 
 
 
@@ -2027,11 +2098,29 @@ function isSessionActive(sess){
 }
 
 async function deleteSession(id){
-  if(!confirm('Delete this session?'))return;
   var sess=await dbGet('sessions',id);
+  var tradeCnt=(await dbGetAll('trades')).filter(function(t){return t.sessionId===id;}).length;
+  var msg='Delete this session'+(tradeCnt?' and its '+tradeCnt+' trade'+(tradeCnt>1?'s':''):'')+'?\n\nNote: Cloudinary images are kept so restores work correctly.';
+  if(!confirm(msg))return;
   var safeName=(sess&&sess.name?sess.name.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,40):'session');
-  await ghSnapshot('sessions/'+safeName);
-  await dbDelete('sessions',id);renderSessionsList();populateSessionSelects();toast('Deleted','ok');
+  // Save snapshot to bkp/ before deleting (no push to main — snapshot only)
+  await ghSnapshot('session',safeName);
+  // Delete all trades belonging to this session (images stay in IndexedDB & Cloudinary)
+  var trades=await dbGetAll('trades');
+  for(var t of trades){
+    if(t.sessionId===id){
+      // Delete image records from IndexedDB only (NOT from Cloudinary)
+      if(t.imageIds){
+        for(var z in t.imageIds){
+          for(var imgId of(t.imageIds[z]||[])){await dbDelete('images',imgId);}
+        }
+      }
+      await dbDelete('trades',t.id);
+    }
+  }
+  await dbDelete('sessions',id);
+  renderSessionsList();populateSessionSelects();renderDashboard();updateSidebarStats();
+  toast('Session and its trades deleted','ok');
 }
 async function renderSessionsList(){
   var sessions=await dbGetAll('sessions');
@@ -2793,8 +2882,10 @@ async function editTrade(id){
 
 // ══ Delete ════════════════════════════════════════
 async function deleteTrade(id){
-  if(!confirm('Delete this trade and all its images?'))return;
+  if(!confirm('Delete this trade?\n\nNote: Cloudinary images are kept so restores work correctly.'))return;
   var trade=await dbGet('trades',id);
+  // Delete image records from IndexedDB only — DO NOT delete from Cloudinary
+  // (Cloudinary images must survive so restoring a backup brings images back)
   if(trade&&trade.imageIds)for(var z in trade.imageIds)for(var imgId of(trade.imageIds[z]||[]))await dbDelete('images',imgId);
   await dbDelete('trades',id);
   toast('Trade deleted','ok');renderHistory();renderDashboard();updateSidebarStats();closeDetail();
@@ -3212,7 +3303,7 @@ async function exportBackup(){
   var localData={};
   ['tj-hist-cols'].forEach(function(k){var v=localStorage.getItem(k);if(v)localData[k]=v;});
   var blob=new Blob([JSON.stringify({version:5,exportedAt:new Date().toISOString(),trades,images,sessions,settings,localData},null,2)],{type:'application/json'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tj_backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tj_data_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
   toast('Full backup downloaded ('+images.length+' images, '+trades.length+' trades)','ok');
 }
 // ══ Recompute derived fields from raw trade data ══════
@@ -3263,6 +3354,7 @@ async function importBackup(input){
     var msg='Imported '+added+' trades, '+imgCount+' images'+(skipped?' ('+skipped+' dupes skipped)':'');
     toast(msg,'ok');
     loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+    ghAutoSync();
   }catch(e){toast('Invalid file: '+e.message,'err');}
   input.value='';
 }
@@ -3274,8 +3366,10 @@ async function exportCSV(){
   toast('CSV downloaded','ok');
 }
 async function clearAll(){
-  if(!confirm('Delete ALL trades, images and sessions? Export a backup first!'))return;
-  await ghSnapshot('clear-all/full-journal');
+  var answer=prompt('This will delete ALL trades and sessions from this browser.\n\nCloudinary images are kept so a restore will bring them back.\n\nIf GitHub is configured, a snapshot is saved to bkp/ first.\n\nType CLEAR to confirm:');
+  if(!answer||answer.trim().toUpperCase()!=='CLEAR'){toast('Cancelled','ok');return;}
+  toast('Saving snapshot before clearing…','ok');
+  await ghSnapshot('clear-all',null);
   await dbClear('trades');await dbClear('images');await dbClear('sessions');
   toast('All data cleared','ok');renderDashboard();updateSidebarStats();renderSessionsList();
 }
@@ -4146,7 +4240,7 @@ function calcCalc(){
 })();
 
 // ══ GitHub Sync ═══════════════════════════════════
-var GH_FILE='tj_backup.json';
+var GH_FILE='tj_data.json';
 
 function ghGetConfig(){
   return{
@@ -4164,29 +4258,59 @@ function ghSaveConfig(){
   if(t)localStorage.setItem('tj-gh-token',t.value.trim());
   ghRefreshStatus();
 }
+// ── Robust file fetch: resolves blob SHA via tree to handle large files ──
+async function ghFetchFileContent(cfg,filePath){
+  try{
+    // Try /contents/ first (works for files < ~1MB)
+    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+filePath+'?t='+Date.now(),{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(resp.ok){
+      var fileData=await resp.json();
+      if(fileData.content&&fileData.content.trim()){
+        try{return decodeURIComponent(escape(atob(fileData.content.replace(/\n/g,''))));}catch(e){}
+      }
+      // Content truncated — fall through to blob API using SHA from this response
+      if(fileData.sha){
+        var blobResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/blobs/'+fileData.sha,{
+          headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+        });
+        if(blobResp.ok){
+          var blobData=await blobResp.json();
+          try{return decodeURIComponent(escape(atob(blobData.content.replace(/\n/g,''))));}catch(e){}
+        }
+      }
+    }
+    // Fallback: resolve SHA via Trees API (handles 404 on /contents/ for very large files)
+    var branchResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/ref/heads/main?_='+Date.now(),{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!branchResp.ok)return null;
+    var branchData=await branchResp.json();
+    var treeSha=branchData.object&&branchData.object.sha;
+    if(!treeSha)return null;
+    var treeResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/trees/'+treeSha+'?recursive=1&_='+Date.now(),{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!treeResp.ok)return null;
+    var treeData=await treeResp.json();
+    var entry=(treeData.tree||[]).find(function(f){return f.path===filePath;});
+    if(!entry||!entry.sha)return null;
+    var blobResp2=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/blobs/'+entry.sha,{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!blobResp2.ok)return null;
+    var blobData2=await blobResp2.json();
+    try{return decodeURIComponent(escape(atob(blobData2.content.replace(/\n/g,''))));}catch(e){return null;}
+  }catch(e){return null;}
+}
+
 async function ghAutoPullOnSetup(){
   var cfg=ghGetConfig();
   toast('Credentials saved — pulling from GitHub…','ok');
   try{
-    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_FILE,{
-      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(!resp.ok){toast('Auto-pull skipped: '+((await resp.json().catch(function(){return{};})).message||'HTTP '+resp.status),'err');return;}
-    var fileData=await resp.json();
-    var jsonStr;
-    if(fileData.content&&fileData.content.trim()){
-      try{jsonStr=decodeURIComponent(escape(atob(fileData.content.replace(/\n/g,''))));}catch(e){jsonStr=null;}
-    }
-    if(!jsonStr){
-      var blobSha=fileData.sha;
-      if(!blobSha){toast('Auto-pull failed: could not get blob SHA','err');return;}
-      var blobResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/blobs/'+blobSha,{
-        headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
-      });
-      if(!blobResp.ok){toast('Auto-pull failed: blob fetch error','err');return;}
-      var blobData=await blobResp.json();
-      try{jsonStr=decodeURIComponent(escape(atob(blobData.content.replace(/\n/g,''))));}catch(e){toast('Auto-pull failed: decode error','err');return;}
-    }
+    var jsonStr=await ghFetchFileContent(cfg,GH_FILE);
+    if(!jsonStr){toast('Auto-pull skipped: file not found or could not be decoded','err');return;}
     var data=JSON.parse(jsonStr);
     var importedTrades=Array.isArray(data)?data:(data.trades||[]);
     var existing=new Set((await dbGetAll('trades')).map(function(t){return t.num+'|'+t.pair+'|'+t.entryTime;}));
@@ -4343,38 +4467,10 @@ async function ghPull(){
   var cfg=ghGetConfig();
   if(!cfg.user||!cfg.repo||!cfg.token){toast('GitHub not configured — set up in Backup & Restore first','err');return;}
   if(!confirm('Pull from GitHub? Your local trades will be replaced to match the remote JSON.'))return;
-  await ghSnapshot('pre-pull');
   toast('Fetching from GitHub…','ok');
   try{
-    var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_FILE+'?t='+Date.now(),{
-      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
-    });
-    if(!resp.ok){var err=await resp.json().catch(function(){return{};});toast('Pull failed: '+(err.message||('HTTP '+resp.status)),'err');return;}
-    var fileData=await resp.json();
-    var jsonStr;
-    // GitHub truncates content for large files — use download_url in that case
-    if(fileData.content&&fileData.content.trim()){
-      try{
-        jsonStr=decodeURIComponent(escape(atob(fileData.content.replace(/\n/g,''))));
-      }catch(e){
-        jsonStr=null;
-      }
-    }
-    if(!jsonStr){
-      // Large file: fetch via Blobs API
-      var blobSha=fileData.sha;
-      if(!blobSha){toast('Pull failed: could not get blob SHA','err');return;}
-      var blobResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/blobs/'+blobSha,{
-        headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
-      });
-      if(!blobResp.ok){toast('Pull failed: blob fetch error (HTTP '+blobResp.status+')','err');return;}
-      var blobData=await blobResp.json();
-      try{
-        jsonStr=decodeURIComponent(escape(atob(blobData.content.replace(/\n/g,''))));
-      }catch(e){
-        toast('Pull failed: could not decode blob content','err');return;
-      }
-    }
+    var jsonStr=await ghFetchFileContent(cfg,GH_FILE);
+    if(!jsonStr){toast('Pull failed: file not found or could not be decoded. Check your repo settings and try again.','err');return;}
     var data=JSON.parse(jsonStr);
     var importedTrades=Array.isArray(data)?data:(data.trades||[]);
 
@@ -4418,28 +4514,30 @@ async function ghAutoSync(){
   await ghPush(false); // no toast on auto-sync to avoid noise
 }
 
-// Push a timestamped snapshot to bkp/ folder before any destructive action
-async function ghSnapshot(reason){
+// Push a timestamped snapshot to bkp/ (flat folder, descriptive filename)
+// type: 'session' | 'manual' | 'clear-all'   name: optional label (e.g. session name)
+async function ghSnapshot(type,name){
   var cfg=ghGetConfig();
-  if(!cfg.user||!cfg.repo||!cfg.token)return; // skip silently if not configured
+  if(!cfg.user||!cfg.repo||!cfg.token)return;
   try{
     var payload=await ghBuildPayload();
     var ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
-    // reason may contain a subfolder, e.g. "sessions/My-Session" or "clear-all/full-journal"
-    var filename='bkp/'+reason+'/'+ts+'.json';
-    var label=reason.split('/').pop().replace(/-/g,' ');
+    var prefix=type==='session'?'session-snapshot'
+               :type==='manual'?'manual-backup'
+               :'clear-all-snapshot';
+    var label=name?name.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,40):'';
+    var filename='bkp/'+(label?prefix+'-'+label+'-'+ts:prefix+'-'+ts)+'.json';
     var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
     var resp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+filename,{
       method:'PUT',
       headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-      body:JSON.stringify({message:'TJ snapshot ['+label+'] — '+ts,content:content})
+      body:JSON.stringify({message:'TJ snapshot ['+prefix+(label?' '+label:'')+'] — '+ts,content:content})
     });
     if(resp.ok){
       toast('Snapshot saved to GitHub bkp/','ok');
     } else {
       var err=await resp.json().catch(function(){return{};});
       console.warn('Snapshot failed:',err.message||resp.status);
-      // Don't block the delete — just warn quietly
     }
   }catch(e){
     console.warn('Snapshot error:',e.message);
@@ -4471,13 +4569,14 @@ async function ghListSnapshots(){
     var files=(treeData.tree||[])
       .filter(function(f){return f.type==='blob'&&f.path.startsWith('bkp/')&&f.path.endsWith('.json');})
       .map(function(f){
-        // path: bkp/sessions/My-Session/2024-06-01T12-30-00.json  OR  bkp/clear-all/full-journal/2024-...json
-        var rel=f.path.slice(4); // strip 'bkp/'
-        var parts=rel.split('/');
-        var folder=parts.length>2?parts.slice(0,-1).join('/'):parts[0]; // e.g. "sessions/My-Session" or "clear-all/full-journal"
-        var tsRaw=parts[parts.length-1].replace('.json','');
-        // Friendly folder label
-        var folderLabel=folder.replace('sessions/','Session: ').replace('clear-all/full-journal','Clear all data').replace(/-/g,' ');
+        // path: bkp/session-snapshot-NAME-TIMESTAMP.json  or  bkp/manual-backup-TIMESTAMP.json
+        var fname=f.path.slice(4); // strip 'bkp/'
+        var tsRaw=fname.replace('.json','').replace(/^.*?(\d{4}-\d{2}-\d{2}T)/,'$1');
+        // Derive friendly label from filename prefix
+        var folderLabel=fname.startsWith('session-snapshot')?'Session snapshot'
+                       :fname.startsWith('manual-backup')?'Manual backup'
+                       :fname.startsWith('clear-all-snapshot')?'Clear all — full journal'
+                       :'Snapshot';
         var tsDisplay=tsRaw.replace('T',' ').replace(/-/g,function(m,i){return i<10?'-':':'});
         return{folderLabel:folderLabel,tsRaw:tsRaw,tsDisplay:tsDisplay,path:f.path,sha:f.sha,
           download_url:'https://raw.githubusercontent.com/'+cfg.user+'/'+cfg.repo+'/main/'+f.path};
@@ -4490,6 +4589,8 @@ async function ghListSnapshots(){
         +'<div style="min-width:0;flex:1"><div style="font-size:12px;font-weight:500;color:var(--text)">'+escHtml(f.tsDisplay)+'</div>'
         +'<div style="font-size:10px;color:var(--text3);margin-top:1px">'+escHtml(f.folderLabel)+'</div></div>'
         +'<div style="display:flex;gap:5px;flex-shrink:0">'
+        +'<button class="btn btn-ghost btn-sm" style="color:var(--purple)" title="Restore this backup" onclick="ghRestoreSnapshot(\''+escHtml(f.download_url)+'\',\''+escHtml(f.path)+'\')">'
+        +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restore</button>'
         +'<a href="'+escHtml(f.download_url)+'" download="'+escHtml(f.path.split('/').pop())+'" class="btn btn-ghost btn-sm" style="text-decoration:none">'
         +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 15 21 19 3 19 3 15"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</a>'
         +'<button class="btn btn-danger btn-sm" title="Delete this snapshot" onclick="ghDeleteSnapshot(\''+escHtml(f.path)+'\',\''+escHtml(f.sha)+'\')">'
@@ -4499,6 +4600,141 @@ async function ghListSnapshots(){
   }catch(e){
     el.innerHTML='<div style="font-size:11px;color:var(--red)">Error: '+escHtml(e.message)+'</div>';
   }
+}
+
+// ── Generic collapsible toggle for bkp page sections ──
+function toggleBkpSection(id){
+  var body=document.getElementById(id+'-body');
+  var chevron=document.getElementById(id+'-chevron');
+  if(!body)return;
+  var open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  if(chevron)chevron.style.transform=open?'':'rotate(180deg)';
+}
+
+// ── Unified import: detects JSON vs CSV automatically ──
+async function importAuto(input){
+  var file=input.files[0];if(!file)return;
+  var name=file.name.toLowerCase();
+  var isCSV=name.endsWith('.csv');
+  var isJSON=name.endsWith('.json');
+  if(!isCSV&&!isJSON){
+    // try sniffing content
+    var peek=await file.slice(0,5).text();
+    isJSON=peek.trim().startsWith('{');
+    isCSV=!isJSON;
+  }
+  var typeLabel=isCSV?'CSV':'JSON';
+  var confirmMsg=isCSV
+    ?'Import trades from CSV file "'+file.name+'"?\n\nThis will ADD trades from the file. Duplicates are skipped. Your existing data is NOT deleted.'
+    :'Import from JSON data file "'+file.name+'"?\n\nTrades, images, sessions and settings will be merged in. Duplicates are skipped. Your existing data is NOT deleted.\n\nType YES to confirm.';
+  if(isJSON){
+    var answer=prompt(confirmMsg);
+    if(!answer||answer.trim().toUpperCase()!=='YES'){toast('Import cancelled','ok');input.value='';return;}
+  } else {
+    if(!confirm(confirmMsg)){input.value='';return;}
+  }
+  if(isCSV){
+    await importCSV(input);
+  } else {
+    await importBackup(input);
+  }
+}
+
+// ── Manual backup → bkp/manual/ ──
+async function ghManualBackup(){
+  var cfg=ghGetConfig();
+  if(!cfg.user||!cfg.repo||!cfg.token){toast('GitHub not configured — set up in the GitHub section first','err');return;}
+  if(!confirm('Push a manual backup snapshot to bkp/manual/ in your GitHub repo?\n\nThe file will be named with the current date and time.'))return;
+  toast('Pushing manual backup…','ok');
+  await ghSnapshot('manual',null);
+  // Refresh snapshot list if open
+  var body=document.getElementById('gh-snapshots-body');
+  if(body&&body.style.display==='block')ghListSnapshots();
+}
+
+// ── Restore latest backup from bkp/ ──
+async function ghRestoreLatestBackup(){
+  var cfg=ghGetConfig();
+  if(!cfg.user||!cfg.repo||!cfg.token){toast('GitHub not configured','err');return;}
+  // Fetch snapshot list to find the most recent file
+  try{
+    var branchResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/ref/heads/main?_='+Date.now(),{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!branchResp.ok){toast('Could not fetch repo info','err');return;}
+    var branchData=await branchResp.json();
+    var treeSha=branchData.object&&branchData.object.sha;
+    if(!treeSha){toast('Could not resolve branch','err');return;}
+    var treeResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/trees/'+treeSha+'?recursive=1&_='+Date.now(),{
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json'}
+    });
+    if(!treeResp.ok){toast('Could not list backup files','err');return;}
+    var treeData=await treeResp.json();
+    var files=(treeData.tree||[])
+      .filter(function(f){return f.type==='blob'&&f.path.startsWith('bkp/')&&f.path.endsWith('.json');})
+      .map(function(f){
+        var parts=f.path.split('/');
+        var tsRaw=parts[parts.length-1].replace('.json','');
+        return{path:f.path,tsRaw:tsRaw,download_url:'https://raw.githubusercontent.com/'+cfg.user+'/'+cfg.repo+'/main/'+f.path};
+      });
+    if(!files.length){toast('No backups found in bkp/ folder','err');return;}
+    files.sort(function(a,b){return b.tsRaw.localeCompare(a.tsRaw);});
+    var latest=files[0];
+    var tsDisplay=latest.tsRaw.replace('T',' ').replace(/-/g,function(m,i){return i<10?'-':':'});
+    var answer=prompt(
+      'RESTORE from backup?\n\n'+
+      'File: '+latest.path+'\n'+
+      'Time: '+tsDisplay+'\n\n'+
+      'This will REPLACE your current data with this backup.\n'+
+      'Your current data will be overwritten.\n\n'+
+      'Type RESTORE to confirm:'
+    );
+    if(!answer||answer.trim().toUpperCase()!=='RESTORE'){toast('Restore cancelled','ok');return;}
+    toast('Fetching backup file…','ok');
+    toast('Fetching backup file…','ok');
+    var rawContent=await ghFetchFileContent(cfg,latest.path);
+    if(!rawContent){toast('Failed to fetch or decode backup file','err');return;}
+    var data=JSON.parse(rawContent);
+    // Clear existing data first, then import
+    await dbClear('trades');await dbClear('images');await dbClear('sessions');
+    var importedTrades=Array.isArray(data)?data:(data.trades||[]);
+    for(var t of importedTrades){recomputeTradeFields(t);await dbPut('trades',t);}
+    for(var img of(data.images||[]))await dbPut('images',img);
+    for(var sess of(data.sessions||[]))await dbPut('sessions',sess);
+    for(var setting of(data.settings||[]))await dbPut('settings',setting);
+    if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
+    toast('Restored from '+latest.path,'ok');
+    loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+  }catch(e){toast('Restore error: '+e.message,'err');}
+}
+
+// ── Restore a specific snapshot by path ──
+async function ghRestoreSnapshot(downloadUrl,filePath){
+  var answer=prompt(
+    'RESTORE this specific backup?\n\n'+
+    'File: '+filePath+'\n\n'+
+    'This will REPLACE your current data entirely.\n\n'+
+    'Type RESTORE to confirm:'
+  );
+  if(!answer||answer.trim().toUpperCase()!=='RESTORE'){toast('Restore cancelled','ok');return;}
+  var cfg=ghGetConfig();
+  try{
+    toast('Fetching backup…','ok');
+    // Use authenticated API to support private repos
+    var rawContent=await ghFetchFileContent(cfg,filePath);
+    if(!rawContent){toast('Failed to fetch or decode backup file','err');return;}
+    var data=JSON.parse(rawContent);
+    await dbClear('trades');await dbClear('images');await dbClear('sessions');
+    var importedTrades=Array.isArray(data)?data:(data.trades||[]);
+    for(var t of importedTrades){recomputeTradeFields(t);await dbPut('trades',t);}
+    for(var img of(data.images||[]))await dbPut('images',img);
+    for(var sess of(data.sessions||[]))await dbPut('sessions',sess);
+    for(var setting of(data.settings||[]))await dbPut('settings',setting);
+    if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
+    toast('Restored from '+filePath,'ok');
+    loadSavedTheme();renderDashboard();updateSidebarStats();populateSessionSelects();renderHistory();
+  }catch(e){toast('Restore error: '+e.message,'err');}
 }
 
 async function ghDeleteSnapshot(filePath,sha){
