@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trading Journal</title>
+<title>JournUP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -98,6 +98,104 @@ table.data tbody tr:hover td{background:var(--bg3);color:var(--text)}
 .badge-amber{background:rgba(232,160,48,.1);color:var(--amber)}
 .badge-purple{background:rgba(155,127,240,.1);color:var(--purple)}
 .badge-gray{background:rgba(107,115,138,.1);color:var(--text2)}
+
+/* ── Calendar view ── */
+.cal-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px;flex-wrap:nowrap;overflow:visible}
+.cal-toolbar-left{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cal-toolbar-right{display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:nowrap}
+.cal-title{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.cal-view-tabs{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.cal-view-tab{padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text3);border:none;background:transparent;transition:all .12s;font-family:inherit}
+.cal-view-tab.active{background:var(--accent);color:#fff}
+.cal-view-tab:hover:not(.active){background:var(--bg4);color:var(--text)}
+/* Month grid */
+.cal-grid-header{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}
+.cal-grid-day-label{text-align:center;font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;padding:4px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-cell{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);min-height:90px;padding:6px 7px;cursor:pointer;transition:border-color .12s,background .12s;position:relative;overflow:hidden}
+.cal-cell:hover{border-color:var(--border2);background:var(--bg3)}
+.cal-cell.other-month{opacity:.35}
+.cal-cell.today{border-color:rgba(77,127,255,.5)}
+.cal-cell.has-trades{border-color:var(--border2)}
+.cal-cell.selected-day{border-color:var(--accent)!important;background:rgba(77,127,255,.06)}
+.cal-cell-date{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px;line-height:1}
+.cal-cell.today .cal-cell-date{color:var(--accent);font-weight:800}
+.cal-cell-trades{display:flex;flex-direction:column;gap:2px}
+.cal-trade-dot{height:4px;border-radius:2px;width:100%}
+.cal-trade-dot.win{background:var(--green)}
+.cal-trade-dot.loss{background:var(--red)}
+.cal-trade-dot.skip{background:var(--amber)}
+.cal-cell-count{position:absolute;bottom:5px;right:6px;font-size:9px;font-weight:700;color:var(--text3);font-family:'DM Mono',monospace}
+.cal-cell-pl{font-size:9px;font-weight:700;font-family:'DM Mono',monospace;margin-top:3px}
+.cal-cell-pl.pos{color:var(--green)}.cal-cell-pl.neg{color:var(--red)}
+/* Heat intensity */
+.cal-cell.heat-1{background:rgba(77,127,255,.06)}
+.cal-cell.heat-2{background:rgba(77,127,255,.11)}
+.cal-cell.heat-3{background:rgba(77,127,255,.17)}
+.cal-cell.heat-4{background:rgba(77,127,255,.23)}
+.cal-cell.heat-pl-pos-1{background:rgba(52,201,122,.07)}
+.cal-cell.heat-pl-pos-2{background:rgba(52,201,122,.13)}
+.cal-cell.heat-pl-pos-3{background:rgba(52,201,122,.20)}
+.cal-cell.heat-pl-neg-1{background:rgba(232,85,85,.07)}
+.cal-cell.heat-pl-neg-2{background:rgba(232,85,85,.13)}
+.cal-cell.heat-pl-neg-3{background:rgba(232,85,85,.20)}
+/* Week view */
+.cal-week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px}
+.cal-week-cell{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 11px;min-height:100px;cursor:pointer;transition:border-color .12s}
+.cal-week-cell:hover{border-color:var(--border2)}
+.cal-week-cell.today{border-color:rgba(77,127,255,.45)}
+.cal-week-cell.has-trades{border-color:var(--border2)}
+.cal-week-cell.selected-day{border-color:var(--accent)!important}
+.cal-week-date{font-size:10px;font-weight:700;color:var(--text3);margin-bottom:2px}
+.cal-week-dow{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px}
+.cal-week-trade-row{display:flex;align-items:center;gap:5px;padding:2px 0;border-bottom:1px solid var(--border);font-size:10px}
+.cal-week-trade-row:last-child{border-bottom:none}
+.cal-week-pl{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;margin-left:auto}
+/* Year view */
+.cal-year-months{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.cal-year-month{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:11px;cursor:pointer;transition:border-color .12s}
+.cal-year-month:hover{border-color:var(--border2)}
+.cal-year-month-name{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em}
+.cal-year-mini-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-year-dot{width:100%;aspect-ratio:1;border-radius:2px;background:var(--bg3)}
+.cal-year-dot.win{background:rgba(52,201,122,.45)}
+.cal-year-dot.loss{background:rgba(232,85,85,.40)}
+.cal-year-dot.mixed{background:rgba(232,160,48,.40)}
+.cal-year-dot.off{background:transparent}
+.cal-year-stats{margin-top:8px;font-size:10px;color:var(--text3);display:flex;gap:8px;flex-wrap:wrap}
+.cal-year-stat{display:flex;flex-direction:column;align-items:center;gap:1px}
+.cal-year-stat-val{font-size:12px;font-weight:700;font-family:'DM Mono',monospace}
+/* Day detail panel */
+.cal-detail-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-top:14px}
+.cal-detail-title{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.cal-detail-trades{display:flex;flex-direction:column;gap:6px}
+.cal-detail-trade{display:flex;align-items:center;gap:10px;padding:8px 11px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:border-color .12s}
+.cal-detail-trade:hover{border-color:var(--border2)}
+/* Streak strip */
+.cal-streak-bar{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:14px}
+.cal-streak-day{width:14px;height:14px;border-radius:3px;background:var(--bg3);position:relative;cursor:default;flex-shrink:0}
+.cal-streak-day.s-win{background:rgba(52,201,122,.5)}
+.cal-streak-day.s-loss{background:rgba(232,85,85,.45)}
+.cal-streak-day.s-mixed{background:rgba(232,160,48,.4)}
+.cal-streak-day.s-off{background:var(--bg3)}
+/* Heatmap mode toggle */
+.cal-heatmode{display:flex;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.cal-heatmode-btn{padding:4px 9px;font-size:10px;font-weight:600;cursor:pointer;color:var(--text3);border:none;background:transparent;transition:all .12s;font-family:inherit;white-space:nowrap}
+.cal-heatmode-btn.active{background:var(--bg4);color:var(--text)}
+/* Week summary row */
+.cal-week-summary{display:flex;gap:14px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;flex-wrap:wrap;font-size:11px}
+.cal-week-summary span{color:var(--text3)}
+.cal-week-summary strong{color:var(--text);font-family:'DM Mono',monospace}
+/* Month cells styled like week cards */
+.cal-cell.week-style{min-height:130px;padding:8px 9px}
+.cal-cell.week-style .cal-week-date{font-size:9px;margin-bottom:1px}
+.cal-cell.week-style .cal-week-dow{font-size:11px;margin-bottom:5px}
+.cal-cell.week-style .cal-week-trade-row{font-size:9px;gap:3px;padding:1px 0}
+.cal-cell.week-style .cal-week-pl{font-size:9px}
+.cal-cell.week-style .cal-pl-footer{margin-top:5px;padding-top:4px;border-top:1px solid var(--border)}
+.cal-cell.week-style .cal-pl-footer-val{font-size:10px;font-weight:700;font-family:'DM Mono',monospace}
+.cal-cell.week-style .cal-pl-footer-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.cal-cell.week-style .cal-pl-footer-meta span{font-size:8px;color:var(--text3)}
 
 /* ── Option pills ── */
 .opt-group{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
@@ -451,13 +549,16 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
   <div class="sidebar-logo">
     <div class="logo-mark">
       <div class="logo-icon"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
-      <div><div class="logo-text">TJ Pro</div><div class="logo-sub">Trading Journal</div></div>
+      <div><div class="logo-text">JournUP</div><div class="logo-sub">Trading Journal</div></div>
     </div>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Overview</div>
     <button class="nav-item active" onclick="nav('dashboard',this)">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
+    </button>
+    <button class="nav-item" onclick="nav('calendar',this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar view
     </button>
     <div class="nav-section-label">Trades</div>
     <button class="nav-item" onclick="nav('log',this)">
@@ -525,6 +626,11 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <span class="dash-filter-badge" id="dash-filter-count" style="display:none"></span>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
+            <!-- Demo toggle — stops propagation so clicking it doesn't open/close the filter panel -->
+            <button id="dash-demo-toggle" onclick="event.stopPropagation();toggleDemoMode()" title="Toggle demo data view" style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(232,160,48,.35);background:rgba(232,160,48,.08);color:var(--amber);font-family:inherit;letter-spacing:.04em;transition:all .12s">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="dash-demo-label">Demo OFF</span>
+            </button>
             <button class="btn btn-ghost btn-sm" id="dash-reset-btn" onclick="event.stopPropagation();resetDashFilters()" style="display:none">Reset</button>
             <svg id="dash-filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
@@ -587,6 +693,49 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
         <div class="card-header"><span class="card-title">Recent trades</span><button class="btn btn-ghost btn-sm" onclick="nav('history',null)">View all</button></div>
         <div class="table-wrap" id="dash-recent"></div>
       </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="page" id="page-calendar">
+      <!-- Toolbar -->
+      <div class="cal-toolbar">
+        <div class="cal-toolbar-left">
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="calNav(-1)" title="Previous">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="cal-title" id="cal-title">—</div>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="calNav(1)" title="Next">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="calGoToday()" style="font-size:10px">Today</button>
+        </div>
+        <div class="cal-toolbar-right">
+          <!-- Demo toggle for calendar -->
+          <button id="cal-demo-toggle" onclick="toggleCalDemoMode()" title="Toggle demo data view" style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(232,160,48,.35);background:rgba(232,160,48,.08);color:var(--amber);font-family:inherit;letter-spacing:.04em;transition:all .12s;white-space:nowrap;flex-shrink:0">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="cal-demo-label">Demo OFF</span>
+          </button>
+          <!-- Session filter (mirrors dashboard) -->
+          <select id="cal-session-filter" style="font-size:11px;padding:4px 28px 4px 8px" onchange="renderCalendar()"><option value="">All sessions</option></select>
+          <!-- View tabs -->
+          <div class="cal-view-tabs">
+            <button class="cal-view-tab active" data-view="month" onclick="calSetView('month',this)">Month</button>
+            <button class="cal-view-tab" data-view="week" onclick="calSetView('week',this)">Week</button>
+            <button class="cal-view-tab" data-view="year" onclick="calSetView('year',this)">Year</button>
+          </div>
+        </div>
+      </div>
+      <!-- Streak bar (365-day GitHub-style activity strip) -->
+      <div id="cal-streak-wrap" style="margin-bottom:14px">
+        <div class="cal-streak-bar" id="cal-streak-bar"></div>
+        <div style="display:flex;gap:10px;margin-top:5px;font-size:9px;color:var(--text3)">
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(52,201,122,.5);display:inline-block"></span>Win day</span>
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(232,85,85,.45);display:inline-block"></span>Loss day</span>
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(232,160,48,.4);display:inline-block"></span>Mixed day</span>
+        </div>
+      </div>
+      <!-- Main calendar body -->
+      <div id="cal-body"></div>
     </div>
 
     <!-- LOG TRADE -->
@@ -3125,12 +3274,31 @@ async function populateSessionSelects(restoreSessionId){
   // Most recent active non-demo session for auto-defaulting filters
   var defaultFilterSession=filterSessions.find(function(s){return isSessionActive(s);})||filterSessions[0]||null;
 
+  // Dashboard session filter: show demo sessions when demo mode is ON, real sessions otherwise
+  var demoOn=!!_dashDemoMode;
+  var dashFilterSessions=demoOn
+    ? activeSessions.filter(function(s){return !!s.isDemo;})
+    : filterSessions;
+  var dashDefaultSession=demoOn
+    ? (dashFilterSessions[0]||null)
+    : defaultFilterSession;
+
   var dashF=document.getElementById('dash-session-filter');
   var dv=dashF.value;
-  dashF.innerHTML='<option value="">All sessions</option>'+filterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
-  // Auto-select most recent active non-demo session if no filter was previously set
-  if(!dv&&defaultFilterSession){dashF.value=defaultFilterSession.id;}
-  else if(dv){dashF.value=dv;}
+  dashF.innerHTML='<option value="">All sessions</option>'+dashFilterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
+  // Auto-select most recent active session of the relevant type if no filter was previously set
+  if(!dv&&dashDefaultSession){dashF.value=dashDefaultSession.id;}
+  else if(dv&&dashFilterSessions.find(function(s){return s.id===dv;})){dashF.value=dv;}
+  else{dashF.value='';} // previous selection no longer valid (mode switched)
+
+  // Calendar session filter — same demo-aware list as dashboard
+  var calF2=document.getElementById('cal-session-filter');
+  if(calF2){
+    var cv=calF2.value;
+    calF2.innerHTML='<option value="">All sessions</option>'+dashFilterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
+    if(cv&&dashFilterSessions.find(function(s){return s.id===cv;})){calF2.value=cv;}
+    else{calF2.value='';}
+  }
 
   var hF=document.getElementById('flt-session');
   if(hF){
@@ -3153,7 +3321,7 @@ async function populateSessionSelects(restoreSessionId){
 }
 
 // ══ Navigation ════════════════════════════════════
-var pageMap={dashboard:{title:'Dashboard',sub:'Overview of your trading performance'},log:{title:'Log trade',sub:'Record a new trade entry'},history:{title:'Trade history',sub:'Browse and filter all your trades'},sessions:{title:'Sessions',sub:'Manage your trading session periods'},'checklist-editor':{title:'Checklist editor',sub:'Edit checklist items globally'},backup:{title:'Backup & restore',sub:'Export, import or clear your journal data'},montecarlo:{title:'Monte Carlo',sub:'Simulate future equity paths from historical trade data'},calculator:{title:'Position Size Calculator',sub:'Forex · Crypto · Gold · Stocks · Indices'}};
+var pageMap={dashboard:{title:'Dashboard',sub:'Overview of your trading performance'},log:{title:'Log trade',sub:'Record a new trade entry'},history:{title:'Trade history',sub:'Browse and filter all your trades'},sessions:{title:'Sessions',sub:'Manage your trading session periods'},'checklist-editor':{title:'Checklist editor',sub:'Edit checklist items globally'},backup:{title:'Backup & restore',sub:'Export, import or clear your journal data'},montecarlo:{title:'Monte Carlo',sub:'Simulate future equity paths from historical trade data'},calculator:{title:'Position Size Calculator',sub:'Forex · Crypto · Gold · Stocks · Indices'},calendar:{title:'Calendar view',sub:'Visual trade activity by day, week and year'}};
 var _currentPage='dashboard';
 function nav(id,btn){
   // Reset log form when navigating away — always clear, including when editing
@@ -3173,6 +3341,7 @@ function nav(id,btn){
   if(id==='checklist-editor')renderChecklistEditor();
   if(id==='montecarlo'){resetMonteCarloResults();initMonteCarlo();}
   if(id==='calculator'){calcReset();calcSyncAssets();}
+  if(id==='calendar'){calPopulateSessionFilter();renderCalendar();}
 }
 function startNewTrade(){
   var logBtn=document.querySelector('.nav-item:nth-of-type(2)');
@@ -3773,9 +3942,10 @@ async function saveTrade(){
   // Images
   var _emptyIds={'htf-W':[],'htf-D':[],'htf-4h':[],'mtf-1h':[],'mtf-30m':[],'ltf-15m':[],'ltf-5m':[],'setup':[],'postanalysis':[]};
   var imageIds=JSON.parse(JSON.stringify(_emptyIds));
+  var oldSessionId=null; // track original session when editing, to rebalance it if the trade is moved
   if(editingId){
     var old=await dbGet('trades',editingId);
-    if(old)imageIds=JSON.parse(JSON.stringify(old.imageIds||_emptyIds));
+    if(old){imageIds=JSON.parse(JSON.stringify(old.imageIds||_emptyIds));oldSessionId=old.sessionId||null;}
     if(pendingImages._deleted){
       for(var z2 in imageIds)imageIds[z2]=(imageIds[z2]||[]).filter(function(id){return!pendingImages._deleted.includes(id)});
       for(var did of pendingImages._deleted)await dbDelete('images',did);
@@ -3833,20 +4003,13 @@ async function saveTrade(){
 
   await dbPut('trades',trade);
 
-  // Update session's currentEquity based on all trades in session
+  // Update currentEquity for the affected session(s).
+  // If the trade was moved from one session to another (oldSessionId !== sessionId),
+  // rebalance both so neither session carries a stale balance.
   if(sessionId){
-    var allSessTrades=await dbGetAll('trades');
-    var sessions=await dbGetAll('sessions');
-    var sess=sessions.find(function(s){return s.id===sessionId;});
-    if(sess){
-      var sessTrades=allSessTrades.filter(function(t){return t.sessionId===sessionId;});
-      // Also include the just-saved trade
-      var alreadySaved=sessTrades.find(function(t){return t.id===trade.id;});
-      if(!alreadySaved)sessTrades.push(trade);
-      var totalPL=sessTrades.reduce(function(a,t){return a+(t.plDollar||0);},0);
-      sess.currentEquity=parseFloat(((sess.startingEquity||5000)+totalPL).toFixed(2));
-      await dbPut('sessions',sess);
-    }
+    var sessionsToRebalance=[sessionId];
+    if(oldSessionId&&oldSessionId!==sessionId)sessionsToRebalance.push(oldSessionId);
+    await rebalanceSession(sessionsToRebalance);
   }
 
   toast(editingId?'Trade updated ✓':'Trade saved ✓','ok');
@@ -3975,14 +4138,37 @@ async function editTrade(id){
   nav('log',logBtn);closeDetail();
 }
 
+// ══ Session equity helper ═════════════════════════
+// Recalculates currentEquity for one or more session IDs from scratch.
+// Pass a single id string or an array of id strings.
+async function rebalanceSession(sessionIds){
+  if(!sessionIds)return;
+  if(!Array.isArray(sessionIds))sessionIds=[sessionIds];
+  sessionIds=sessionIds.filter(Boolean);
+  if(!sessionIds.length)return;
+  var allTrades=await dbGetAll('trades');
+  var allSessions=await dbGetAll('sessions');
+  for(var sid of sessionIds){
+    var sess=allSessions.find(function(s){return s.id===sid;});
+    if(!sess)continue;
+    var sessTrades=allTrades.filter(function(t){return t.sessionId===sid;});
+    var totalPL=sessTrades.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+    sess.currentEquity=parseFloat(((sess.startingEquity||5000)+totalPL).toFixed(2));
+    await dbPut('sessions',sess);
+  }
+}
+
 // ══ Delete ════════════════════════════════════════
 async function deleteTrade(id){
   if(!confirm('Delete this trade?\n\nNote: Cloudinary images are kept so restores work correctly.'))return;
   var trade=await dbGet('trades',id);
+  var sourceSessionId=trade?trade.sessionId:null;
   // Delete image records from IndexedDB only — DO NOT delete from Cloudinary
   // (Cloudinary images must survive so restoring a backup brings images back)
   if(trade&&trade.imageIds)for(var z in trade.imageIds)for(var imgId of(trade.imageIds[z]||[]))await dbDelete('images',imgId);
   await dbDelete('trades',id);
+  // Rebalance the session this trade belonged to so its currentEquity reflects the removal
+  if(sourceSessionId)await rebalanceSession(sourceSessionId);
   toast('Trade deleted','ok');renderHistory();renderDashboard();updateSidebarStats();closeDetail();
   ghAutoSync();
 }
@@ -4309,6 +4495,9 @@ async function renderDashboard(){
   var allSess=await dbGetAll('sessions');
   // Build set of archived session IDs
   var archivedIds=new Set(allSess.filter(function(s){return s.archived;}).map(function(s){return s.id;}));
+  // Build sets of demo / real session IDs for mode-aware filtering
+  var demoIds=new Set(allSess.filter(function(s){return !!s.isDemo;}).map(function(s){return s.id;}));
+  var demoOn=!!_dashDemoMode;
   var sesF=document.getElementById('dash-session-filter').value;
   var atF=(document.getElementById('dash-asset-type-filter')||{}).value||'';
   var pairF=(document.getElementById('dash-pair-filter')||{}).value||'';
@@ -4316,6 +4505,9 @@ async function renderDashboard(){
   var skipF=(document.getElementById('dash-skipped-filter')||{}).value||'taken';
   var trades=allTrades.filter(function(t){
     if(archivedIds.has(t.sessionId))return false; // exclude archived sessions always
+    // Enforce demo/real split: only include trades that match the current mode
+    if(demoOn&&!demoIds.has(t.sessionId))return false;
+    if(!demoOn&&demoIds.has(t.sessionId))return false;
     if(sesF&&t.sessionId!==sesF)return false;
     if(atF&&t.assetType!==atF)return false;
     if(pairF&&t.pair!==pairF)return false;
@@ -4343,7 +4535,8 @@ async function renderDashboard(){
   }
 
   // Compute baseline equity early so stat card P/L% is correct
-  var allSessForBase=allSess.filter(function(s){return !s.archived;});
+  // Only consider sessions matching current demo mode
+  var allSessForBase=allSess.filter(function(s){return !s.archived&&(demoOn?!!s.isDemo:!s.isDemo);});
   var baselineForStats;
   if(sesF){
     var thisSessB=allSessForBase.find(function(s){return s.id===sesF;});
@@ -4545,16 +4738,76 @@ function toggleDashFilters(){
   body.style.display=open?'none':'block';
   chevron.style.transform=open?'':'rotate(180deg)';
 }
+
+// ── Demo mode toggle ───────────────────────────────────────
+var _dashDemoMode=false; // false = real sessions, true = demo sessions
+function toggleDemoMode(){
+  _dashDemoMode=!_dashDemoMode;
+  var btn=document.getElementById('dash-demo-toggle');
+  var lbl=document.getElementById('dash-demo-label');
+  var calBtn=document.getElementById('cal-demo-toggle');
+  var calLbl=document.getElementById('cal-demo-label');
+  if(_dashDemoMode){
+    if(btn){btn.style.background='rgba(232,160,48,.22)';btn.style.borderColor='rgba(232,160,48,.6)';}
+    if(lbl)lbl.textContent='Demo ON';
+    if(calBtn){calBtn.style.background='rgba(232,160,48,.22)';calBtn.style.borderColor='rgba(232,160,48,.6)';}
+    if(calLbl)calLbl.textContent='Demo ON';
+  } else {
+    if(btn){btn.style.background='rgba(232,160,48,.08)';btn.style.borderColor='rgba(232,160,48,.35)';}
+    if(lbl)lbl.textContent='Demo OFF';
+    if(calBtn){calBtn.style.background='rgba(232,160,48,.08)';calBtn.style.borderColor='rgba(232,160,48,.35)';}
+    if(calLbl)calLbl.textContent='Demo OFF';
+  }
+  // Reset session filter selection since the available options change
+  var dashF=document.getElementById('dash-session-filter');
+  if(dashF)dashF.value='';
+  // Re-populate selects with correct session list then render
+  populateSessionSelects().then(function(){renderDashboard();});
+}
+
+function toggleCalDemoMode(){
+  _dashDemoMode=!_dashDemoMode;
+  // Sync both demo buttons
+  var dashBtn=document.getElementById('dash-demo-toggle');
+  var dashLbl=document.getElementById('dash-demo-label');
+  var calBtn=document.getElementById('cal-demo-toggle');
+  var calLbl=document.getElementById('cal-demo-label');
+  if(_dashDemoMode){
+    if(dashBtn){dashBtn.style.background='rgba(232,160,48,.22)';dashBtn.style.borderColor='rgba(232,160,48,.6)';}
+    if(dashLbl)dashLbl.textContent='Demo ON';
+    if(calBtn){calBtn.style.background='rgba(232,160,48,.22)';calBtn.style.borderColor='rgba(232,160,48,.6)';}
+    if(calLbl)calLbl.textContent='Demo ON';
+  } else {
+    if(dashBtn){dashBtn.style.background='rgba(232,160,48,.08)';dashBtn.style.borderColor='rgba(232,160,48,.35)';}
+    if(dashLbl)dashLbl.textContent='Demo OFF';
+    if(calBtn){calBtn.style.background='rgba(232,160,48,.08)';calBtn.style.borderColor='rgba(232,160,48,.35)';}
+    if(calLbl)calLbl.textContent='Demo OFF';
+  }
+  var calF=document.getElementById('cal-session-filter');
+  if(calF)calF.value='';
+  populateSessionSelects().then(function(){renderCalendar();});
+}
+
 function resetDashFilters(){
   ['dash-session-filter','dash-asset-type-filter','dash-pair-filter','dash-strategy-filter'].forEach(function(id){var el=document.getElementById(id);if(el)el.selectedIndex=0;});
   var dsk=document.getElementById('dash-skipped-filter');if(dsk)dsk.value='taken';
+  // Turn demo off
+  _dashDemoMode=false;
+  var dashBtn=document.getElementById('dash-demo-toggle');var dashLbl=document.getElementById('dash-demo-label');
+  var calBtn=document.getElementById('cal-demo-toggle');var calLbl=document.getElementById('cal-demo-label');
+  if(dashBtn){dashBtn.style.background='rgba(232,160,48,.08)';dashBtn.style.borderColor='rgba(232,160,48,.35)';}
+  if(dashLbl)dashLbl.textContent='Demo OFF';
+  if(calBtn){calBtn.style.background='rgba(232,160,48,.08)';calBtn.style.borderColor='rgba(232,160,48,.35)';}
+  if(calLbl)calLbl.textContent='Demo OFF';
   updateDashFilterBadge();
   document.getElementById('dash-reset-btn').style.display='none';
-  renderDashboard();
+  populateSessionSelects().then(function(){renderDashboard();});
 }
 function updateDashFilterBadge(){
   var count=0;
   ['dash-session-filter','dash-asset-type-filter','dash-pair-filter','dash-strategy-filter'].forEach(function(id){var el=document.getElementById(id);if(el&&el.value)count++;});
+  // Also count demo mode as an active filter
+  if(_dashDemoMode)count++;
   var badge=document.getElementById('dash-filter-count');
   var resetBtn=document.getElementById('dash-reset-btn');
   if(count>0){badge.textContent=count;badge.style.display='inline';if(resetBtn)resetBtn.style.display='inline-flex';}
@@ -6615,6 +6868,590 @@ function retroViewEdit(){
   closeRetroView();
   if(_retroViewSessionId)editSessionById(_retroViewSessionId);
 }
+
+// ══════════════════════════════════════════════════════════
+// ██████╗ █████╗ ██╗     ███████╗███╗   ██╗██████╗  █████╗ ██████╗
+// ██╔════╝██╔══██╗██║     ██╔════╝████╗  ██║██╔══██╗██╔══██╗██╔══██╗
+// ██║     ███████║██║     █████╗  ██╔██╗ ██║██║  ██║███████║██████╔╝
+// ██║     ██╔══██║██║     ██╔══╝  ██║╚██╗██║██║  ██║██╔══██║██╔══██╗
+// ╚██████╗██║  ██║███████╗███████╗██║ ╚████║██████╔╝██║  ██║██║  ██║
+//  ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+// ══════════════════════════════════════════════════════════
+
+var _calView='month';       // 'month' | 'week' | 'year'
+var _calHeatMode='count';   // 'count' | 'pl'
+var _calDate=new Date();    // pivot date (any day in the current period)
+var _calSelectedDay=null;   // 'YYYY-MM-DD' string or null
+var _calTrades=[];          // cached filtered trade list
+
+// ── Helpers ──────────────────────────────────────────────
+function calDateKey(d){
+  // Returns 'YYYY-MM-DD' for a Date object (local time)
+  var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+dd;
+}
+function calFmt(d,fmt){
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var short=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  if(fmt==='month-year')return months[d.getMonth()]+' '+d.getFullYear();
+  if(fmt==='month-short')return short[d.getMonth()];
+  if(fmt==='dow')return dow[d.getDay()];
+  if(fmt==='MMMM')return months[d.getMonth()];
+  return d.toLocaleDateString();
+}
+function calPlFmt(v){
+  return (v>=0?'+':'')+v.toFixed(2);
+}
+function calStartOfWeek(d){
+  // Returns Sunday of the week containing d
+  var r=new Date(d);r.setHours(0,0,0,0);r.setDate(r.getDate()-r.getDay());return r;
+}
+function calEndOfWeek(d){
+  var r=calStartOfWeek(d);r.setDate(r.getDate()+6);return r;
+}
+
+// Group trades by local date key
+function calGroupByDay(trades){
+  var map={};
+  trades.forEach(function(t){
+    var dateStr=t.entryTime?t.entryTime.slice(0,10):(t.savedAt?t.savedAt.slice(0,10):null);
+    if(!dateStr)return;
+    if(!map[dateStr])map[dateStr]=[];
+    map[dateStr].push(t);
+  });
+  return map;
+}
+
+// Compute heat class for a day's trades
+function calHeatClass(dayTrades,maxCount,maxAbsPl){
+  if(!dayTrades||!dayTrades.length)return'';
+  if(_calHeatMode==='count'){
+    var ratio=dayTrades.length/Math.max(maxCount,1);
+    if(ratio>0.75)return'heat-4';
+    if(ratio>0.5)return'heat-3';
+    if(ratio>0.25)return'heat-2';
+    return'heat-1';
+  } else {
+    var pl=dayTrades.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+    var r=Math.abs(pl)/Math.max(maxAbsPl,0.01);
+    var lvl=r>0.66?3:r>0.33?2:1;
+    if(pl>=0)return'heat-pl-pos-'+lvl;
+    return'heat-pl-neg-'+lvl;
+  }
+}
+
+// ── Populate session filter ───────────────────────────────
+async function calPopulateSessionFilter(){
+  var sel=document.getElementById('cal-session-filter');
+  if(!sel)return;
+  var sessions=await dbGetAll('sessions');
+  var demoOn=!!_dashDemoMode;
+  sessions=sessions.filter(function(s){return !s.archived&&(demoOn?!!s.isDemo:!s.isDemo);});
+  sessions.sort(function(a,b){return new Date(b.startDate)-new Date(a.startDate);});
+  var existing=sel.value;
+  sel.innerHTML='<option value="">All sessions</option>'+sessions.map(function(s){
+    return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>';
+  }).join('');
+  // Keep existing selection only if it still exists in the new list
+  if(existing&&sessions.find(function(s){return s.id===existing;}))sel.value=existing;
+  else sel.value='';
+}
+
+// ── Main render entry ─────────────────────────────────────
+async function renderCalendar(){
+  var allTrades=await dbGetAll('trades');
+  var allSess=await dbGetAll('sessions');
+  var archivedIds=new Set(allSess.filter(function(s){return s.archived;}).map(function(s){return s.id;}));
+  var demoIds=new Set(allSess.filter(function(s){return !!s.isDemo;}).map(function(s){return s.id;}));
+  var demoOn=!!_dashDemoMode;
+  var sesF=(document.getElementById('cal-session-filter')||{}).value||'';
+  _calTrades=allTrades.filter(function(t){
+    if(archivedIds.has(t.sessionId))return false;
+    if(demoOn&&!demoIds.has(t.sessionId))return false;
+    if(!demoOn&&demoIds.has(t.sessionId))return false;
+    if(sesF&&t.sessionId!==sesF)return false;
+    if(t.skipped)return false; // only real trades
+    return true;
+  });
+
+  // Render streak bar (always visible regardless of view)
+  calRenderStreakBar(_calTrades);
+
+  if(_calView==='month')calRenderMonth();
+  else if(_calView==='week')calRenderWeek();
+  else calRenderYear();
+}
+
+// ── Streak bar (GitHub contribution graph style) ──────────
+function calRenderStreakBar(trades){
+  var bar=document.getElementById('cal-streak-bar');
+  if(!bar)return;
+  var byDay=calGroupByDay(trades);
+  var today=new Date();today.setHours(0,0,0,0);
+  // Go back 364 days (52 weeks × 7)
+  var start=new Date(today);start.setDate(start.getDate()-363);
+  // Align to Sunday
+  start.setDate(start.getDate()-start.getDay());
+  var html='';
+  var cur=new Date(start);
+  while(cur<=today){
+    var key=calDateKey(cur);
+    var dayTrades=byDay[key]||[];
+    var cls='s-off';
+    if(dayTrades.length){
+      var wins=dayTrades.filter(function(t){return t.winLoss===1;}).length;
+      var losses=dayTrades.filter(function(t){return t.winLoss===0;}).length;
+      if(wins>0&&losses===0)cls='s-win';
+      else if(losses>0&&wins===0)cls='s-loss';
+      else cls='s-mixed';
+    }
+    var title=key+(dayTrades.length?' · '+dayTrades.length+' trade'+(dayTrades.length>1?'s':''):'');
+    html+='<div class="cal-streak-day '+cls+'" title="'+title+'" onclick="calClickStreakDay(\''+key+'\')"></div>';
+    cur.setDate(cur.getDate()+1);
+  }
+  bar.innerHTML=html;
+}
+function calClickStreakDay(dateKey){
+  // Jump to that month and select the day
+  var parts=dateKey.split('-');
+  _calDate=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  _calView='month';
+  // Update view tab UI
+  document.querySelectorAll('.cal-view-tab').forEach(function(b){b.classList.toggle('active',b.dataset.view==='month');});
+  _calSelectedDay=dateKey;
+  renderCalendar().then(function(){calShowDayDetail(dateKey);});
+}
+
+// ── MONTH VIEW ────────────────────────────────────────────
+function calRenderMonth(){
+  var y=_calDate.getFullYear(),m=_calDate.getMonth();
+  document.getElementById('cal-title').textContent=calFmt(new Date(y,m,1),'month-year');
+
+  var byDay=calGroupByDay(_calTrades);
+  // Max values for heat normalisation
+  var allCounts=Object.values(byDay).map(function(v){return v.length;});
+  var maxCount=allCounts.length?Math.max.apply(null,allCounts):1;
+  var allPl=Object.values(byDay).map(function(v){return Math.abs(v.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0));});
+  var maxAbsPl=allPl.length?Math.max.apply(null,allPl):1;
+
+  // First day of month & grid padding
+  var firstDay=new Date(y,m,1).getDay(); // 0=Sun
+  var daysInMonth=new Date(y,m+1,0).getDate();
+  var today=calDateKey(new Date());
+
+  var headerHtml='<div class="cal-grid-header">'+
+    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(function(d){return'<div class="cal-grid-day-label">'+d+'</div>';}).join('')+
+    '</div>';
+
+  var cells=[];
+  // Prev-month padding
+  var prevMonthDays=new Date(y,m,0).getDate();
+  for(var i=0;i<firstDay;i++){
+    var d=prevMonthDays-firstDay+1+i;
+    var key=(new Date(y,m-1,d)?calDateKey(new Date(y,m-1,d)):null);
+    cells.push({date:d,key:key,otherMonth:true,trades:[]});
+  }
+  // Current month
+  for(var d2=1;d2<=daysInMonth;d2++){
+    var key2=calDateKey(new Date(y,m,d2));
+    cells.push({date:d2,key:key2,otherMonth:false,trades:byDay[key2]||[]});
+  }
+  // Next-month padding to fill last row
+  var remaining=(7-cells.length%7)%7;
+  for(var i2=0;i2<remaining;i2++){
+    var key3=calDateKey(new Date(y,m+1,i2+1));
+    cells.push({date:i2+1,key:key3,otherMonth:true,trades:[]});
+  }
+
+  // Build weeks array
+  var weeks=[];
+  for(var w=0;w<cells.length/7;w++)weeks.push(cells.slice(w*7,w*7+7));
+
+  var gridHtml='<div class="cal-grid">';
+  weeks.forEach(function(week){
+    week.forEach(function(c){
+      // Build a date object for this cell
+      var cellParts=c.key?c.key.split('-'):null;
+      var cellDate=cellParts?new Date(parseInt(cellParts[0]),parseInt(cellParts[1])-1,parseInt(cellParts[2])):null;
+
+      var cls='cal-cell week-style';
+      if(c.otherMonth)cls+=' other-month';
+      if(c.key===today&&!c.otherMonth)cls+=' today';
+      if(c.trades.length>0)cls+=' has-trades';
+      if(c.key===_calSelectedDay)cls+=' selected-day';
+      if(c.trades.length>0&&!c.otherMonth)cls+=' '+calHeatClass(c.trades,maxCount,maxAbsPl);
+
+      var dayPl=c.trades.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+      var dayWins=c.trades.filter(function(t){return t.winLoss===1;}).length;
+      var dayRRArr=c.trades.filter(function(t){return t.actualRR!=null;});
+      var dayAvgRR=dayRRArr.length?dayRRArr.reduce(function(a,t){return a+t.actualRR;},0)/dayRRArr.length:null;
+      var isToday=c.key===today&&!c.otherMonth;
+
+      // Date header — same as week view
+      var dow=cellDate?['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][cellDate.getDay()]:'';
+      var dateLabel=cellDate?cellDate.toLocaleDateString(undefined,{month:'short',day:'numeric'}):'';
+
+      // Trade rows — identical to week view (up to 3 to save space, then +N more)
+      var rowsHtml=c.trades.slice(0,3).map(function(t){
+        var pl=parseFloat(t.plDollar)||0;
+        var win=t.winLoss===1;
+        return'<div class="cal-week-trade-row" onclick="event.stopPropagation();openDetail(\''+t.id+'\')" title="'+escHtml(t.pair||'')+'">'+
+          '<span class="badge '+(win?'badge-green':'badge-red')+'" style="font-size:8px;padding:1px 4px">'+(win?'W':'L')+'</span>'+
+          '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:52px;color:var(--text2)">'+escHtml(t.pair||'')+'</span>'+
+          '<span class="cal-week-pl" style="color:'+(pl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(pl)+'</span>'+
+          '</div>';
+      }).join('');
+      if(c.trades.length>3)rowsHtml+='<div style="font-size:8px;color:var(--text3);padding-top:2px">+'+(c.trades.length-3)+' more…</div>';
+
+      // P/L footer — identical to week view bottom section
+      var footerHtml='';
+      if(c.trades.length&&!c.otherMonth){
+        footerHtml='<div class="cal-pl-footer">'+
+          '<div class="cal-pl-footer-val" style="color:'+(dayPl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(dayPl)+'</div>'+
+          '<div class="cal-pl-footer-meta">'+
+            '<span>'+c.trades.length+' trade'+(c.trades.length>1?'s':'')+'</span>'+
+            '<span>WR: <strong style="color:var(--text2);font-weight:600">'+(dayWins/c.trades.length*100).toFixed(0)+'%</strong></span>'+
+            (dayAvgRR!=null?'<span>RR: <strong style="color:var(--text2);font-weight:600">'+dayAvgRR.toFixed(1)+'R</strong></span>':'')+
+          '</div>'+
+        '</div>';
+      }
+
+      var onclick=c.key?'onclick="calClickDay(\''+c.key+'\')"':'';
+      gridHtml+='<div class="'+cls+'" '+onclick+'>'+
+        '<div class="cal-week-date">'+dateLabel+'</div>'+
+        '<div class="cal-week-dow" style="'+(isToday?'color:var(--accent)':'')+'">'+dow+'</div>'+
+        rowsHtml+
+        (c.trades.length===0?'<div style="font-size:9px;color:var(--text3);margin-top:4px">—</div>':'')+
+        footerHtml+
+        '</div>';
+    });
+  });
+  gridHtml+='</div>';
+
+  // Per-week summary strip below grid
+  var weekStripHtml='<div style="margin-top:10px;display:flex;flex-direction:column;gap:4px">';
+  weeks.forEach(function(week,wi){
+    var wPl=week.reduce(function(a,c){return a+c.trades.reduce(function(b,t){return b+(parseFloat(t.plDollar)||0);},0);},0);
+    var wCnt=week.reduce(function(a,c){return a+c.trades.length;},0);
+    var wWins=week.reduce(function(a,c){return a+c.trades.filter(function(t){return t.winLoss===1;}).length;},0);
+    var wRRArr=week.reduce(function(a,c){return a.concat(c.trades.filter(function(t){return t.actualRR!=null;}));;},[]);
+    var wAvgRR=wRRArr.length?wRRArr.reduce(function(a,t){return a+t.actualRR;},0)/wRRArr.length:null;
+    var firstReal=week.find(function(c){return !c.otherMonth;});
+    var lastReal=week.slice().reverse().find(function(c){return !c.otherMonth;});
+    if(!firstReal&&!lastReal)return;
+    var label='Wk '+(wi+1);
+    weekStripHtml+='<div class="cal-week-summary">'+
+      '<span>'+label+'</span>'+
+      '<span>Trades: <strong>'+wCnt+'</strong></span>'+
+      '<span>Wins: <strong style="color:var(--green)">'+wWins+'</strong> / Losses: <strong style="color:var(--red)">'+(wCnt-wWins)+'</strong></span>'+
+      (wCnt?'<span>WR: <strong>'+(wWins/wCnt*100).toFixed(0)+'%</strong></span>':'')+
+      (wAvgRR!=null?'<span>Avg RR: <strong>'+wAvgRR.toFixed(2)+'R</strong></span>':'')+
+      '<span>P/L: <strong style="color:'+(wPl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(wPl)+'</strong></span>'+
+      '</div>';
+  });
+  weekStripHtml+='</div>';
+
+  // Month grand total summary card
+  var monthTrades=_calTrades.filter(function(t){
+    if(!t.entryTime)return false;
+    var td=new Date(t.entryTime);
+    return td.getFullYear()===y&&td.getMonth()===m;
+  });
+  var moPl=monthTrades.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+  var moWins=monthTrades.filter(function(t){return t.winLoss===1;}).length;
+  var moLosses=monthTrades.length-moWins;
+  var moRRArr=monthTrades.filter(function(t){return t.actualRR!=null;});
+  var moAvgRR=moRRArr.length?moRRArr.reduce(function(a,t){return a+t.actualRR;},0)/moRRArr.length:null;
+  var moWinRate=monthTrades.length?(moWins/monthTrades.length*100).toFixed(1):0;
+  // Best/worst day
+  var moBestDay=null,moWorstDay=null;
+  for(var dd2=1;dd2<=daysInMonth;dd2++){
+    var dk=calDateKey(new Date(y,m,dd2));
+    var dt=byDay[dk]||[];if(!dt.length)continue;
+    var dpl=dt.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+    if(moBestDay===null||dpl>moBestDay)moBestDay=dpl;
+    if(moWorstDay===null||dpl<moWorstDay)moWorstDay=dpl;
+  }
+  var moTitle=calFmt(new Date(y,m,1),'month-year');
+
+  var monthSummaryHtml='';
+  if(monthTrades.length){
+    monthSummaryHtml='<div style="margin-top:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">'+
+      '<div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">'+
+        '<span style="font-size:12px;font-weight:700;color:var(--text2)">Month Summary — '+moTitle+'</span>'+
+        '<span style="font-size:18px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+(moPl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(moPl)+'</span>'+
+      '</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0;padding:0">'+
+        '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Trades</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+monthTrades.length+'</div></div>'+
+        '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Win Rate</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+moWinRate+'%</div><div style="font-size:10px;color:var(--text3);margin-top:2px"><span style="color:var(--green)">'+moWins+'W</span> / <span style="color:var(--red)">'+moLosses+'L</span></div></div>'+
+        (moAvgRR!=null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Avg RR</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+moAvgRR.toFixed(2)+'R</div></div>':'')+
+        (moBestDay!==null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Best Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--green)">'+calPlFmt(moBestDay)+'</div></div>':'')+
+        (moWorstDay!==null?'<div style="padding:12px 14px"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Worst Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--red)">'+calPlFmt(moWorstDay)+'</div></div>':'')+
+      '</div>'+
+    '</div>';
+  }
+
+  document.getElementById('cal-body').innerHTML=headerHtml+gridHtml+'<div id="cal-detail-panel" style="display:none"></div>'+weekStripHtml+monthSummaryHtml;
+
+  // Re-render detail if a day is selected
+  if(_calSelectedDay)calShowDayDetail(_calSelectedDay);
+  else document.getElementById('cal-detail-panel').style.display='none';
+}
+
+// ── WEEK VIEW ─────────────────────────────────────────────
+function calRenderWeek(){
+  var weekStart=calStartOfWeek(_calDate);
+  var weekEnd=calEndOfWeek(_calDate);
+  // Title
+  var titleStr=calFmt(weekStart,'month-short')+' '+weekStart.getDate();
+  if(weekStart.getMonth()!==weekEnd.getMonth())titleStr+=' – '+calFmt(weekEnd,'month-short')+' '+weekEnd.getDate()+', '+weekEnd.getFullYear();
+  else titleStr+=' – '+weekEnd.getDate()+', '+weekEnd.getFullYear();
+  document.getElementById('cal-title').textContent=titleStr;
+
+  var byDay=calGroupByDay(_calTrades);
+  var today=calDateKey(new Date());
+  var weekTrades=[];
+
+  var html='<div class="cal-week-grid">';
+  for(var i=0;i<7;i++){
+    var d=new Date(weekStart);d.setDate(d.getDate()+i);
+    var key=calDateKey(d);
+    var dayTrades=byDay[key]||[];
+    weekTrades=weekTrades.concat(dayTrades);
+    var isToday=key===today;
+    var sel=key===_calSelectedDay;
+    var cls='cal-week-cell'+(isToday?' today':'')+(dayTrades.length?' has-trades':'')+(sel?' selected-day':'');
+
+    // Compute daily stats
+    var dayPl=dayTrades.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+    var dayPlPct=dayTrades.reduce(function(a,t){return a+(parseFloat(t.plPct)||0);},0);
+    var dayWins=dayTrades.filter(function(t){return t.winLoss===1;}).length;
+    var dayRRArr=dayTrades.filter(function(t){return t.actualRR!=null;});
+    var dayAvgRR=dayRRArr.length?dayRRArr.reduce(function(a,t){return a+t.actualRR;},0)/dayRRArr.length:null;
+
+    var rowsHtml=dayTrades.slice(0,5).map(function(t){
+      var pl=parseFloat(t.plDollar)||0;
+      var win=t.winLoss===1;
+      return'<div class="cal-week-trade-row" onclick="event.stopPropagation();openDetail(\''+t.id+'\')" title="'+escHtml(t.pair||'')+'">'+
+        '<span class="badge '+(win?'badge-green':'badge-red')+'" style="font-size:9px;padding:1px 5px">'+(win?'W':'L')+'</span>'+
+        '<span style="font-size:10px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60px">'+escHtml(t.pair||'')+'</span>'+
+        '<span class="cal-week-pl" style="color:'+(pl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(pl)+'</span>'+
+        '</div>';
+    }).join('');
+    if(dayTrades.length>5)rowsHtml+='<div style="font-size:9px;color:var(--text3);padding-top:3px">+'+(dayTrades.length-5)+' more…</div>';
+
+    // Daily P/L summary (shown at bottom of each day card)
+    var dayPlHtml='';
+    if(dayTrades.length){
+      var plPctDisp=(dayPlPct!==0?dayPlPct:dayPl).toFixed(2);
+      // Compute rough % from plDollar if plPct not stored
+      dayPlHtml='<div style="margin-top:6px;padding-top:5px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:2px">'+
+        '<div style="font-size:10px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+(dayPl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(dayPl)+'</div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
+          '<span style="font-size:9px;color:var(--text3)">'+dayTrades.length+' trade'+(dayTrades.length>1?'s':'')+'</span>'+
+          '<span style="font-size:9px;color:var(--text3)">WR: <span style="color:var(--text2);font-weight:600">'+(dayWins/dayTrades.length*100).toFixed(0)+'%</span></span>'+
+          (dayAvgRR!=null?'<span style="font-size:9px;color:var(--text3)">RR: <span style="color:var(--text2);font-weight:600">'+dayAvgRR.toFixed(2)+'R</span></span>':'')+
+        '</div>'+
+      '</div>';
+    }
+
+    html+='<div class="'+cls+'" onclick="calClickDay(\''+key+'\')">'+
+      '<div class="cal-week-date">'+d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+'</div>'+
+      '<div class="cal-week-dow" style="'+(isToday?'color:var(--accent)':'')+'">'+calFmt(d,'dow')+'</div>'+
+      rowsHtml+
+      (dayTrades.length===0?'<div style="font-size:10px;color:var(--text3);margin-top:6px">—</div>':'')+
+      dayPlHtml+
+      '</div>';
+  }
+  html+='</div>';
+
+  // Week grand total summary card
+  var wPl=weekTrades.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+  var wWins=weekTrades.filter(function(t){return t.winLoss===1;}).length;
+  var wLosses=weekTrades.length-wWins;
+  var wRR=weekTrades.filter(function(t){return t.actualRR!=null;});
+  var avgRR=wRR.length?wRR.reduce(function(a,t){return a+t.actualRR;},0)/wRR.length:null;
+  var wWinRate=weekTrades.length?(wWins/weekTrades.length*100).toFixed(1):0;
+  var wBestDay=null,wWorstDay=null;
+  // Compute best/worst day
+  var dayKeys=[];
+  for(var di=0;di<7;di++){var dk=new Date(weekStart);dk.setDate(dk.getDate()+di);dayKeys.push(calDateKey(dk));}
+  dayKeys.forEach(function(k){
+    var dt=byDay[k]||[];if(!dt.length)return;
+    var dpl=dt.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+    if(wBestDay===null||dpl>wBestDay)wBestDay=dpl;
+    if(wWorstDay===null||dpl<wWorstDay)wWorstDay=dpl;
+  });
+
+  html+='<div id="cal-detail-panel" style="display:none"></div>';
+
+  html+='<div style="margin-top:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">'+
+    '<div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">'+
+      '<span style="font-size:12px;font-weight:700;color:var(--text2)">Week Summary — '+titleStr+'</span>'+
+      '<span style="font-size:18px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+(wPl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(wPl)+'</span>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0;padding:0">'+
+      '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Trades</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+weekTrades.length+'</div></div>'+
+      '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Win Rate</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+wWinRate+'%</div><div style="font-size:10px;color:var(--text3);margin-top:2px"><span style="color:var(--green)">'+wWins+'W</span> / <span style="color:var(--red)">'+wLosses+'L</span></div></div>'+
+      (avgRR!=null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Avg RR</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+avgRR.toFixed(2)+'R</div></div>':'')+
+      (wBestDay!==null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Best Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--green)">'+calPlFmt(wBestDay)+'</div></div>':'')+
+      (wWorstDay!==null?'<div style="padding:12px 14px"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Worst Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--red)">'+calPlFmt(wWorstDay)+'</div></div>':'')+
+    '</div>'+
+  '</div>';
+
+  document.getElementById('cal-body').innerHTML=html;
+  if(_calSelectedDay)calShowDayDetail(_calSelectedDay);
+}
+function calRenderYear(){
+  var y=_calDate.getFullYear();
+  document.getElementById('cal-title').textContent=String(y);
+  var byDay=calGroupByDay(_calTrades);
+  var html='<div class="cal-year-months">';
+
+  for(var mo=0;mo<12;mo++){
+    var monthName=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mo];
+    var daysInMo=new Date(y,mo+1,0).getDate();
+    var firstDow=new Date(y,mo,1).getDay();
+
+    // Mini grid
+    var miniHtml='<div class="cal-year-mini-grid">';
+    for(var pad=0;pad<firstDow;pad++)miniHtml+='<div class="cal-year-dot off"></div>';
+    var moPl=0,moCnt=0,moWins=0;
+    for(var dd=1;dd<=daysInMo;dd++){
+      var key=y+'-'+String(mo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+      var dt=byDay[key]||[];
+      moCnt+=dt.length;
+      var pl=dt.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+      moPl+=pl;
+      var wins=dt.filter(function(t){return t.winLoss===1;}).length;
+      var losses=dt.filter(function(t){return t.winLoss===0;}).length;
+      moWins+=wins;
+      var dotCls='cal-year-dot';
+      if(dt.length===0)dotCls+=' off';
+      else if(wins>0&&losses===0)dotCls+=' win';
+      else if(losses>0&&wins===0)dotCls+=' loss';
+      else dotCls+=' mixed';
+      miniHtml+='<div class="'+dotCls+'" title="'+key+(dt.length?' · '+dt.length+' trade'+(dt.length>1?'s':''):'')+'"></div>';
+    }
+    miniHtml+='</div>';
+
+    var statsHtml='<div class="cal-year-stats">'+
+      '<div class="cal-year-stat"><div class="cal-year-stat-val">'+moCnt+'</div><div style="color:var(--text3);font-size:9px">Trades</div></div>'+
+      (moCnt?'<div class="cal-year-stat"><div class="cal-year-stat-val" style="color:'+(moPl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(moPl)+'</div><div style="color:var(--text3);font-size:9px">P/L</div></div>':'')+''+
+      (moCnt?'<div class="cal-year-stat"><div class="cal-year-stat-val">'+(moCnt?(moWins/moCnt*100).toFixed(0):0)+'%</div><div style="color:var(--text3);font-size:9px">WR</div></div>':'')+
+      '</div>';
+
+    html+='<div class="cal-year-month" onclick="calClickYearMonth('+y+','+mo+')">'+
+      '<div class="cal-year-month-name">'+monthName+' '+y+'</div>'+
+      miniHtml+statsHtml+
+      '</div>';
+  }
+  html+='</div>';
+  document.getElementById('cal-body').innerHTML=html;
+}
+
+// ── Day click / detail panel ──────────────────────────────
+function calClickDay(key){
+  _calSelectedDay=(_calSelectedDay===key)?null:key;
+  // Re-render cells without full async reload (just toggle selected class)
+  document.querySelectorAll('.cal-cell, .cal-week-cell').forEach(function(el){
+    var onclick=el.getAttribute('onclick')||'';
+    var match=onclick.match(/calClickDay\('([^']+)'\)/);
+    if(match){el.classList.toggle('selected-day',match[1]===_calSelectedDay);}
+  });
+  if(_calSelectedDay){calShowDayDetail(_calSelectedDay);}
+  else{var p=document.getElementById('cal-detail-panel');if(p)p.style.display='none';}
+}
+function calClickYearMonth(y,mo){
+  _calDate=new Date(y,mo,1);
+  _calView='month';
+  document.querySelectorAll('.cal-view-tab').forEach(function(b){b.classList.toggle('active',b.dataset.view==='month');});
+  renderCalendar();
+}
+
+function calShowDayDetail(key){
+  var panel=document.getElementById('cal-detail-panel');
+  if(!panel)return;
+  var byDay=calGroupByDay(_calTrades);
+  var dayTrades=byDay[key]||[];
+  var parts=key.split('-');
+  var d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  var label=d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  var pl=dayTrades.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
+  var wins=dayTrades.filter(function(t){return t.winLoss===1;}).length;
+  var rrT=dayTrades.filter(function(t){return t.actualRR!=null;});
+  var avgRR=rrT.length?rrT.reduce(function(a,t){return a+t.actualRR;},0)/rrT.length:null;
+
+  if(!dayTrades.length){
+    panel.style.display='block';
+    panel.innerHTML='<div class="cal-detail-panel"><div class="cal-detail-title"><span>'+escHtml(label)+'</span></div>'+
+      '<div style="color:var(--text3);font-size:12px;padding:10px 0">No trades on this day.</div></div>';
+    return;
+  }
+
+  var summaryHtml='<div style="display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap">'+
+    '<div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:700">Trades</div><div style="font-size:18px;font-weight:700;font-family:\'DM Mono\',monospace">'+dayTrades.length+'</div></div>'+
+    '<div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:700">P/L</div><div style="font-size:18px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+(pl>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(pl)+'</div></div>'+
+    '<div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:700">Win rate</div><div style="font-size:18px;font-weight:700;font-family:\'DM Mono\',monospace">'+(dayTrades.length?(wins/dayTrades.length*100).toFixed(0):0)+'%</div></div>'+
+    (avgRR!=null?'<div><div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:700">Avg RR</div><div style="font-size:18px;font-weight:700;font-family:\'DM Mono\',monospace">'+avgRR.toFixed(2)+'R</div></div>':'')+
+    '</div>';
+
+  var tradesHtml='<div class="cal-detail-trades">'+dayTrades.map(function(t){
+    var pl2=parseFloat(t.plDollar)||0;
+    var win=t.winLoss===1;
+    var rr=t.actualRR!=null?parseFloat(t.actualRR).toFixed(2)+'R':'—';
+    return'<div class="cal-detail-trade" onclick="openDetail(\''+t.id+'\')">'+
+      '<span class="badge '+(win?'badge-green':'badge-red')+'">'+(win?'Win':'Loss')+'</span>'+
+      '<span style="font-weight:700;color:var(--text);font-family:\'DM Mono\',monospace">#'+escHtml(t.num||'')+'</span>'+
+      '<span style="color:var(--text);font-weight:600">'+escHtml(t.pair||'')+'</span>'+
+      '<span style="color:var(--text2);font-size:11px">'+escHtml(t.strategy||'—')+'</span>'+
+      '<span class="mono" style="color:'+(pl2>=0?'var(--green)':'var(--red)')+'">'+calPlFmt(pl2)+'</span>'+
+      '<span class="mono" style="color:var(--text3);font-size:11px">'+rr+'</span>'+
+      '</div>';
+  }).join('')+'</div>';
+
+  panel.style.display='block';
+  panel.innerHTML='<div class="cal-detail-panel">'+
+    '<div class="cal-detail-title">'+
+      '<span>'+escHtml(label)+'</span>'+
+      '<button class="btn btn-ghost btn-sm" onclick="_calSelectedDay=null;document.getElementById(\'cal-detail-panel\').style.display=\'none\'">✕</button>'+
+    '</div>'+
+    summaryHtml+tradesHtml+
+    '</div>';
+}
+
+// ── Controls ──────────────────────────────────────────────
+function calNav(dir){
+  if(_calView==='month'){
+    _calDate=new Date(_calDate.getFullYear(),_calDate.getMonth()+dir,1);
+  } else if(_calView==='week'){
+    _calDate=new Date(_calDate.getTime()+dir*7*24*60*60*1000);
+  } else {
+    _calDate=new Date(_calDate.getFullYear()+dir,_calDate.getMonth(),1);
+  }
+  _calSelectedDay=null;
+  renderCalendar();
+}
+function calGoToday(){
+  _calDate=new Date();
+  _calSelectedDay=null;
+  renderCalendar();
+}
+function calSetView(v,btn){
+  _calView=v;
+  _calSelectedDay=null;
+  document.querySelectorAll('.cal-view-tab').forEach(function(b){b.classList.toggle('active',b.dataset.view===v);});
+  renderCalendar();
+}
+function calSetHeatMode(mode,btn){
+  _calHeatMode=mode;
+  document.querySelectorAll('.cal-heatmode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode===mode);});
+  renderCalendar();
+}
+// Init calendar date to current month
+_calDate=new Date();
 
 
 
