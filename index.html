@@ -1711,9 +1711,51 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </span>
         </label>
       </div>
+
+      <!-- Demo session option -->
+      <div id="demo-session-section" style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:16px">
+        <div class="frow" style="margin-bottom:0">
+          <label style="display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none">
+            <input type="checkbox" id="sm-demo" style="width:14px;height:14px;accent-color:var(--purple);cursor:pointer;flex-shrink:0" onchange="toggleDemoSessionOptions()">
+            <span>
+              <span class="flabel" style="display:block;cursor:pointer;color:var(--purple)">✦ Create demo session</span>
+              <span style="font-size:10px;color:var(--text3);line-height:1.4">Auto-populate this session with realistic random trades for testing.</span>
+            </span>
+          </label>
+        </div>
+        <!-- Demo options panel -->
+        <div id="demo-session-options" style="display:none;margin-top:12px;background:rgba(155,127,240,.04);border:1px solid rgba(155,127,240,.2);border-radius:var(--radius-lg);padding:13px">
+          <div style="font-size:9px;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">Demo options</div>
+          <div class="frow-inline" style="margin-bottom:12px">
+            <div class="frow" style="max-width:110px">
+              <label class="flabel">Number of trades</label>
+              <input type="number" id="sm-demo-count" value="10" min="1" max="100" step="1" style="text-align:center;font-family:'DM Mono',monospace;font-weight:600" oninput="this.value=Math.max(1,Math.min(100,parseInt(this.value)||1))">
+            </div>
+          </div>
+          <div class="frow" style="margin-bottom:12px">
+            <label class="flabel" style="margin-bottom:6px">Asset types <span style="color:var(--text3);font-weight:400">(select one or more)</span></label>
+            <div id="demo-asset-type-pills" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+          </div>
+          <div class="frow" style="margin-bottom:0;padding-top:10px;border-top:1px solid rgba(155,127,240,.15)">
+            <label class="flabel" style="margin-bottom:7px">Show this session in dashboard, dropdowns &amp; filters?</label>
+            <div style="display:flex;gap:7px">
+              <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);flex:1;justify-content:center;transition:all .12s" id="demo-vis-yes-lbl">
+                <input type="radio" name="demo-visibility" id="demo-vis-yes" value="yes" checked style="accent-color:var(--green);cursor:pointer" onchange="onDemoVisibilityChange()">
+                <span style="font-size:12px;font-weight:500;color:var(--green)">Yes — show everywhere</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);flex:1;justify-content:center;transition:all .12s" id="demo-vis-no-lbl">
+                <input type="radio" name="demo-visibility" id="demo-vis-no" value="no" style="accent-color:var(--text3);cursor:pointer" onchange="onDemoVisibilityChange()">
+                <span style="font-size:12px;font-weight:500;color:var(--text3)">No — hide from everywhere</span>
+              </label>
+            </div>
+            <div id="demo-vis-hint" style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5">Session will appear in the dashboard, history filters, session dropdowns, and trade form.</div>
+          </div>
+        </div>
+      </div>
+
       <div style="display:flex;justify-content:flex-end;gap:7px">
         <button class="btn btn-ghost" onclick="closeSessionModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveSession()">Save session</button>
+        <button class="btn btn-primary" onclick="saveSession()" id="sm-save-btn">Save session</button>
       </div>
     </div>
   </div>
@@ -2036,6 +2078,19 @@ function openNewSessionModal(){
   document.getElementById('sm-equity').value='5000';
   document.getElementById('sm-notes').value='';
   document.getElementById('sm-archived').checked=false;
+  // Reset demo options
+  var demoCb=document.getElementById('sm-demo');
+  if(demoCb){demoCb.checked=false;}
+  var demoSection=document.getElementById('demo-session-section');
+  if(demoSection)demoSection.style.display='';
+  var saveBtn=document.getElementById('sm-save-btn');
+  if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save session';}
+  // Reset visibility radio to Yes
+  var visYes=document.getElementById('demo-vis-yes');
+  if(visYes){visYes.checked=true;}
+  onDemoVisibilityChange();
+  toggleDemoSessionOptions();
+  populateDemoAssetTypePills();
   document.getElementById('session-modal').classList.add('open');
 }
 function openEditSessionModal(sess){
@@ -2047,10 +2102,262 @@ function openEditSessionModal(sess){
   document.getElementById('sm-equity').value=sess.startingEquity||5000;
   document.getElementById('sm-notes').value=sess.notes||'';
   document.getElementById('sm-archived').checked=!!(sess.archived);
+  // Hide demo section when editing
+  var demoSection=document.getElementById('demo-session-section');
+  if(demoSection)demoSection.style.display='none';
+  var saveBtn=document.getElementById('sm-save-btn');
+  if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save session';}
   document.getElementById('session-modal').classList.add('open');
 }
 async function editSessionById(id){var sessions=await dbGetAll('sessions');var sess=sessions.find(function(s){return s.id===id;});if(sess)openEditSessionModal(sess);}
 function closeSessionModal(){document.getElementById('session-modal').classList.remove('open');}
+
+// ══ Demo Session ══════════════════════════════════
+function toggleDemoSessionOptions(){
+  var cb=document.getElementById('sm-demo');
+  var panel=document.getElementById('demo-session-options');
+  var saveBtn=document.getElementById('sm-save-btn');
+  if(!cb||!panel)return;
+  var show=cb.checked&&!editingSessionId;
+  panel.style.display=show?'block':'none';
+  if(saveBtn)saveBtn.textContent=show?'Create demo session':'Save session';
+  if(show)populateDemoAssetTypePills();
+}
+
+async function populateDemoAssetTypePills(){
+  var container=document.getElementById('demo-asset-type-pills');
+  if(!container)return;
+  var assets=await getAssets();
+  var COLORS=['opt-blue','opt-green','opt-amber','opt-purple','opt-teal','opt-pink','opt-red','opt-gray'];
+  container.innerHTML=assets.map(function(at,i){
+    var colorClass=COLORS[i%COLORS.length];
+    return'<span class="opt-pill '+colorClass+' selected" data-demo-asset="'+escHtml(at.name)+'" onclick="toggleDemoAssetPill(this)">'+escHtml(at.name)+'</span>';
+  }).join('');
+}
+
+function toggleDemoAssetPill(pill){
+  pill.classList.toggle('selected');
+}
+
+function onDemoVisibilityChange(){
+  var isYes=document.getElementById('demo-vis-yes').checked;
+  var hint=document.getElementById('demo-vis-hint');
+  var yesLbl=document.getElementById('demo-vis-yes-lbl');
+  var noLbl=document.getElementById('demo-vis-no-lbl');
+  if(hint){
+    hint.textContent=isYes
+      ?'Session will appear in the dashboard, history filters, session dropdowns, and trade form.'
+      :'Session will be archived and hidden from the dashboard, filters, dropdowns, and all charts. You can un-archive it later from the Sessions page.';
+    hint.style.color=isYes?'var(--text3)':'var(--amber)';
+  }
+  if(yesLbl){yesLbl.style.borderColor=isYes?'var(--green)':'var(--border2)';yesLbl.style.background=isYes?'rgba(52,201,122,.06)':'var(--bg3)';}
+  if(noLbl){noLbl.style.borderColor=!isYes?'var(--text3)':'var(--border2)';noLbl.style.background=!isYes?'rgba(107,115,138,.08)':'var(--bg3)';}
+}
+
+function rnd(min,max,decimals){
+  var v=min+Math.random()*(max-min);
+  var f=Math.pow(10,decimals||2);
+  return Math.round(v*f)/f;
+}
+
+function randChoice(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEquity,count,selectedAssets){
+  // Realistic price data per asset type
+  var ASSET_PRICE_MAP={
+    'Forex Major':{pairs:['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','USD/CAD','NZD/USD'],priceRange:[0.65,155],pipSize:0.0001,qtyRange:[0.01,2.0],decimals:5},
+    'Forex Cross':{pairs:['EUR/GBP','EUR/JPY','GBP/JPY','EUR/AUD','AUD/JPY'],priceRange:[0.85,175],pipSize:0.0001,qtyRange:[0.01,2.0],decimals:5},
+    'Commodity':{pairs:['XAU/USD','XAG/USD','OIL/USD'],priceRange:[18,2450],pipSize:0.1,qtyRange:[0.01,1.0],decimals:2},
+    'Index':{pairs:['US30','NAS100','US500','UK100'],priceRange:[3500,40000],pipSize:1,qtyRange:[0.01,0.5],decimals:0},
+    'Crypto':{pairs:['BTC/USD','ETH/USD'],priceRange:[1500,70000],pipSize:1,qtyRange:[0.001,0.5],decimals:2}
+  };
+
+  var DEFAULT_PRICE_DATA={pairs:['ASSET/USD'],priceRange:[1,100],pipSize:0.01,qtyRange:[0.01,1],decimals:2};
+
+  var strategies=['S&D - Imbalance (Limit Buy) - JeaFx','S&D - Imbalance (Liquidation candle) - Brad'];
+  var models=['S&D - Continuation','S&D - Reversals'];
+  var ltfs=['1h → 15m → 5m','4h → 1h → 15m','D → 4h → 1h','W → D → 4h'];
+  var methods=['Instant','Confirmation'];
+  var slplaces=['Below structure','Above structure','At order block','Below FVG','Above liquidity'];
+  var tpplaces=['Next structure','Previous high/low','50% extension','RR target','Order block'];
+  var exitCrits=['Full TP hit','Partial close','Manual exit','Time stop'];
+  var ratings=['1','2','3','4','5'];
+  var errors=['None','Early entry','Late entry','Oversized','Undersized','Wrong direction'];
+  var biasOptions=['bull','bear','neutral'];
+  var narrativeTemplates=['Price swept liquidity at the low before reversing bullish.','Strong impulsive move away from the zone, confirmed on LTF.','Mitigation of the daily FVG with bullish reaction.','Clean break of structure to the upside after consolidation.','Price rejected the daily order block with engulfing candle.','Bearish BOS on 4h confirmed the short bias.','Premium array aligned with weekly bearish OB.'];
+  var ledToTradeTemplates=['1. Clear BOS on 4H\n2. LTF confirmation via 15m engulf\n3. Volume spike at zone','1. HTF bearish bias\n2. Price in premium\n3. FVG fill entry','1. Structure aligned across all TFs\n2. Clean order block\n3. Confluence of indicators'];
+  var emotionTemplates=['Calm and focused, followed the plan.','Slight hesitation but stuck to the system.','Confident after pre-market analysis.','Neutral, no FOMO.'];
+  var lessonTemplates=['Stick to the plan regardless of PA noise.','Trust the system and the higher TF bias.','Entry timing is critical — wait for LTF confirmation.'];
+  var mistakeTemplates=['None — executed well.','Moved SL slightly early.','Took trade a few pips early.'];
+  var goodTemplates=['Good patience waiting for the setup.','Respected the risk parameters.','Clean entry at the exact level.'];
+
+  var startDate=new Date(sessionStartDate+'T00:00:00');
+  var endDate=sessionEndDate?new Date(sessionEndDate+'T23:59:59'):new Date(startDate.getTime()+30*24*3600*1000);
+  var dateRange=endDate-startDate;
+
+  var currentEquity=startingEquity;
+  var trades=[];
+
+  // Build asset pool from selected asset types
+  var assetPool=[];
+  selectedAssets.forEach(function(typeName){
+    var data=ASSET_PRICE_MAP[typeName]||DEFAULT_PRICE_DATA;
+    data.pairs.forEach(function(pair){
+      assetPool.push({pair:pair,assetType:typeName,data:data});
+    });
+  });
+  if(!assetPool.length){
+    // fallback — pick a forex pair
+    assetPool=[{pair:'EUR/USD',assetType:'Forex Major',data:ASSET_PRICE_MAP['Forex Major']}];
+  }
+
+  for(var i=0;i<count;i++){
+    var asset=randChoice(assetPool);
+    var pdata=asset.data;
+    var isLong=Math.random()>0.5;
+    var type=isLong?'Long':'Short';
+
+    // Realistic entry price for the asset
+    var entry,exitPrice,sl,tp;
+    var pair=asset.pair;
+    if(pair==='EUR/USD'){entry=rnd(1.05,1.12,5);}
+    else if(pair==='GBP/USD'){entry=rnd(1.22,1.32,5);}
+    else if(pair==='USD/JPY'){entry=rnd(140,158,3);}
+    else if(pair==='USD/CHF'){entry=rnd(0.86,0.94,5);}
+    else if(pair==='AUD/USD'){entry=rnd(0.63,0.70,5);}
+    else if(pair==='USD/CAD'){entry=rnd(1.30,1.40,5);}
+    else if(pair==='NZD/USD'){entry=rnd(0.59,0.65,5);}
+    else if(pair==='EUR/GBP'){entry=rnd(0.84,0.88,5);}
+    else if(pair==='EUR/JPY'){entry=rnd(155,170,3);}
+    else if(pair==='GBP/JPY'){entry=rnd(178,198,3);}
+    else if(pair==='XAU/USD'){entry=rnd(1900,2400,2);}
+    else if(pair==='XAG/USD'){entry=rnd(22,30,3);}
+    else if(pair==='OIL/USD'){entry=rnd(70,90,2);}
+    else if(pair==='US30'){entry=rnd(36000,40000,0);}
+    else if(pair==='NAS100'){entry=rnd(16000,19000,1);}
+    else if(pair==='US500'){entry=rnd(4500,5200,1);}
+    else if(pair==='UK100'){entry=rnd(7500,8200,1);}
+    else if(pair==='BTC/USD'){entry=rnd(40000,70000,0);}
+    else if(pair==='ETH/USD'){entry=rnd(2000,3800,0);}
+    else{entry=rnd(pdata.priceRange[0],pdata.priceRange[1],pdata.decimals);}
+
+    // SL: 0.05% to 0.4% from entry
+    var slPct=rnd(0.05,0.4)/100;
+    var slDist=entry*slPct;
+    sl=isLong?parseFloat((entry-slDist).toFixed(pdata.decimals)):parseFloat((entry+slDist).toFixed(pdata.decimals));
+
+    // Win ~55% of the time
+    var isWin=Math.random()<0.55;
+    var rrAchieved=isWin?rnd(1.0,3.5,2):rnd(-1.0,-0.3,2);
+    var exitDist=Math.abs(rrAchieved)*slDist;
+    if(isLong){exitPrice=parseFloat((entry+(isWin?exitDist:-exitDist)).toFixed(pdata.decimals));}
+    else{exitPrice=parseFloat((entry-(isWin?exitDist:-exitDist)).toFixed(pdata.decimals));}
+
+    // Quantity based on 1% risk
+    var acct=currentEquity;
+    var riskDollar=acct*0.01;
+    var qty=parseFloat((riskDollar/slDist).toFixed(pdata.decimals<3?4:pdata.decimals));
+    if(qty<=0)qty=0.01;
+
+    // P/L
+    var priceDiff=isLong?(exitPrice-entry):(entry-exitPrice);
+    var plDollar=parseFloat((priceDiff*qty).toFixed(2));
+    var plPct=parseFloat(((plDollar/acct)*100).toFixed(4));
+
+    // Dates
+    var tradeOffset=Math.random()*dateRange;
+    var entryDt=new Date(startDate.getTime()+tradeOffset);
+    var durationMs=rnd(15,360,0)*60000;
+    var exitDt=new Date(entryDt.getTime()+durationMs);
+    function fmtDt(d){
+      var yr=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0');
+      var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
+      return yr+'-'+mo+'-'+dy+'T'+hh+':'+mm;
+    }
+
+    var targetRR=rnd(1.5,3.5,1);
+    var arr=Math.abs(rrAchieved)*(isWin?1:-1);
+    var tfBiases={W:randChoice(biasOptions),D:randChoice(biasOptions),'4h':randChoice(biasOptions),'1h':randChoice(biasOptions),'15m':randChoice(biasOptions)};
+
+    var strategy=randChoice(strategies);
+    var model=randChoice(models);
+    var ltf=randChoice(ltfs);
+    var method=randChoice(methods);
+    var slplace=randChoice(slplaces);
+    var tpplace=randChoice(tpplaces);
+    var exitCrit=randChoice(exitCrits);
+    var rating=randChoice(ratings);
+    var error=randChoice(errors);
+
+    var tradeNum=String(i+1);
+    var tradeId=Date.now().toString(36)+Math.random().toString(36).slice(2)+'_demo'+i;
+
+    var trade={
+      id:tradeId,
+      num:tradeNum,
+      pair:pair,
+      assetType:asset.assetType,
+      sessionId:sessionId,
+      type:type,
+      strategy:strategy,
+      model:model,
+      method:method,
+      ltf:ltf,
+      rating:rating,
+      error:error,
+      acct:acct,
+      riskpct:1,
+      riskDollar:parseFloat(riskDollar.toFixed(2)),
+      entryPrice:entry,
+      stopLoss:sl,
+      exitPrice:exitPrice,
+      qty:qty,
+      targetRR:targetRR,
+      actualRR:parseFloat(arr.toFixed(3)),
+      plDollar:plDollar,
+      plPct:plPct,
+      entryTime:fmtDt(entryDt),
+      exitTime:fmtDt(exitDt),
+      durationMin:Math.round(durationMs/60000),
+      winLoss:isWin?1:0,
+      checklist:{},
+      biasNarrative:tfBiases,
+      narrativeNotes:randChoice(narrativeTemplates),
+      setupNotes:'1. Trading within a '+asset.assetType+' context, '+pair+' at key level.',
+      ledToTrade:randChoice(ledToTradeTemplates),
+      issuesNotes:'1.',
+      postAnalysis:'1.',
+      news:'1.',
+      tpCriteria:'',
+      tpSlPlace:slplace,
+      tpTpPlace:tpplace,
+      tpExitA:exitCrit,
+      tpRrA:'',
+      tpExit:'',
+      tpTrail:'No',
+      tpTpChg:'No',
+      trailDetail:null,
+      tpChangeDetail:null,
+      planIf:'Price reaches the '+pair+' zone around '+entry,
+      planIfThen:'Enter '+(isLong?'long':'short')+' with SL at '+sl+' targeting '+exitPrice,
+      planElseIf:'',
+      planElseIfThen:'',
+      emoBefore:randChoice(emotionTemplates),
+      emoAfter:randChoice(emotionTemplates),
+      emoComplete:randChoice(emotionTemplates),
+      mistakes:randChoice(mistakeTemplates),
+      lessons:randChoice(lessonTemplates),
+      good:randChoice(goodTemplates),
+      imageIds:{htf:[],mtf:[],ltf:[],setup:[]},
+      savedAt:new Date().toISOString(),
+      loggedAt:fmtDt(entryDt)+':00'
+    };
+
+    currentEquity=parseFloat((currentEquity+plDollar).toFixed(2));
+    trades.push(trade);
+  }
+  return{trades:trades,finalEquity:currentEquity};
+}
 async function saveSession(){
   var startDate=document.getElementById('sm-start').value;
   if(!startDate){toast('Start date required','err');return;}
@@ -2061,7 +2368,22 @@ async function saveSession(){
   var startingEquity=parseFloat(document.getElementById('sm-equity').value)||5000;
   var archived=document.getElementById('sm-archived').checked;
   var existing=editingSessionId?sessions.find(function(s){return s.id===editingSessionId;}):null;
-  // Preserve currentEquity if editing (don't reset it), but if startingEquity changed significantly, ask or just update startingEquity only
+
+  // Check if demo session requested (only for new sessions)
+  var isDemoSession=!editingSessionId&&document.getElementById('sm-demo')&&document.getElementById('sm-demo').checked;
+  var demoCount=0;
+  var selectedDemoAssets=[];
+  if(isDemoSession){
+    demoCount=parseInt((document.getElementById('sm-demo-count')||{}).value)||10;
+    demoCount=Math.max(1,Math.min(100,demoCount));
+    var pills=document.querySelectorAll('#demo-asset-type-pills .opt-pill.selected');
+    pills.forEach(function(p){selectedDemoAssets.push(p.dataset.demoAsset);});
+    if(!selectedDemoAssets.length){toast('Select at least one asset type for demo trades','err');return;}
+    // If user chose to hide the session, archive it
+    var demoVisNo=document.getElementById('demo-vis-no');
+    if(demoVisNo&&demoVisNo.checked){archived=true;}
+  }
+
   var sess={
     id:editingSessionId||(Date.now().toString(36)+Math.random().toString(36).slice(2)),
     name,startDate,endDate,
@@ -2069,11 +2391,39 @@ async function saveSession(){
     currentEquity:existing?existing.currentEquity:startingEquity,
     notes:document.getElementById('sm-notes').value,
     archived:archived,
+    isDemo:isDemoSession||false,
     createdAt:(existing&&existing.createdAt)||new Date().toISOString()
   };
   await dbPut('sessions',sess);
-  closeSessionModal();renderSessionsList();populateSessionSelects();
-  toast(editingSessionId?'Session updated':'Session created','ok');
+
+  if(isDemoSession){
+    // Show progress
+    var saveBtn=document.getElementById('sm-save-btn');
+    if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Generating trades…';}
+    try{
+      // Fetch available strategies for demo
+      var result=generateDemoTrades(sess.id,startDate,endDate,startingEquity,demoCount,selectedDemoAssets);
+      var trades=result.trades;
+      var allExistingTrades=await dbGetAll('trades');
+      var baseNum=allExistingTrades.length;
+      for(var ti=0;ti<trades.length;ti++){
+        trades[ti].num=String(baseNum+ti+1);
+        await dbPut('trades',trades[ti]);
+      }
+      // Update session equity
+      sess.currentEquity=result.finalEquity;
+      await dbPut('sessions',sess);
+      closeSessionModal();renderSessionsList();populateSessionSelects();renderDashboard();updateSidebarStats();
+      var hiddenMsg=archived?' (hidden from dashboard)':'';
+      toast('Demo session created with '+demoCount+' trades'+hiddenMsg+' ✓','ok');
+    }catch(e){
+      toast('Error generating demo trades: '+e.message,'err');
+      if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Create demo session';}
+    }
+  } else {
+    closeSessionModal();renderSessionsList();populateSessionSelects();
+    toast(editingSessionId?'Session updated':'Session created','ok');
+  }
   editingSessionId=null;
 }
 
@@ -2099,24 +2449,27 @@ function isSessionActive(sess){
 
 async function deleteSession(id){
   var sess=await dbGet('sessions',id);
-  var tradeCnt=(await dbGetAll('trades')).filter(function(t){return t.sessionId===id;}).length;
+  var trades=await dbGetAll('trades');
+  var sessTrades=trades.filter(function(t){return t.sessionId===id;});
+  var tradeCnt=sessTrades.length;
   var msg='Delete this session'+(tradeCnt?' and its '+tradeCnt+' trade'+(tradeCnt>1?'s':''):'')+'?\n\nNote: Cloudinary images are kept so restores work correctly.';
   if(!confirm(msg))return;
   var safeName=(sess&&sess.name?sess.name.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,40):'session');
-  // Save snapshot to bkp/ before deleting (no push to main — snapshot only)
-  await ghSnapshot('session',safeName);
+  // Skip snapshot for demo sessions — no real data worth preserving.
+  // Check both the stored flag (new sessions) and trade ID pattern (sessions created before the flag was added).
+  var looksLikeDemo=!!(sess&&sess.isDemo)||
+    (sessTrades.length>0&&sessTrades.every(function(t){return/_demo\d+$/.test(t.id);}));
+  if(!looksLikeDemo){
+    await ghSnapshot('session',safeName);
+  }
   // Delete all trades belonging to this session (images stay in IndexedDB & Cloudinary)
-  var trades=await dbGetAll('trades');
-  for(var t of trades){
-    if(t.sessionId===id){
-      // Delete image records from IndexedDB only (NOT from Cloudinary)
-      if(t.imageIds){
-        for(var z in t.imageIds){
-          for(var imgId of(t.imageIds[z]||[])){await dbDelete('images',imgId);}
-        }
+  for(var t of sessTrades){
+    if(t.imageIds){
+      for(var z in t.imageIds){
+        for(var imgId of(t.imageIds[z]||[])){await dbDelete('images',imgId);}
       }
-      await dbDelete('trades',t.id);
     }
+    await dbDelete('trades',t.id);
   }
   await dbDelete('sessions',id);
   renderSessionsList();populateSessionSelects();renderDashboard();updateSidebarStats();
