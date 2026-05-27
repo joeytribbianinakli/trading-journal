@@ -916,7 +916,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:2;min-width:180px">
                 <div class="ai-filter-label" style="margin-bottom:4px">API Key</div>
-                <input type="password" id="ai-openrouter-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="sk-or-v1-..." oninput="aiDebounceFetch('openrouter')">
+                <input type="password" id="ai-openrouter-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="sk-or-v1-...">
               </div>
               <div style="flex:2;min-width:200px">
                 <div class="ai-filter-label" style="margin-bottom:4px;display:flex;align-items:center;gap:6px">Model (free) <span id="ai-openrouter-model-status" style="font-size:10px;color:var(--text3)"></span></div>
@@ -942,7 +942,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:2;min-width:180px">
                 <div class="ai-filter-label" style="margin-bottom:4px">API Key</div>
-                <input type="password" id="ai-groq-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="gsk_..." oninput="aiDebounceFetch('groq')">
+                <input type="password" id="ai-groq-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="gsk_...">
               </div>
               <div style="flex:2;min-width:200px">
                 <div class="ai-filter-label" style="margin-bottom:4px;display:flex;align-items:center;gap:6px">Model <span id="ai-groq-model-status" style="font-size:10px;color:var(--text3)"></span></div>
@@ -968,7 +968,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:2;min-width:180px">
                 <div class="ai-filter-label" style="margin-bottom:4px">API Key</div>
-                <input type="password" id="ai-gemini-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="AIza..." oninput="aiDebounceFetch('gemini')">
+                <input type="password" id="ai-gemini-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="AIza...">
               </div>
               <div style="flex:2;min-width:200px">
                 <div class="ai-filter-label" style="margin-bottom:4px;display:flex;align-items:center;gap:6px">Model <span id="ai-gemini-model-status" style="font-size:10px;color:var(--text3)"></span></div>
@@ -994,7 +994,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:2;min-width:180px">
                 <div class="ai-filter-label" style="margin-bottom:4px">API Key</div>
-                <input type="password" id="ai-cerebras-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="csk-..." oninput="aiDebounceFetch('cerebras')">
+                <input type="password" id="ai-cerebras-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="csk-...">
               </div>
               <div style="flex:2;min-width:200px">
                 <div class="ai-filter-label" style="margin-bottom:4px;display:flex;align-items:center;gap:6px">Model <span id="ai-cerebras-model-status" style="font-size:10px;color:var(--text3)"></span></div>
@@ -8231,20 +8231,16 @@ function aiLoadConfig(){
       var el=document.getElementById('ai-cfg-'+p);
       if(el)el.style.display=(p===_aiProvider)?'':'none';
     });
-    // Fetch models for the active provider if key exists
-    var activeKey={openrouter:cfg.openrouterKey,groq:cfg.groqKey,gemini:cfg.geminiKey,cerebras:cfg.cerebrasKey}[_aiProvider];
-    if(activeKey){
-      aiFetchModels(_aiProvider).then(function(){
-        var savedModel={openrouter:cfg.openrouterModel,groq:cfg.groqModel,gemini:cfg.geminiModel,cerebras:cfg.cerebrasModel}[_aiProvider];
-        var sel=document.getElementById('ai-'+_aiProvider+'-model');
-        if(sel){
-          // Restore saved model if it's still in the list, otherwise keep auto-selected top-1
-          if(savedModel&&sel.querySelector('option[value="'+savedModel.replace(/"/g,'\\"')+'"]'))sel.value=savedModel;
-          // Save whichever model ends up selected so status badge works
-          aiSaveConfig();
-        }
-      });
-    }
+    // Populate model dropdowns from curated list (no API call) and restore saved selections
+    ['openrouter','groq','gemini','cerebras'].forEach(function(p){
+      var sel=document.getElementById('ai-'+p+'-model');
+      if(!sel)return;
+      var curated=_aiTopModels[p]||[];
+      sel.innerHTML=curated.map(function(m){return'<option value="'+escHtml(m.id)+'">'+escHtml(m.label)+'</option>';}).join('');
+      var savedModel={openrouter:cfg.openrouterModel,groq:cfg.groqModel,gemini:cfg.geminiModel,cerebras:cfg.cerebrasModel}[p];
+      if(savedModel&&sel.querySelector('option[value="'+savedModel.replace(/"/g,'\\"')+'"]'))sel.value=savedModel;
+      else if(curated.length)sel.value=curated[0].id;
+    });
   }catch(e){}
 }
 
@@ -8291,9 +8287,13 @@ function aiSetProvider(provider,btn){
     var el=document.getElementById('ai-cfg-'+p);
     if(el)el.style.display=(p===provider)?'':'none';
   });
-  // Auto-fetch models if key already entered
-  var keyEl=document.getElementById('ai-'+provider+'-key');
-  if(keyEl&&keyEl.value.trim())aiFetchModels(provider);
+  // Populate model dropdown from curated list only — use ↺ to validate against live API
+  var sel=document.getElementById('ai-'+provider+'-model');
+  if(sel&&!sel.options.length){
+    var curated=_aiTopModels[provider]||[];
+    sel.innerHTML=curated.map(function(m){return'<option value="'+escHtml(m.id)+'">'+escHtml(m.label)+'</option>';}).join('');
+    if(curated.length)sel.value=curated[0].id;
+  }
 }
 
 function toggleAiConfig(){
