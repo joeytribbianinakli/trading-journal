@@ -1903,7 +1903,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
               </div>
               <div class="bc-title">Manual Backup</div>
-              <div class="bc-desc">Saves a timestamped trades snapshot to <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/trades/</code> and overwrites the single config backup at <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/config_backup.json</code> with current strategies, checklist, and pairs.</div>
+              <div class="bc-desc">Saves a timestamped trades snapshot to <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/trades/</code> and overwrites the single config backup at <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px">bkp/config_backup.json</code> with all current settings (strategies, checklist, pairs, columns, theme, defaults).</div>
               <button class="btn" style="border-color:rgba(52,201,122,.3);color:var(--green)" onclick="ghManualBackup()">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 Save manual backup
@@ -2359,9 +2359,60 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                   <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4">+ ½ skipped trades auto-added</div>
                 </div>
               </div>
+              <div style="margin-bottom:12px;display:flex;justify-content:flex-end">
+                <button class="btn btn-ghost btn-sm" onclick="saveDemoDefaults()" style="font-size:10px;color:var(--purple);border-color:rgba(155,127,240,.3)">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  Save as default
+                </button>
+              </div>
               <div class="frow" style="margin-bottom:12px">
                 <label class="flabel" style="margin-bottom:6px">Asset types <span style="color:var(--text3);font-weight:400">(select one or more)</span></label>
                 <div id="demo-asset-type-pills" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+              </div>
+              <!-- Trade duration mode -->
+              <div class="frow" style="margin-bottom:12px;padding-top:10px;border-top:1px solid rgba(155,127,240,.15)">
+                <label class="flabel" style="margin-bottom:7px">Trade hold duration</label>
+                <div style="display:flex;flex-direction:column;gap:6px" id="demo-duration-options">
+                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 11px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);transition:all .12s" id="demo-dur-hours-lbl">
+                    <input type="radio" name="demo-duration-mode" id="demo-dur-hours" value="hours" checked style="accent-color:var(--accent);cursor:pointer" onchange="onDemoDurationModeChange()">
+                    <span style="flex:1">
+                      <span style="font-size:12px;font-weight:600;color:var(--text)">Intraday only</span>
+                      <span style="font-size:10px;color:var(--text3);display:block;margin-top:1px">All trades close within the same day</span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:5px">
+                      <span style="font-size:10px;color:var(--text3)">max</span>
+                      <input type="number" id="demo-dur-hours-max" value="24" min="1" max="24" step="1" style="width:52px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;font-size:12px;padding:3px 6px" oninput="this.value=Math.max(1,Math.min(24,parseInt(this.value)||1))" onclick="event.stopPropagation();document.getElementById('demo-dur-hours').checked=true;onDemoDurationModeChange()">
+                      <span style="font-size:10px;color:var(--text3)">h</span>
+                    </span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 11px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);transition:all .12s" id="demo-dur-days-lbl">
+                    <input type="radio" name="demo-duration-mode" id="demo-dur-days" value="days" style="accent-color:var(--purple);cursor:pointer" onchange="onDemoDurationModeChange()">
+                    <span style="flex:1">
+                      <span style="font-size:12px;font-weight:600;color:var(--text)">Multi-day</span>
+                      <span style="font-size:10px;color:var(--text3);display:block;margin-top:1px">Swing / position trades spanning multiple days</span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:5px">
+                      <span style="font-size:10px;color:var(--text3)">max</span>
+                      <input type="number" id="demo-dur-days-max" value="7" min="2" max="90" step="1" style="width:52px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;font-size:12px;padding:3px 6px" oninput="this.value=Math.max(2,Math.min(90,parseInt(this.value)||2))" onclick="event.stopPropagation();document.getElementById('demo-dur-days').checked=true;onDemoDurationModeChange()">
+                      <span style="font-size:10px;color:var(--text3)">d</span>
+                    </span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 11px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);transition:all .12s" id="demo-dur-mix-lbl">
+                    <input type="radio" name="demo-duration-mode" id="demo-dur-mix" value="mix" style="accent-color:var(--amber);cursor:pointer" onchange="onDemoDurationModeChange()">
+                    <span style="flex:1">
+                      <span style="font-size:12px;font-weight:600;color:var(--text)">Mix</span>
+                      <span style="font-size:10px;color:var(--text3);display:block;margin-top:1px">Blend of intraday and multi-day trades</span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:5px;flex-shrink:0" id="demo-dur-mix-inputs">
+                      <span style="font-size:10px;color:var(--text3)">≤</span>
+                      <input type="number" id="demo-dur-mix-hours" value="24" min="1" max="24" step="1" style="width:42px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;font-size:12px;padding:3px 6px" oninput="this.value=Math.max(1,Math.min(24,parseInt(this.value)||1))" onclick="event.stopPropagation();document.getElementById('demo-dur-mix').checked=true;onDemoDurationModeChange()">
+                      <span style="font-size:10px;color:var(--text3)">h &amp;</span>
+                      <span style="font-size:10px;color:var(--text3)">≤</span>
+                      <input type="number" id="demo-dur-mix-days" value="7" min="2" max="90" step="1" style="width:42px;text-align:center;font-family:'DM Mono',monospace;font-weight:600;font-size:12px;padding:3px 6px" oninput="this.value=Math.max(2,Math.min(90,parseInt(this.value)||2))" onclick="event.stopPropagation();document.getElementById('demo-dur-mix').checked=true;onDemoDurationModeChange()">
+                      <span style="font-size:10px;color:var(--text3)">d</span>
+                    </span>
+                  </label>
+                </div>
               </div>
               <div class="frow" style="margin-bottom:0;padding-top:10px;border-top:1px solid rgba(155,127,240,.15)">
                 <label class="flabel" style="margin-bottom:7px">Show this session in dashboard, dropdowns &amp; filters?</label>
@@ -3004,6 +3055,42 @@ function toggleDemoSessionOptions(){
     else if(!show&&nameInput.value==='[demo]')nameInput.value='';
   }
   if(show)populateDemoAssetTypePills();
+  if(show)onDemoDurationModeChange();
+  if(show)loadDemoDefaults();
+}
+
+async function saveDemoDefaults(){
+  var val={
+    count:parseInt(document.getElementById('sm-demo-count').value)||10,
+    durMode:(document.querySelector('input[name="demo-duration-mode"]:checked')||{}).value||'hours',
+    durHoursMax:parseInt(document.getElementById('demo-dur-hours-max').value)||24,
+    durDaysMax:parseInt(document.getElementById('demo-dur-days-max').value)||7,
+    durMixHours:parseInt(document.getElementById('demo-dur-mix-hours').value)||24,
+    durMixDays:parseInt(document.getElementById('demo-dur-mix-days').value)||7
+  };
+  await setSetting('tj-demo-defaults',val);
+  ghAutoSyncConfig();
+  toast('Demo defaults saved','ok');
+}
+
+async function loadDemoDefaults(){
+  var val=await getSetting('tj-demo-defaults',null);
+  if(!val)return;
+  var countEl=document.getElementById('sm-demo-count');
+  if(countEl&&val.count)countEl.value=val.count;
+  if(val.durMode){
+    var radio=document.querySelector('input[name="demo-duration-mode"][value="'+val.durMode+'"]');
+    if(radio){radio.checked=true;}
+  }
+  var hoursMaxEl=document.getElementById('demo-dur-hours-max');
+  if(hoursMaxEl&&val.durHoursMax)hoursMaxEl.value=val.durHoursMax;
+  var daysMaxEl=document.getElementById('demo-dur-days-max');
+  if(daysMaxEl&&val.durDaysMax)daysMaxEl.value=val.durDaysMax;
+  var mixHoursEl=document.getElementById('demo-dur-mix-hours');
+  if(mixHoursEl&&val.durMixHours)mixHoursEl.value=val.durMixHours;
+  var mixDaysEl=document.getElementById('demo-dur-mix-days');
+  if(mixDaysEl&&val.durMixDays)mixDaysEl.value=val.durMixDays;
+  onDemoDurationModeChange();
 }
 
 async function populateDemoAssetTypePills(){
@@ -3036,6 +3123,24 @@ function onDemoVisibilityChange(){
   if(noLbl){noLbl.style.borderColor=!isYes?'var(--text3)':'var(--border2)';noLbl.style.background=!isYes?'rgba(107,115,138,.08)':'var(--bg3)';}
 }
 
+function onDemoDurationModeChange(){
+  var mode=document.querySelector('input[name="demo-duration-mode"]:checked');
+  if(!mode)return;
+  var v=mode.value;
+  var hoursLbl=document.getElementById('demo-dur-hours-lbl');
+  var daysLbl=document.getElementById('demo-dur-days-lbl');
+  var mixLbl=document.getElementById('demo-dur-mix-lbl');
+  var accent={hours:'var(--accent)',days:'var(--purple)',mix:'var(--amber)'};
+  var bg={hours:'rgba(77,127,255,.06)',days:'rgba(155,127,240,.06)',mix:'rgba(232,160,48,.06)'};
+  [['hours',hoursLbl],['days',daysLbl],['mix',mixLbl]].forEach(function(pair){
+    var key=pair[0],lbl=pair[1];
+    if(!lbl)return;
+    var active=v===key;
+    lbl.style.borderColor=active?accent[key]:'var(--border2)';
+    lbl.style.background=active?bg[key]:'var(--bg3)';
+  });
+}
+
 function rnd(min,max,decimals){
   var v=min+Math.random()*(max-min);
   var f=Math.pow(10,decimals||2);
@@ -3044,7 +3149,7 @@ function rnd(min,max,decimals){
 
 function randChoice(arr){return arr[Math.floor(Math.random()*arr.length)];}
 
-async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEquity,count,selectedAssets){
+async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEquity,count,selectedAssets,durationOpts){
   // Pull real user settings so demo trades match the actual form options
   var strategies=await getStrategies();
   var checklistTemplate=await getChecklist();
@@ -3128,6 +3233,18 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
     assetPool=[{pair:'EUR/USD',assetType:'Forex Major',data:ASSET_PRICE_MAP['Forex Major']}];
   }
 
+  // ── Date window: computed once, before the trade loop ──────────────────
+  // Realistic cadence: ~3-4 trades/week (1-2 multi-day + 2-3 intraday)
+  var today=new Date();today.setHours(23,59,59,999);
+  var hardCap=endDate<today?endDate:today;
+  var weeksNeeded=Math.ceil(count/3.5);
+  var windowMs=Math.max(weeksNeeded,2)*7*24*3600*1000; // at least 2 weeks
+  // windowStart is purely count-based — never clamped to the form's startDate
+  // (session startDate gets set from trades afterward, so clamping here creates the loop)
+  var windowStart=new Date(hardCap.getTime()-windowMs);
+  var spreadMs=hardCap-windowStart;
+  if(spreadMs<=0)spreadMs=14*24*3600*1000;
+
   for(var i=0;i<count;i++){
     var asset=randChoice(assetPool);
     var pdata=asset.data;
@@ -3181,11 +3298,33 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
     var plDollar=parseFloat((priceDiff*qty).toFixed(2));
     var plPct=parseFloat(((plDollar/acct)*100).toFixed(4));
 
-    // Dates
-    var tradeOffset=Math.random()*dateRange;
-    var entryDt=new Date(startDate.getTime()+tradeOffset);
-    var durationMs=rnd(15,360,0)*60000;
-    var exitDt=new Date(entryDt.getTime()+durationMs);
+    // Trade style: 40% multi-day, 60% intraday
+    var isMultiDay=Math.random()<0.40;
+    var durMode=(durationOpts&&durationOpts.mode)||'hours';
+    var maxHours=(durationOpts&&durationOpts.maxHours)||8;
+    var maxDays=(durationOpts&&durationOpts.maxDays)||5;
+    var intendedDurMs;
+    if(durMode==='hours'){
+      intendedDurMs=rnd(15,Math.max(maxHours,8)*60,0)*60000;
+    } else if(durMode==='days'){
+      intendedDurMs=rnd(1,Math.max(maxDays,3))*24*3600*1000;
+    } else {
+      // Mix: 40/60 split
+      intendedDurMs=isMultiDay
+        ?rnd(1,Math.max(maxDays,3))*24*3600*1000
+        :rnd(15,Math.max(maxHours,8)*60,0)*60000;
+    }
+
+    // Pick entry from a sub-window that leaves room for the full duration,
+    // so exitDt rarely needs clamping and entry/exit/duration stay consistent
+    var entryRoom=Math.max(spreadMs-intendedDurMs,0);
+    var tradeOffset=Math.random()*entryRoom;
+    var entryDt=new Date(windowStart.getTime()+tradeOffset);
+    var exitDt=new Date(entryDt.getTime()+intendedDurMs);
+    if(exitDt>hardCap){exitDt=new Date(hardCap);}
+    if(entryDt>hardCap){entryDt=new Date(hardCap);exitDt=new Date(hardCap);}
+    // durationMin always derived from the actual stored datetimes (consistent with real trades)
+    var actualDurMs=exitDt.getTime()-entryDt.getTime();
     function fmtDt(d){
       var yr=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0');
       var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
@@ -3236,7 +3375,7 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       plPct:plPct,
       entryTime:fmtDt(entryDt),
       exitTime:fmtDt(exitDt),
-      durationMin:Math.round(durationMs/60000),
+      durationMin:actualDurMs>0?Math.round(actualDurMs/60000):null,
       winLoss:isWin?1:0,
       checklist:makeDemoChecklist(isWin),
       setupNotes:'1. Trading within a '+asset.assetType+' context, '+pair+' at key level.',
@@ -3300,8 +3439,9 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
     var sIsLong=Math.random()>0.5;
     var sSlPct=rnd(0.05,0.4)/100;
     sSl=sIsLong?parseFloat((sEntry-sEntry*sSlPct).toFixed(sPdata.decimals)):parseFloat((sEntry+sEntry*sSlPct).toFixed(sPdata.decimals));
-    var sTradeOffset=Math.random()*dateRange;
-    var sEntryDt=new Date(startDate.getTime()+sTradeOffset);
+    var sTradeOffset=Math.random()*spreadMs;
+    var sEntryDt=new Date(windowStart.getTime()+sTradeOffset);
+    if(sEntryDt>hardCap)sEntryDt=new Date(hardCap);
     function fmtDt2(d){var yr=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0');var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');return yr+'-'+mo+'-'+dy+'T'+hh+':'+mm;}
     var sTradeId=Date.now().toString(36)+Math.random().toString(36).slice(2)+'_skip'+j;
     var sTfBiases={W:randChoice(biasOptions),D:randChoice(biasOptions),'4h':randChoice(biasOptions),'1h':randChoice(biasOptions),'15m':randChoice(biasOptions)};
@@ -3398,6 +3538,18 @@ async function saveSession(){
     var pills=document.querySelectorAll('#demo-asset-type-pills .opt-pill.selected');
     pills.forEach(function(p){selectedDemoAssets.push(p.dataset.demoAsset);});
     if(!selectedDemoAssets.length){toast('Select at least one asset type for demo trades','err');return;}
+    // Duration mode
+    var durModeEl=document.querySelector('input[name="demo-duration-mode"]:checked');
+    var demoDurMode=durModeEl?durModeEl.value:'hours';
+    var demoDurMaxHours=parseInt((document.getElementById('demo-dur-hours-max')||{}).value)||24;
+    var demoDurMixHours=parseInt((document.getElementById('demo-dur-mix-hours')||{}).value)||24;
+    var demoDurDaysMax=parseInt((document.getElementById('demo-dur-days-max')||{}).value)||7;
+    var demoDurMixDays=parseInt((document.getElementById('demo-dur-mix-days')||{}).value)||7;
+    var demoDurationOpts={
+      mode:demoDurMode,
+      maxHours:demoDurMode==='mix'?demoDurMixHours:demoDurMaxHours,
+      maxDays:demoDurMode==='mix'?demoDurMixDays:demoDurDaysMax
+    };
     // If user chose to hide the session, archive it
     var demoVisNo=document.getElementById('demo-vis-no');
     if(demoVisNo&&demoVisNo.checked){archived=true;}
@@ -3427,13 +3579,25 @@ async function saveSession(){
     if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Generating trades…';}
     try{
       // Fetch available strategies for demo
-      var result=await generateDemoTrades(sess.id,startDate,endDate,startingEquity,demoCount,selectedDemoAssets);
+      var result=await generateDemoTrades(sess.id,startDate,endDate,startingEquity,demoCount,selectedDemoAssets,demoDurationOpts);
       var trades=result.trades;
       var allExistingTrades=await dbGetAll('trades');
       var baseNum=allExistingTrades.length;
       for(var ti=0;ti<trades.length;ti++){
         trades[ti].num=String(baseNum+ti+1);
         await dbPut('trades',trades[ti]);
+      }
+      // Derive session startDate and endDate from actual trade datetimes (not the form input)
+      var takenTrades=trades.filter(function(t){return t.entryTime&&!t.skipped;});
+      if(takenTrades.length){
+        var allEntryDates=takenTrades.map(function(t){return t.entryTime.slice(0,10);});
+        var allExitDates=takenTrades.filter(function(t){return t.exitTime;}).map(function(t){return t.exitTime.slice(0,10);});
+        var earliest=allEntryDates.reduce(function(a,b){return a<b?a:b;});
+        var latestEntry=allEntryDates.reduce(function(a,b){return a>b?a:b;});
+        var latestExit=allExitDates.length?allExitDates.reduce(function(a,b){return a>b?a:b;}):latestEntry;
+        var latest=latestExit>latestEntry?latestExit:latestEntry;
+        sess.startDate=earliest;
+        sess.endDate=latest;
       }
       // Update session equity
       sess.currentEquity=result.finalEquity;
@@ -3983,7 +4147,7 @@ function recalc(){
   // Duration
   var edt=getDT('f-etime-date','f-etime-time');
   var xdt=getDT('f-xtime-date','f-xtime-time');
-  if(edt&&xdt){var ms=new Date(xdt)-new Date(edt);if(ms>0){var h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000);set('c-dur',h+'h '+m+'m');}else set('c-dur','—');}
+  if(edt&&xdt){var ms=new Date(xdt)-new Date(edt);if(ms>0){var d=Math.floor(ms/86400000),h=Math.floor((ms%86400000)/3600000),m=Math.floor((ms%3600000)/60000);var durStr=d>0?d+'d'+(h>0?' '+h+'h':'')+(m>0?' '+m+'m':''):(h>0?h+'h ':'')+m+'m';set('c-dur',durStr);}else set('c-dur','—');}
   else set('c-dur','—');
 }
 
@@ -4479,7 +4643,7 @@ var ALL_HISTORY_COLS=[
   {key:'riskpct',   label:'Risk %',    sortVal:function(t){return parseFloat(t.riskpct)||0;},     render:function(t){return'<td class="mono">'+(t.riskpct?t.riskpct+'%':'—')+'</td>';}},
   {key:'riskDollar',label:'Risk $',    sortVal:function(t){return parseFloat(t.riskDollar)||0;},  render:function(t){return'<td class="mono">'+(t.riskDollar?'$'+parseFloat(t.riskDollar).toFixed(2):'—')+'</td>';}},
   {key:'strategy',  label:'Strategy',  sortVal:function(t){return t.strategy||'';},               render:function(t){return'<td style="font-size:11px;color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escHtml(t.strategy||'—')+'</td>';}},
-  {key:'durationMin',label:'Duration', sortVal:function(t){return t.durationMin||0;},             render:function(t){if(!t.durationMin)return'<td>—</td>';var h=Math.floor(t.durationMin/60),m=t.durationMin%60;return'<td style="font-size:12px;color:var(--text2)">'+(h>0?h+'h ':'')+m+'m</td>';}},
+  {key:'durationMin',label:'Duration', sortVal:function(t){return t.durationMin||0;},             render:function(t){if(!t.durationMin)return'<td>—</td>';var total=t.durationMin,days=Math.floor(total/1440),h=Math.floor((total%1440)/60),m=total%60;if(days>0){var label=days+'d'+(h>0?' '+h+'h':'');return'<td><span style="display:inline-flex;align-items:center;gap:4px;background:rgba(155,127,240,.12);border:1px solid rgba(155,127,240,.25);color:var(--purple);border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;font-family:\'DM Mono\',monospace;white-space:nowrap">⏱ '+label+'</span></td>';}return'<td style="font-size:12px;color:var(--text2)">'+(h>0?h+'h ':'')+m+'m</td>';}},
   {key:'rating',    label:'Rating',    sortVal:function(t){return(t.rating||'').length;},         render:function(t){return'<td><span class="stars">'+(t.rating||'')+'</span></td>';}},
   {key:'error',     label:'Error type',sortVal:function(t){return t.error||'';},                  render:function(t){return'<td style="font-size:11px;color:var(--text2)">'+escHtml(t.error||'—')+'</td>';}},
   {key:'model',     label:'Model',     sortVal:function(t){return t.model||'';},                  render:function(t){return'<td style="font-size:11px;color:var(--text2)">'+escHtml(t.model||'—')+'</td>';}},
@@ -4493,18 +4657,29 @@ var DEFAULT_HIST_COL_KEYS=['num','sessionName','pair','type','result','plDollar'
 // ── Sort state ──────────────────────────────────────
 var _histSort={key:'loggedAt',dir:-1}; // default: session desc + loggedAt desc
 
-function getHistColConfig(){
-  try{var s=localStorage.getItem('tj-hist-cols');if(s)return JSON.parse(s);}catch(e){}
-  return DEFAULT_HIST_COL_KEYS.map(function(k){return{key:k,visible:true};});
+var _histColConfigCache=null;
+async function getHistColConfig(){
+  if(_histColConfigCache)return _histColConfigCache;
+  // Try IndexedDB settings first, fall back to localStorage migration
+  try{
+    var s=await getSetting('hist-cols',null);
+    if(s){_histColConfigCache=s;return s;}
+    // Migrate from localStorage if present
+    var ls=localStorage.getItem('tj-hist-cols');
+    if(ls){var parsed=JSON.parse(ls);await setSetting('hist-cols',parsed);localStorage.removeItem('tj-hist-cols');_histColConfigCache=parsed;return parsed;}
+  }catch(e){}
+  var def=DEFAULT_HIST_COL_KEYS.map(function(k){return{key:k,visible:true};});
+  _histColConfigCache=def;
+  return def;
 }
-function saveHistColConfig(cfg){localStorage.setItem('tj-hist-cols',JSON.stringify(cfg));}
-function resetColumnConfig(){saveHistColConfig(DEFAULT_HIST_COL_KEYS.map(function(k){return{key:k,visible:true};}));renderColumnManager();renderHistory();toast('Columns reset','ok');}
+async function saveHistColConfig(cfg){_histColConfigCache=cfg;await setSetting('hist-cols',cfg);ghAutoSyncConfig();}
+function resetColumnConfig(){saveHistColConfig(DEFAULT_HIST_COL_KEYS.map(function(k){return{key:k,visible:true};})).then(function(){renderColumnManager();renderHistory();});toast('Columns reset','ok');}
 
-function openColumnManager(){renderColumnManager();document.getElementById('col-manager-modal').classList.add('open');}
+function openColumnManager(){renderColumnManager().then(function(){document.getElementById('col-manager-modal').classList.add('open');});}
 function closeColumnManager(){document.getElementById('col-manager-modal').classList.remove('open');}
 
-function renderColumnManager(){
-  var cfg=getHistColConfig();
+async function renderColumnManager(){
+  var cfg=await getHistColConfig();
   // Build ordered list: configured cols first (in order), then any unconfigured
   var configuredKeys=cfg.map(function(c){return c.key;});
   var orderedCols=cfg.map(function(c){return ALL_HISTORY_COLS.find(function(col){return col.key===c.key;});}).filter(Boolean);
@@ -4534,11 +4709,11 @@ function renderColumnManager(){
     row.addEventListener('dragend',function(){row.style.opacity='';});
     row.addEventListener('dragover',function(e){e.preventDefault();row.style.background='var(--bg4)';});
     row.addEventListener('dragleave',function(){row.style.background='';});
-    row.addEventListener('drop',function(e){
+    row.addEventListener('drop',async function(e){
       e.preventDefault();row.style.background='';
       var srcKey=e.dataTransfer.getData('text/plain');
       if(srcKey===col.key)return;
-      var curCfg=getHistColConfig();
+      var curCfg=await getHistColConfig();
       var allKeys=orderedCols.map(function(c){return c.key;});
       // Ensure all keys appear in cfg
       allKeys.forEach(function(k){if(!curCfg.find(function(c){return c.key===k;}))curCfg.push({key:k,visible:false});});
@@ -4547,20 +4722,20 @@ function renderColumnManager(){
       if(srcIdx<0||dstIdx<0)return;
       var item=curCfg.splice(srcIdx,1)[0];
       curCfg.splice(dstIdx,0,item);
-      saveHistColConfig(curCfg);
+      await saveHistColConfig(curCfg);
       renderColumnManager();renderHistory();
     });
     el.appendChild(row);
   });
 }
-function toggleColVisible(key){
-  var cfg=getHistColConfig();
+async function toggleColVisible(key){
+  var cfg=await getHistColConfig();
   var all=ALL_HISTORY_COLS.map(function(c){return c.key;});
   // Ensure all keys in cfg
   all.forEach(function(k){if(!cfg.find(function(c){return c.key===k;}))cfg.push({key:k,visible:false});});
   var entry=cfg.find(function(c){return c.key===key;});
   if(entry)entry.visible=!entry.visible;else cfg.push({key:key,visible:true});
-  saveHistColConfig(cfg);renderHistory();
+  await saveHistColConfig(cfg);renderHistory();
 }
 
 // ── Sort toggle ─────────────────────────────────────
@@ -4622,7 +4797,7 @@ async function renderHistory(){
   }
 
   // Get visible columns in order
-  var cfg=getHistColConfig();
+  var cfg=await getHistColConfig();
   var visibleCols=cfg.filter(function(c){return c.visible;}).map(function(c){return ALL_HISTORY_COLS.find(function(col){return col.key===c.key;});}).filter(Boolean);
   if(!visibleCols.length)visibleCols=DEFAULT_HIST_COL_KEYS.map(function(k){return ALL_HISTORY_COLS.find(function(c){return c.key===k;});}).filter(Boolean);
 
@@ -4733,7 +4908,7 @@ async function openDetail(id){
     +'<div class="detail-item"><div class="di-label">Risk</div><div class="di-val mono">$'+trade.riskDollar+' / '+trade.riskpct+'%</div></div>'
     +'<div class="detail-item"><div class="di-label">Qty / Size</div><div class="di-val mono">'+(trade.qty||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Acct balance</div><div class="di-val mono">'+(trade.acct?'$'+parseFloat(trade.acct).toLocaleString():'—')+'</div></div>'
-    +'<div class="detail-item"><div class="di-label">Duration</div><div class="di-val">'+(trade.durationMin?Math.floor(trade.durationMin/60)+'h '+trade.durationMin%60+'m':'—')+'</div></div>'
+    +'<div class="detail-item"><div class="di-label">Duration</div><div class="di-val">'+(function(){if(!trade.durationMin)return'—';var tot=trade.durationMin,d=Math.floor(tot/1440),h=Math.floor((tot%1440)/60),m=tot%60;if(d>0)return'<span style="color:var(--purple);font-weight:700">'+d+'d'+(h>0?' '+h+'h':'')+(m>0?' '+m+'m':'')+'</span>';return(h>0?h+'h ':'')+m+'m';})()+'</div></div>'
     +'<div class="detail-item"><div class="di-label">LTF entry</div><div class="di-val">'+(trade.ltf||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Asset type</div><div class="di-val">'+(trade.assetType||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Entry date/time</div><div class="di-val mono">'+(trade.entryTime?trade.entryTime.slice(0,10)+(trade.entryTime.length>10?' '+to12h(trade.entryTime.slice(11,16)):''):'—')+'</div></div>'
@@ -4927,7 +5102,6 @@ async function exportBackup(){
   var trades=await dbGetAll('trades'),images=await dbGetAll('images'),sessions=await dbGetAll('sessions'),settings=await dbGetAll('settings');
   // Also capture localStorage keys used by the app
   var localData={};
-  ['tj-hist-cols'].forEach(function(k){var v=localStorage.getItem(k);if(v)localData[k]=v;});
   var blob=new Blob([JSON.stringify({version:5,exportedAt:new Date().toISOString(),trades,images,sessions,settings,localData},null,2)],{type:'application/json'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tj_data_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
   toast('Full backup downloaded ('+images.length+' images, '+trades.length+' trades)','ok');
@@ -5204,8 +5378,8 @@ function applyThemeVars(name){
   r.setProperty('--accent',t.accent);r.setProperty('--accent2',t.accent2);
   r.setProperty('--green',t.green);r.setProperty('--red',t.red);r.setProperty('--amber',t.amber);r.setProperty('--purple',t.purple);
   localStorage.setItem('tj-theme',name);
-  // Also persist to IndexedDB so it survives via JSON backup/GitHub sync
-  if(typeof setSetting==='function')setSetting('tj-theme',name);
+  // Persist to IndexedDB (canonical) and push to config JSON/GitHub
+  if(typeof setSetting==='function'){setSetting('tj-theme',name).then(function(){ghAutoSyncConfig();});}
 }
 function applyTheme(name){
   applyThemeVars(name);
@@ -5296,8 +5470,9 @@ async function initMonteCarlo(){
       if(activeSession)sel.value=activeSession.id;
     }
   }
-  // Load saved defaults (or built-in defaults)
-  var mcDefs=JSON.parse(localStorage.getItem('tj-mc-defaults')||'{}');
+  // Load saved defaults — prefer IndexedDB, fall back to localStorage
+  var mcDefs={};
+  try{var mcS=await getSetting('tj-mc-defaults',null);if(mcS)mcDefs=mcS;else{var mcLs=localStorage.getItem('tj-mc-defaults');if(mcLs){mcDefs=JSON.parse(mcLs);setSetting('tj-mc-defaults',mcDefs);}}}catch(e){}
   var tpmEl=document.getElementById('mc-trades-per-month');
   var monEl=document.getElementById('mc-months');
   var runsEl=document.getElementById('mc-runs');
@@ -5319,7 +5494,9 @@ function mcSaveDefaults(){
   var tpm=document.getElementById('mc-trades-per-month').value;
   var months=document.getElementById('mc-months').value;
   var runs=document.getElementById('mc-runs').value;
-  localStorage.setItem('tj-mc-defaults',JSON.stringify({tpm:tpm,months:months,runs:runs}));
+  var val={tpm:tpm,months:months,runs:runs};
+  localStorage.setItem('tj-mc-defaults',JSON.stringify(val));
+  setSetting('tj-mc-defaults',val).then(function(){ghAutoSyncConfig();});
   toast('Monte Carlo defaults saved','ok');
 }
 
@@ -5755,12 +5932,17 @@ async function calcSyncAssets(){
 function calcGetDefaultCapital(){
   return parseFloat(localStorage.getItem('tj-calc-capital'))||5000;
 }
+async function calcGetDefaultCapitalAsync(){
+  try{var s=await getSetting('tj-calc-capital',null);if(s!=null)return parseFloat(s)||5000;}catch(e){}
+  return calcGetDefaultCapital();
+}
 
 function calcSetDefaultCapital(){
   var bal=document.getElementById('calc-balance');
   var v=parseFloat(bal&&bal.value);
   if(!v||v<=0){toast('Enter a valid balance first','err');return;}
   localStorage.setItem('tj-calc-capital',v);
+  setSetting('tj-calc-capital',v).then(function(){ghAutoSyncConfig();});
   toast('Default capital set to $'+v.toLocaleString(),'ok');
 }
 
@@ -6095,7 +6277,18 @@ async function ghBuildConfigPayload(){
   var checklist=await getChecklist();
   var strategies=await getStrategies();
   var assets=await getAssets();
-  return{version:1,exportedAt:new Date().toISOString(),checklist:checklist,strategies:strategies,assets:assets};
+  var histCols=await getHistColConfig();
+  // Other user preferences stored in IndexedDB settings
+  var theme=await getSetting('tj-theme',null);
+  var calView=await getSetting('tj-cal-default-view',null);
+  var mcDefaults=await getSetting('tj-mc-defaults',null);
+  var calcCapital=await getSetting('tj-calc-capital',null);
+  var demoDefaults=await getSetting('tj-demo-defaults',null);
+  return{
+    version:2,exportedAt:new Date().toISOString(),
+    checklist,strategies,assets,histCols,
+    theme,calView,mcDefaults,calcCapital,demoDefaults
+  };
 }
 async function ghGetFileSHAByPath(cfg,path){
   try{
@@ -6124,6 +6317,12 @@ async function ghApplyConfigData(data){
   if(data.checklist)await setSetting('checklist',data.checklist);
   if(data.strategies)await setSetting('strategies',data.strategies);
   if(data.assets)await setSetting('assets',data.assets);
+  if(data.histCols){await setSetting('hist-cols',data.histCols);_histColConfigCache=null;}
+  if(data.theme){await setSetting('tj-theme',data.theme);localStorage.setItem('tj-theme',data.theme);if(typeof applyThemeVars==='function'&&typeof THEMES!=='undefined'&&THEMES[data.theme])applyThemeVars(data.theme);}
+  if(data.calView){await setSetting('tj-cal-default-view',data.calView);localStorage.setItem('tj-cal-default-view',data.calView);}
+  if(data.mcDefaults){await setSetting('tj-mc-defaults',data.mcDefaults);}
+  if(data.calcCapital!=null){await setSetting('tj-calc-capital',data.calcCapital);localStorage.setItem('tj-calc-capital',data.calcCapital);}
+  if(data.demoDefaults){await setSetting('tj-demo-defaults',data.demoDefaults);}
 }
 // Silently push tj_config.json after any checklist/strategies/assets change
 // Note: bkp/config_backup.json is only updated on Manual Backup — not here
@@ -6304,7 +6503,6 @@ async function ghTestConnection(){
 async function ghBuildPayload(){
   var trades=await dbGetAll('trades'),images=await dbGetAll('images'),sessions=await dbGetAll('sessions'),settings=await dbGetAll('settings');
   var localData={};
-  ['tj-hist-cols'].forEach(function(k){var v=localStorage.getItem(k);if(v)localData[k]=v;});
   // Strip base64 data from images that have a Cloudinary URL — keeps the backup lean
   var imagesForGH=images.map(function(img){
     if(img.cloudUrl){return{id:img.id,cloudUrl:img.cloudUrl,name:img.name,zone:img.zone};}
@@ -6541,13 +6739,13 @@ async function ghListSnapshots(){
       cfgPane.innerHTML='<div style="font-size:11px;color:var(--text3);padding:10px 0">No config backup yet. Use <strong>Manual Backup</strong> above to create one. Config is backed up as a single file — it is overwritten each time.</div>';
     } else {
       cfgPane.innerHTML='<div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.7">'
-        +'Config backup stores your <strong style="color:var(--text2)">strategies, checklist, and asset pairs</strong> in a single file that is overwritten each time you run a Manual Backup or change a config setting. '
+        +'Config backup stores your <strong style="color:var(--text2)">strategies, checklist, asset pairs, history column layout, theme, calendar default view, Monte Carlo defaults, calculator default capital, and demo session defaults</strong> in a single file that is overwritten each time you run a Manual Backup or change any setting. '
         +'<code style="background:var(--bg3);padding:1px 5px;border-radius:3px">bkp/config_backup.json</code>'
         +'</div>'
         +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)">'
         +'<div>'
         +'<div style="font-size:12px;font-weight:600;color:var(--text)">config_backup.json</div>'
-        +'<div style="font-size:10px;color:var(--text3);margin-top:2px">Strategies · Checklist · Asset pairs — last updated when config changed</div>'
+        +'<div style="font-size:10px;color:var(--text3);margin-top:2px">Strategies · Checklist · Asset pairs · Column layout · Theme · Calendar view · MC defaults · Calculator capital · Demo defaults</div>'
         +'</div>'
         +'<button class="btn btn-ghost btn-sm" style="color:var(--purple);flex-shrink:0" onclick="ghRestoreConfigBackup()">'
         +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restore config'
@@ -7367,11 +7565,22 @@ function calRenderStreakBar(trades){
   }
 }
 function calClickStreakDay(dateKey){
-  // Jump to that month and select the day
+  if(_calView==='week'){
+    // In week view: just select the day and show the detail panel — no view switch
+    _calSelectedDay=(_calSelectedDay===dateKey)?null:dateKey;
+    document.querySelectorAll('.cal-week-cell').forEach(function(el){
+      var onclick=el.getAttribute('onclick')||'';
+      var match=onclick.match(/calClickDay\('([^']+)'\)/);
+      if(match){el.classList.toggle('selected-day',match[1]===_calSelectedDay);}
+    });
+    if(_calSelectedDay){calShowDayDetail(_calSelectedDay);}
+    else{var p=document.getElementById('cal-detail-panel');if(p)p.style.display='none';}
+    return;
+  }
+  // Other views: jump to that month and select the day
   var parts=dateKey.split('-');
   _calDate=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
   _calView='month';
-  // Update view tab UI
   document.querySelectorAll('.cal-view-tab').forEach(function(b){b.classList.toggle('active',b.dataset.view==='month');});
   _calSelectedDay=dateKey;
   renderCalendar().then(function(){calShowDayDetail(dateKey);});
@@ -8808,6 +9017,7 @@ function calSetHeatMode(mode,btn){
 }
 function calSetDefaultView(v){
   localStorage.setItem('tj-cal-default-view',v);
+  setSetting('tj-cal-default-view',v).then(function(){ghAutoSyncConfig();});
   toast('Default calendar view set to '+v.charAt(0).toUpperCase()+v.slice(1),'ok');
 }
 // Init calendar date to current month
