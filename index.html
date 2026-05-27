@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JournUP</title>
+<title>JournUp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -658,7 +658,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
   <div class="sidebar-logo">
     <div class="logo-mark">
       <div class="logo-icon"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
-      <div><div class="logo-text">JournUP</div><div class="logo-sub">Trading Journal</div></div>
+      <div><div class="logo-text">JournUp</div><div class="logo-sub">Trading Journal</div></div>
     </div>
   </div>
   <nav class="sidebar-nav">
@@ -696,6 +696,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
     <div class="nav-section-label">Data</div>
     <button class="nav-item" onclick="nav('calculator',this)">
       <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>Calculator
+    </button>
+    <button class="nav-item" onclick="nav('price-alerts',this)" id="nav-price-alerts">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><circle cx="18" cy="5" r="3" fill="var(--red)" stroke="none" id="nav-alerts-badge" style="display:none"/></svg>Price Alerts
+      <span id="nav-alerts-count" style="display:none;margin-left:auto;font-size:9px;font-weight:700;background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;line-height:1.5"></span>
     </button>
     <button class="nav-item" onclick="nav('montecarlo',this)">
       <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Monte Carlo
@@ -2283,6 +2287,253 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
       </div>
     </div>
 
+    <!-- PRICE ALERTS -->
+    <div class="page" id="page-price-alerts">
+      <style>
+      #page-price-alerts .pa-grid{display:grid;grid-template-columns:340px 1fr;gap:12px;align-items:start;}
+      @media(max-width:800px){#page-price-alerts .pa-grid{grid-template-columns:1fr;}}
+      #page-price-alerts .pa-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;}
+      #page-price-alerts .pa-ptitle{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+      #page-price-alerts .pa-field{margin-bottom:11px;}
+      #page-price-alerts .pa-field label{display:block;font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px;letter-spacing:.04em;}
+      #page-price-alerts .pa-field input,#page-price-alerts .pa-field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 10px;outline:none;transition:border-color .12s;appearance:none;-webkit-appearance:none;}
+      #page-price-alerts .pa-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%233d4457' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:28px;}
+      #page-price-alerts .pa-field input:focus,#page-price-alerts .pa-field select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(77,127,255,.1);}
+      #page-price-alerts .pa-field input:hover:not(:focus){border-color:var(--border2);}
+      #page-price-alerts .pa-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+      #page-price-alerts .pa-dir-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px;}
+      #page-price-alerts .pa-dir-btn{padding:8px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;}
+      #page-price-alerts .pa-dir-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+      #page-price-alerts .pa-dir-btn.above-on{background:rgba(52,201,122,.1);border-color:rgba(52,201,122,.3);color:var(--green);}
+      #page-price-alerts .pa-dir-btn.below-on{background:rgba(232,85,85,.1);border-color:rgba(232,85,85,.3);color:var(--red);}
+      /* Alert cards */
+      #page-price-alerts .pa-alert-list{display:flex;flex-direction:column;gap:8px;}
+      #page-price-alerts .pa-alert-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;position:relative;transition:border-color .12s;}
+      #page-price-alerts .pa-alert-card.triggered{border-color:rgba(232,160,48,.4);background:rgba(232,160,48,.05);}
+      #page-price-alerts .pa-alert-card.fired{border-color:rgba(52,201,122,.35);background:rgba(52,201,122,.04);opacity:.7;}
+      #page-price-alerts .pa-alert-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+      #page-price-alerts .pa-alert-symbol{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--text);background:var(--bg4);border:1px solid var(--border2);border-radius:5px;padding:3px 8px;}
+      #page-price-alerts .pa-alert-dir{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;}
+      #page-price-alerts .pa-alert-dir.above{background:rgba(52,201,122,.1);color:var(--green);}
+      #page-price-alerts .pa-alert-dir.below{background:rgba(232,85,85,.1);color:var(--red);}
+      #page-price-alerts .pa-alert-price{font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--text);margin-left:auto;}
+      #page-price-alerts .pa-alert-meta{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+      #page-price-alerts .pa-alert-note{font-size:11px;color:var(--text2);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-style:italic;}
+      #page-price-alerts .pa-alert-actions{display:flex;gap:5px;margin-left:auto;}
+      #page-price-alerts .pa-current-price{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);}
+      #page-price-alerts .pa-progress-bar{height:3px;background:var(--bg4);border-radius:2px;margin-top:8px;overflow:hidden;}
+      #page-price-alerts .pa-progress-fill{height:100%;border-radius:2px;transition:width .5s;}
+      /* Setup box */
+      #page-price-alerts .pa-setup-box{background:rgba(77,127,255,.05);border:1px solid rgba(77,127,255,.2);border-radius:var(--radius-lg);padding:14px;}
+      #page-price-alerts .pa-setup-step{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
+      #page-price-alerts .pa-setup-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+      #page-price-alerts .pa-setup-text{font-size:12px;color:var(--text2);line-height:1.6;}
+      #page-price-alerts .pa-setup-text a{color:var(--accent);text-decoration:none;}
+      #page-price-alerts .pa-setup-text a:hover{text-decoration:underline;}
+      #page-price-alerts .pa-setup-text code{background:var(--bg4);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text);}
+      #page-price-alerts .pa-connected-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.04em;}
+      #page-price-alerts .pa-connected-badge.ok{background:rgba(52,201,122,.1);color:var(--green);border:1px solid rgba(52,201,122,.25);}
+      #page-price-alerts .pa-connected-badge.not{background:rgba(232,160,48,.1);color:var(--amber);border:1px solid rgba(232,160,48,.25);}
+      #page-price-alerts .pa-status-dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:paBlink 1.5s infinite;}
+      @keyframes paBlink{0%,100%{opacity:1}50%{opacity:.35}}
+      #page-price-alerts .pa-empty{text-align:center;padding:32px 16px;color:var(--text3);}
+      #page-price-alerts .pa-empty svg{width:36px;height:36px;stroke:var(--border2);fill:none;stroke-width:1.5;margin-bottom:10px;}
+      #page-price-alerts .pa-monitoring-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(52,201,122,.06);border:1px solid rgba(52,201,122,.2);border-radius:var(--radius);margin-bottom:12px;font-size:11px;color:var(--green);}
+      #page-price-alerts .pa-monitoring-bar.off{background:var(--bg3);border-color:var(--border);color:var(--text3);}
+      #page-price-alerts .pa-ticker-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:4px;background:var(--bg4);border:1px solid var(--border);color:var(--text2);font-family:'DM Mono',monospace;}
+      </style>
+
+      <!-- Telegram Setup + Add Alert -->
+      <div class="pa-grid">
+
+        <!-- LEFT column: Setup + Add -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+
+          <!-- Telegram Setup -->
+          <div class="pa-panel">
+            <p class="pa-ptitle">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.068 4.14l4.204 1.582 1.584 4.87a.75.75 0 001.426-.024l1.059-4.232 5.982 5.982a2.25 2.25 0 003.584-1.022L23.767 4.5a2.25 2.25 0 00-2.569-2.067z"/></svg>
+              Telegram Notifications
+              <span id="pa-tg-badge" class="pa-connected-badge not" style="margin-left:auto">
+                <span class="pa-status-dot"></span> Not configured
+              </span>
+            </p>
+
+            <!-- Connected state (hidden until configured) -->
+            <div id="pa-tg-connected" style="display:none;margin-bottom:12px;">
+
+              <!-- Collapsible: Sending to -->
+              <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:2px;">
+                <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:space-between;font-size:11px;" onclick="paTgToggleSection('pa-sending-box','pa-sending-chevron')">
+                  <span style="display:flex;align-items:center;gap:6px;">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+                    Sending to…
+                  </span>
+                  <svg id="pa-sending-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div id="pa-sending-box" style="display:none;margin-top:8px;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+                    <div style="font-size:11px;color:var(--text2);">Chat ID: <span id="pa-tg-chat-label" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text)"></span></div>
+                    <button class="btn btn-ghost btn-sm" onclick="paTgEdit()">Edit</button>
+                  </div>
+                  <button class="btn btn-sm" style="width:100%" onclick="paTgTest()">
+                    <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+                    Send test message
+                  </button>
+                </div>
+              </div>
+
+              <!-- Collapsible: Message template -->
+              <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:8px;">
+                <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:space-between;font-size:11px;" onclick="paTgToggleTemplate()">
+                  <span>Customise message template</span>
+                  <svg id="pa-tpl-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div id="pa-tpl-box" style="display:none;margin-top:10px;">
+                  <div style="font-size:10px;color:var(--text3);margin-bottom:6px;line-height:1.6;">
+                    Available placeholders: <code>{symbol}</code> <code>{direction}</code> <code>{target}</code> <code>{price}</code> <code>{note}</code> <code>{datetime}</code><br>
+                    Supports Telegram HTML: <code>&lt;b&gt;</code> <code>&lt;i&gt;</code> Emojis ✅
+                  </div>
+                  <div class="pa-field" style="margin-bottom:8px;">
+                    <label>Template</label>
+                    <textarea id="pa-tpl-input" rows="7" spellcheck="false" oninput="paTplPreview()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:7px 10px;outline:none;resize:vertical;line-height:1.6;transition:border-color .12s;box-sizing:border-box;"></textarea>
+                  </div>
+                  <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;">Preview</div>
+                  <div id="pa-tpl-preview" style="font-size:11px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;white-space:pre-wrap;font-family:'DM Mono',monospace;line-height:1.6;margin-bottom:8px;min-height:40px;"></div>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-ghost btn-sm" style="flex:1" onclick="paTplReset()">Reset to default</button>
+                    <button class="btn btn-primary btn-sm" style="flex:1" onclick="paTplSave()">Save template</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Collapsible: Auto-delete -->
+              <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:8px;">
+                <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:space-between;font-size:11px;" onclick="paTgToggleSection('pa-delete-box','pa-delete-chevron')">
+                  <span>Auto-delete fired alert messages</span>
+                  <svg id="pa-delete-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div id="pa-delete-box" style="display:none;margin-top:10px;">
+                  <select id="pa-delete-days" onchange="paDeleteDaysSave()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 10px;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%233d4457' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 9px center;padding-right:28px;margin-bottom:6px;">
+                    <option value="0">Never delete</option>
+                    <option value="1">After 1 day</option>
+                    <option value="2">After 2 days</option>
+                  </select>
+                  <div style="font-size:10px;color:var(--text3);line-height:1.5;">⚠️ Telegram only allows bots to delete messages up to <strong>48 hours</strong> old. Messages older than that cannot be deleted.</div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Setup form -->
+            <div id="pa-tg-setup-form">
+              <div class="pa-setup-box" style="margin-bottom:12px;">
+                <div class="pa-setup-step">
+                  <div class="pa-setup-num">1</div>
+                  <div class="pa-setup-text">Open Telegram and message <a href="https://t.me/BotFather" target="_blank">@BotFather</a>. Send <code>/newbot</code> and follow the prompts. Copy the <strong>Bot Token</strong> it gives you.</div>
+                </div>
+                <div class="pa-setup-step">
+                  <div class="pa-setup-num">2</div>
+                  <div class="pa-setup-text">Send any message to your new bot (e.g. "hello"). Then open this URL in your browser — replace <code>YOUR_TOKEN</code> with your actual bot token:<br><code style="word-break:break-all;font-size:10px;display:block;margin-top:4px;padding:4px 6px;background:var(--bg4);border-radius:3px;border:1px solid var(--border2)">https://api.telegram.org/botYOUR_TOKEN/getUpdates</code><br>In the JSON response, find <code>"chat"</code> and copy the <code>"id"</code> number inside it — that is your <strong>Chat ID</strong>. (Alternatively, message <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> which may also work.)</div>
+                </div>
+                <div class="pa-setup-step" style="margin-bottom:0">
+                  <div class="pa-setup-num">3</div>
+                  <div class="pa-setup-text">Paste both below and click <strong>Save &amp; Test</strong>.</div>
+                </div>
+              </div>
+              <div class="pa-field">
+                <label>Bot Token</label>
+                <input type="text" id="pa-tg-token" placeholder="1234567890:ABCDEFabcdef..." autocomplete="off" spellcheck="false">
+              </div>
+              <div class="pa-field">
+                <label>Your Chat ID</label>
+                <input type="text" id="pa-tg-chatid" placeholder="123456789" autocomplete="off" spellcheck="false">
+              </div>
+              <button class="btn btn-primary" style="width:100%" onclick="paTgSave()">
+                <svg viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+                Save &amp; Test
+              </button>
+            </div>
+          </div>
+
+          <!-- Add Alert -->
+          <div class="pa-panel" id="pa-add-panel">
+            <p class="pa-ptitle" id="pa-form-title">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Alert
+            </p>
+            <div class="pa-field">
+              <label>Asset Type</label>
+              <select id="pa-asset-type" onchange="paOnAssetTypeChange()">
+                <option value="">All types</option>
+              </select>
+            </div>
+            <div class="pa-field">
+              <label>Symbol / Asset</label>
+              <select id="pa-symbol" onchange="paOnSymbolChange()">
+                <option value="">— select symbol —</option>
+              </select>
+            </div>
+            <div class="pa-field">
+              <label>Condition</label>
+              <div class="pa-dir-row" style="margin-bottom:0">
+                <button class="pa-dir-btn above-on" id="pa-btn-above" onclick="paSetDir('above')">
+                  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+                  Price rises above
+                </button>
+                <button class="pa-dir-btn" id="pa-btn-below" onclick="paSetDir('below')">
+                  <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                  Price drops below
+                </button>
+              </div>
+            </div>
+            <div class="pa-field" style="margin-top:11px;">
+              <label>Target Price</label>
+              <input type="number" id="pa-target" step="any" placeholder="e.g. 1.08500">
+            </div>
+            <div class="pa-field">
+              <label>Note <span style="color:var(--text3);font-size:10px">(optional – sent with alert)</span></label>
+              <input type="text" id="pa-note" placeholder="e.g. Watch for breakout, check 1H structure">
+            </div>
+            <button class="btn btn-primary" id="pa-add-btn" style="width:100%" onclick="paAddAlert()">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+              Set Alert
+            </button>
+            <button class="btn btn-ghost" id="pa-cancel-edit-btn" style="width:100%;margin-top:6px;display:none" onclick="paCancelEdit()">Cancel edit</button>
+          </div>
+        </div>
+
+        <!-- RIGHT column: Active Alerts -->
+        <div class="pa-panel">
+          <p class="pa-ptitle" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <span style="display:flex;align-items:center;gap:7px;">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+              Active Alerts
+              <span id="pa-alert-count-badge" style="display:none;font-size:9px;font-weight:700;background:var(--accent);color:#fff;border-radius:10px;padding:1px 6px;letter-spacing:.03em;font-family:'DM Mono',monospace;"></span>
+            </span>
+            <span style="display:flex;align-items:center;gap:6px;">
+              <span id="pa-monitor-label" class="pa-monitoring-bar off" style="padding:4px 10px;margin:0;font-size:10px;">
+                <span id="pa-monitor-dot" style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:4px;flex-shrink:0"></span>
+                Monitoring off
+              </span>
+              <button class="btn btn-ghost btn-sm" onclick="paClearFired()" title="Remove triggered alerts">Clear fired</button>
+            </span>
+          </p>
+
+          <!-- Price ticker display -->
+          <div id="pa-tickers-row" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;min-height:0;"></div>
+
+          <div id="pa-alerts-list" class="pa-alert-list">
+            <div class="pa-empty" id="pa-empty-state">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+              <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:4px">No alerts set</div>
+              <div style="font-size:11px">Add an alert using the form on the left</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /page-price-alerts -->
+
   </div>
 </div>
 </div>
@@ -3771,7 +4022,7 @@ async function populateSessionSelects(restoreSessionId){
 }
 
 // ══ Navigation ════════════════════════════════════
-var pageMap={dashboard:{title:'Dashboard',sub:'Overview of your trading performance'},log:{title:'Log trade',sub:'Record a new trade entry'},history:{title:'Trade history',sub:'Browse and filter all your trades'},sessions:{title:'Sessions',sub:'Manage your trading session periods'},'checklist-editor':{title:'Checklist editor',sub:'Edit checklist items globally'},backup:{title:'Backup & restore',sub:'Export, import or clear your journal data'},montecarlo:{title:'Monte Carlo',sub:'Simulate future equity paths from historical trade data'},calculator:{title:'Position Size Calculator',sub:'Forex · Crypto · Gold · Stocks · Indices'},calendar:{title:'Calendar view',sub:'Visual trade activity by day, week and year'},'ai-analyzer':{title:'AI Trade Analyzer',sub:'Intelligent session review powered by AI'}};
+var pageMap={dashboard:{title:'Dashboard',sub:'Overview of your trading performance'},log:{title:'Log trade',sub:'Record a new trade entry'},history:{title:'Trade history',sub:'Browse and filter all your trades'},sessions:{title:'Sessions',sub:'Manage your trading session periods'},'checklist-editor':{title:'Checklist editor',sub:'Edit checklist items globally'},backup:{title:'Backup & restore',sub:'Export, import or clear your journal data'},montecarlo:{title:'Monte Carlo',sub:'Simulate future equity paths from historical trade data'},calculator:{title:'Position Size Calculator',sub:'Forex · Crypto · Gold · Stocks · Indices'},calendar:{title:'Calendar view',sub:'Visual trade activity by day, week and year'},'ai-analyzer':{title:'AI Trade Analyzer',sub:'Intelligent session review powered by AI'},'price-alerts':{title:'Price Alerts',sub:'Get notified on your phone when a price target is hit'}};;
 var _currentPage='dashboard';
 function nav(id,btn){
   // Reset log form when navigating away — always clear, including when editing
@@ -5905,28 +6156,39 @@ function calcOnInstrumentChange(){
   calcCalc();
 }
 
-// Sync forex instrument list from journal Assets & pairs
+// Sync instrument lists from journal Assets & pairs — routes to correct tab by asset type name
 async function calcSyncAssets(){
   var assets=await getAssets();
-  // Collect all pairs across all asset types to use as forex instruments
-  var allPairs=[];
+  // Map asset type name keywords -> calc tab
+  function guessCalcTab(typeName){
+    var n=typeName.toLowerCase();
+    if(n.includes('crypto'))return 'crypto';
+    if(n.includes('metal')||n.includes('gold')||n.includes('silver')||n.includes('commodi'))return 'metals';
+    if(n.includes('stock')||n.includes('etf')||n.includes('equity')||n.includes('share'))return 'stocks';
+    if(n.includes('index')||n.includes('indic')||n.includes('future'))return 'indices';
+    return 'forex'; // default: forex
+  }
   assets.forEach(function(at){
+    var tab=guessCalcTab(at.name);
     at.pairs.forEach(function(p){
-      // Check if already in CALC_INSTRUMENTS.forex
-      if(!CALC_INSTRUMENTS.forex.find(function(i){return i.sym===p;})){
-        // Determine pip size heuristically: JPY pairs use 0.01 pip
-        var isJPY=p.includes('JPY');
-        allPairs.push({sym:p, pip:isJPY?0.01:0.0001, contract:100000, pvp:isJPY?null:10, quote:p.split('/')[1]||'USD', lev:[1,10,20,30,50,100,200,500], defLev:30, desc:at.name+' — '+p});
+      if(CALC_INSTRUMENTS[tab]&&CALC_INSTRUMENTS[tab].find(function(i){return i.sym===p;}))return; // already there
+      var isJPY=p.includes('JPY');
+      var entry;
+      if(tab==='forex'){
+        entry={sym:p, pip:isJPY?0.01:0.0001, contract:100000, pvp:isJPY?null:10, quote:p.split('/')[1]||'USD', lev:[1,10,20,30,50,100,200,500], defLev:30, desc:at.name+' — '+p};
+      } else if(tab==='crypto'){
+        entry={sym:p, pip:0.01, contract:1, pvp:0.01, quote:'USD', lev:[1,2,3,5,10,20,50,100], defLev:10, desc:at.name+' — '+p, unitLabel:'Coins', breakdownType:'crypto'};
+      } else if(tab==='metals'){
+        entry={sym:p, pip:0.1, contract:100, pvp:10, quote:'USD', lev:[1,2,5,10,20,50,100,200,500], defLev:100, desc:at.name+' — '+p, unitLabel:'Oz', tickSize:0.1, tickVal:10, breakdownType:'oz'};
+      } else if(tab==='stocks'){
+        entry={sym:p, pip:0.01, contract:1, pvp:0.01, quote:'USD', lev:[1,2,4,5,10,20], defLev:5, desc:at.name+' — '+p, breakdownType:'shares', unitLabel:'Shares'};
+      } else {
+        entry={sym:p, pip:0.1, contract:1, pvp:0.1, quote:'USD', lev:[1,2,5,10,20,50,100,200], defLev:50, desc:at.name+' — '+p, breakdownType:'contracts', unitLabel:'Lots'};
       }
+      if(CALC_INSTRUMENTS[tab])CALC_INSTRUMENTS[tab].push(entry);
     });
   });
-  // Rebuild forex list: keep built-in instruments + add new ones from assets
-  var baseForex=CALC_INSTRUMENTS.forex.filter(function(i){
-    return assets.some(function(at){return at.pairs.includes(i.sym);})||
-      ['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','USD/CAD','NZD/USD','EUR/GBP','EUR/JPY','GBP/JPY','USD/MXN','EUR/CHF'].includes(i.sym);
-  });
-  CALC_INSTRUMENTS.forex=baseForex.concat(allPairs);
-  if(calcCurrentClass==='forex')calcPopulateInstruments();
+  if(CALC_INSTRUMENTS[calcCurrentClass])calcPopulateInstruments();
 }
 
 function calcGetDefaultCapital(){
@@ -6271,6 +6533,8 @@ function calcCalc(){
 var GH_FILE='tj_data.json';
 var GH_CONFIG_FILE='tj_config.json';       // live config (always overwritten)
 var GH_BKP_CONFIG_FILE='bkp/config_backup.json'; // single config backup (always overwritten)
+var GH_ALERTS_FILE='tjalert.json';         // live alerts (always overwritten)
+var GH_BKP_ALERTS_FILE='bkp/alerts_backup.json'; // single alerts backup (manual backup only)
 
 // ── Config file helpers (checklist, strategies, assets & pairs) ──
 async function ghBuildConfigPayload(){
@@ -6330,6 +6594,44 @@ async function ghAutoSyncConfig(){
   var cfg=ghGetConfig();
   if(!cfg.user||!cfg.repo||!cfg.token)return;
   await ghPushConfigFile(cfg);
+}
+
+// ── Alerts file helpers ────────────────────────────────────────
+async function ghPushAlertsFile(cfg){
+  try{
+    var payload={version:1,exportedAt:new Date().toISOString(),alerts:_paAlerts};
+    var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+    var sha=await ghGetFileSHAByPath(cfg,GH_ALERTS_FILE);
+    var body={message:'TJ alerts — '+new Date().toISOString().slice(0,16).replace('T',' '),content:content};
+    if(sha)body.sha=sha;
+    await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_ALERTS_FILE,{
+      method:'PUT',
+      headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+  }catch(e){console.warn('Alerts file push error:',e.message);}
+}
+
+// Silently push tjalert.json after any alert add/remove/change
+// Note: bkp/alerts_backup.json is only updated on Manual Backup — not here
+async function ghAutoSyncAlerts(){
+  var cfg=ghGetConfig();
+  if(!cfg.user||!cfg.repo||!cfg.token)return;
+  await ghPushAlertsFile(cfg);
+}
+
+// Pull alerts from tjalert.json and merge into local storage
+async function ghPullAlertsFile(cfg){
+  try{
+    var raw=await ghFetchFileContent(cfg,GH_ALERTS_FILE);
+    if(!raw)return;
+    var data=JSON.parse(raw);
+    var remote=Array.isArray(data)?data:(data.alerts||[]);
+    if(remote.length){
+      _paAlerts=remote;
+      paSave();
+    }
+  }catch(e){console.warn('Alerts pull error:',e.message);}
 }
 
 function ghGetConfig(){
@@ -6420,6 +6722,8 @@ async function ghAutoPullOnSetup(){
       var cfgStr=await ghFetchFileContent(cfg,GH_CONFIG_FILE);
       if(cfgStr){var cfgData=JSON.parse(cfgStr);await ghApplyConfigData(cfgData);}
     }catch(ce){console.warn('Config pull error:',ce.message);}
+    // Pull alerts file
+    await ghPullAlertsFile(cfg);
     var now=new Date().toISOString();
     localStorage.setItem('tj-gh-last-sync',now);
     ghRefreshStatus();
@@ -6591,6 +6895,8 @@ async function ghPull(){
       var cfgStr=await ghFetchFileContent(cfg,GH_CONFIG_FILE);
       if(cfgStr){var cfgData=JSON.parse(cfgStr);await ghApplyConfigData(cfgData);}
     }catch(ce){console.warn('Config pull error:',ce.message);}
+    // Pull alerts file
+    await ghPullAlertsFile(cfg);
     var now=new Date().toISOString();
     localStorage.setItem('tj-gh-last-sync',now);
     ghRefreshStatus();
@@ -6644,7 +6950,20 @@ async function ghSnapshot(type,name){
         headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
         body:JSON.stringify(cfgBody)
       });
-      toast('Manual backup saved — trades snapshot + config backup updated','ok');
+      // Also overwrite the single alerts backup file (bkp/alerts_backup.json)
+      try{
+        var alertsPayload={version:1,exportedAt:new Date().toISOString(),alerts:_paAlerts};
+        var alertsContent=btoa(unescape(encodeURIComponent(JSON.stringify(alertsPayload,null,2))));
+        var alertsBkpSha=await ghGetFileSHAByPath(cfg,GH_BKP_ALERTS_FILE);
+        var alertsBkpBody={message:'TJ alerts backup — '+ts,content:alertsContent};
+        if(alertsBkpSha)alertsBkpBody.sha=alertsBkpSha;
+        await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/contents/'+GH_BKP_ALERTS_FILE,{
+          method:'PUT',
+          headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+          body:JSON.stringify(alertsBkpBody)
+        });
+      }catch(ae){console.warn('Alerts backup error:',ae.message);}
+      toast('Manual backup saved — trades snapshot + config backup + alerts backup updated','ok');
     } else {
       toast('Snapshot saved to GitHub bkp/trades/','ok');
     }
@@ -8406,7 +8725,7 @@ async function aiCallLLM(prompt,systemPrompt){
     if(!model2)throw new Error('No model selected. Click ↺ to load models, then pick one and Save.');
     var resp2=await fetch('https://openrouter.ai/api/v1/chat/completions',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':'https://journup.app','X-Title':'JournUP Trading Journal'},
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':'https://journup.app','X-Title':'JournUp Trading Journal'},
       body:JSON.stringify({model:model2,messages:[{role:'system',content:systemPrompt},{role:'user',content:prompt}],max_tokens:1800}),
       signal:AbortSignal.timeout(60000)
     });
@@ -9031,6 +9350,797 @@ _calDate=new Date();
   });
 })();
 
+
+// ══════════════════════════════════════════════════════════════
+// PRICE ALERTS — Telegram Bot integration
+// ══════════════════════════════════════════════════════════════
+
+var _paAlerts = [];          // array of alert objects
+var _paPrices = {};          // { symbol: currentPrice }
+var _paMonitorInterval = null;
+var _paDeleteInterval  = null;
+var _paDir = 'above';        // default direction for new alert
+var _paPollMs = 15000;       // poll every 15 seconds
+var PA_KEY_ALERTS = 'tj-price-alerts';
+var PA_KEY_TOKEN  = 'tj-pa-tg-token';
+var PA_KEY_CHATID = 'tj-pa-tg-chatid';
+
+var PA_KEY_TEMPLATE = 'tj-pa-tg-template';
+var PA_DEFAULT_TEMPLATE = '\u{1F514} <b>Price Alert Triggered!</b>\n\n<b>{symbol}</b> {direction} <b>{target}</b>\nCurrent price: <b>{price}</b>\n{note}\n<i>\u{1F551} {datetime}</i>\n<i>\u2014 JournUp Price Alerts</i>';
+
+function paGetTemplate(){
+  var saved = localStorage.getItem(PA_KEY_TEMPLATE);
+  if(!saved) return PA_DEFAULT_TEMPLATE;
+  // Migrate: if saved template is missing {datetime}, append it before the signature line
+  if(saved.indexOf('{datetime}') === -1){
+    saved = saved.replace(/(\n<i>\u2014)/g, '\n<i>\u{1F551} {datetime}</i>\n<i>\u2014');
+    // Fallback: if no signature line found, just append before end
+    if(saved.indexOf('{datetime}') === -1){
+      saved = saved + '\n<i>\u{1F551} {datetime}</i>';
+    }
+    localStorage.setItem(PA_KEY_TEMPLATE, saved);
+  }
+  return saved;
+}
+
+function paBuildMessage(a, currentPrice){
+  var dir = a.dir === 'above' ? '\u{1F4C8} rose above' : '\u{1F4C9} dropped below';
+  var noteStr = a.note ? '\n\u{1F4DD} ' + a.note : '';
+  var now = new Date();
+  var dateStr = now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})
+              + ' ' + now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  return paGetTemplate()
+    .replace(/\{symbol\}/g, a.symbol)
+    .replace(/\{direction\}/g, dir)
+    .replace(/\{target\}/g, paFmtPrice(a.target))
+    .replace(/\{price\}/g, paFmtPrice(currentPrice))
+    .replace(/\{note\}/g, noteStr)
+    .replace(/\{datetime\}/g, dateStr);
+}
+
+function paTgToggleSection(boxId, chevId){
+  var box = document.getElementById(boxId);
+  var chev = document.getElementById(chevId);
+  if(!box) return;
+  var open = box.style.display === 'none';
+  box.style.display = open ? 'block' : 'none';
+  if(chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+}
+
+function paTgToggleTemplate(){
+  var box = document.getElementById('pa-tpl-box');
+  var chev = document.getElementById('pa-tpl-chevron');
+  var inp = document.getElementById('pa-tpl-input');
+  if(!box) return;
+  var open = box.style.display === 'none';
+  box.style.display = open ? 'block' : 'none';
+  if(chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+  if(open && inp){
+    inp.value = paGetTemplate();
+    paTplPreview();
+  }
+}
+
+function paTplPreview(){
+  var inp = document.getElementById('pa-tpl-input');
+  var prev = document.getElementById('pa-tpl-preview');
+  if(!inp || !prev) return;
+  var sample = {symbol:'EUR/USD', dir:'above', target:1.0850, note:''};
+  var sampleDate = new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})
+                 + ' ' + new Date().toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  var txt = inp.value
+    .replace(/\{symbol\}/g, sample.symbol)
+    .replace(/\{direction\}/g, '\u{1F4C8} rose above')
+    .replace(/\{target\}/g, paFmtPrice(sample.target))
+    .replace(/\{price\}/g, paFmtPrice(1.0851))
+    .replace(/\{note\}/g, sample.note ? '\n\u{1F4DD} ' + sample.note : '')
+    .replace(/\{datetime\}/g, sampleDate);
+  // strip HTML tags for plain preview
+  prev.textContent = txt.replace(/<[^>]+>/g, '');
+}
+
+function paTplReset(){
+  var inp = document.getElementById('pa-tpl-input');
+  if(inp){ inp.value = PA_DEFAULT_TEMPLATE; paTplPreview(); }
+}
+
+function paTplSave(){
+  var inp = document.getElementById('pa-tpl-input');
+  if(!inp) return;
+  var val = inp.value.trim();
+  if(!val){ toast('Template cannot be empty','err'); return; }
+  localStorage.setItem(PA_KEY_TEMPLATE, val);
+  toast('Message template saved','ok');
+}
+
+
+// ── Helpers ───────────────────────────────────────────────────
+
+function paLoad(){
+  try{
+    var raw = localStorage.getItem(PA_KEY_ALERTS);
+    _paAlerts = raw ? JSON.parse(raw) : [];
+  } catch(e){ _paAlerts=[]; }
+}
+
+function paSave(){
+  localStorage.setItem(PA_KEY_ALERTS, JSON.stringify(_paAlerts));
+  // Mirror to GitHub tjalert.json (bkp/alerts_backup.json only on Manual Backup)
+  ghAutoSyncAlerts();
+}
+
+function paGetTg(){
+  return {
+    token:  localStorage.getItem(PA_KEY_TOKEN)  || '',
+    chatId: localStorage.getItem(PA_KEY_CHATID) || ''
+  };
+}
+
+function paIsConfigured(){
+  var tg = paGetTg();
+  return tg.token.length > 10 && tg.chatId.length > 3;
+}
+
+// ── Telegram badge & form visibility ─────────────────────────
+
+function paRefreshTgUI(){
+  var configured = paIsConfigured();
+  var badge = document.getElementById('pa-tg-badge');
+  var connected = document.getElementById('pa-tg-connected');
+  var form = document.getElementById('pa-tg-setup-form');
+  var label = document.getElementById('pa-tg-chat-label');
+  if(!badge) return;
+  if(configured){
+    badge.className = 'pa-connected-badge ok';
+    badge.innerHTML = '<span class="pa-status-dot"></span> Connected';
+    if(connected) connected.style.display='block';
+    if(form) form.style.display='none';
+    var tg = paGetTg();
+    if(label) label.textContent = 'Chat ' + tg.chatId;
+  } else {
+    badge.className = 'pa-connected-badge not';
+    badge.innerHTML = '<span class="pa-status-dot"></span> Not configured';
+    if(connected) connected.style.display='none';
+    if(form) form.style.display='block';
+  }
+  // Restore delete days select
+  var ddSel = document.getElementById('pa-delete-days');
+  if(ddSel) ddSel.value = localStorage.getItem('tj-pa-delete-days') || '0';
+}
+
+function paDeleteDaysSave(){
+  var sel = document.getElementById('pa-delete-days');
+  if(!sel) return;
+  localStorage.setItem('tj-pa-delete-days', sel.value);
+  toast(sel.value === '0' ? 'Auto-delete disabled' : 'Alert messages will be deleted after ' + sel.value + ' day(s)', 'ok');
+}
+
+function paTgEdit(){
+  var form = document.getElementById('pa-tg-setup-form');
+  var connected = document.getElementById('pa-tg-connected');
+  // Close all collapsibles
+  ['pa-tpl-box','pa-sending-box','pa-delete-box'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.style.display='none';
+  });
+  ['pa-tpl-chevron','pa-sending-chevron','pa-delete-chevron'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.style.transform='';
+  });
+  var tg = paGetTg();
+  var tokenInput = document.getElementById('pa-tg-token');
+  var chatInput  = document.getElementById('pa-tg-chatid');
+  if(tokenInput) tokenInput.value = tg.token;
+  if(chatInput)  chatInput.value  = tg.chatId;
+  if(form) form.style.display = 'block';
+  if(connected) connected.style.display = 'none';
+}
+
+function paTgSave(){
+  var token  = (document.getElementById('pa-tg-token').value  || '').trim();
+  var chatId = (document.getElementById('pa-tg-chatid').value || '').trim();
+  if(!token || !chatId){
+    toast('Enter both Bot Token and Chat ID','err'); return;
+  }
+  localStorage.setItem(PA_KEY_TOKEN,  token);
+  localStorage.setItem(PA_KEY_CHATID, chatId);
+  paRefreshTgUI();
+  paTgSendMessage('✅ JournUp Price Alerts connected!\n\nYou will receive alerts here when your price targets are hit.', function(ok){
+    if(ok){ toast('Connected! Test message sent to Telegram','ok'); }
+    else  { toast('Saved, but test message failed — check your token/chat ID','err'); }
+  });
+}
+
+function paTgTest(){
+  if(!paIsConfigured()){ toast('Configure Telegram first','err'); return; }
+  paTgSendMessage('🔔 Test alert from JournUp Price Alerts — everything is working!', function(ok){
+    if(ok) toast('Test message sent to Telegram','ok');
+    else   toast('Failed to send — check your token/chat ID','err');
+  });
+}
+
+function paTgSendMessage(text, cb){
+  var tg = paGetTg();
+  if(!tg.token || !tg.chatId){ if(cb) cb(false, null); return; }
+  fetch('https://api.telegram.org/bot' + tg.token + '/sendMessage', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ chat_id: tg.chatId, text: text, parse_mode: 'HTML' })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){ if(cb) cb(d.ok===true, d.result ? d.result.message_id : null); })
+  .catch(function(){ if(cb) cb(false, null); });
+}
+
+function paTgDeleteMessage(messageId){
+  var tg = paGetTg();
+  if(!tg.token || !tg.chatId || !messageId) return;
+  fetch('https://api.telegram.org/bot' + tg.token + '/deleteMessage', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ chat_id: tg.chatId, message_id: messageId })
+  }).catch(function(){});
+}
+
+// Delete fired alert messages older than the configured number of days
+// Note: Telegram only allows bots to delete messages up to 48 hours old.
+function paTgDeleteOldMessages(){
+  var days = parseInt(localStorage.getItem('tj-pa-delete-days') || '0', 10);
+  if(!days || days < 1) return;
+  var cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
+  var changed = false;
+  _paAlerts.forEach(function(a){
+    if(!a.fired || !a.tgMessageId) return;
+    if(a.firedAt && a.firedAt < cutoff){
+      paTgDeleteMessage(a.tgMessageId);
+      a.tgMessageId = null; // clear so we don't retry
+      changed = true;
+    }
+  });
+  if(changed) paSave();
+}
+
+// ── Direction toggle ──────────────────────────────────────────
+
+function paSetDir(dir){
+  _paDir = dir;
+  var aboveBtn = document.getElementById('pa-btn-above');
+  var belowBtn = document.getElementById('pa-btn-below');
+  if(aboveBtn){ aboveBtn.classList.toggle('above-on', dir==='above'); }
+  if(belowBtn){ belowBtn.classList.toggle('below-on', dir==='below'); }
+}
+
+// ── Add alert ────────────────────────────────────────────────
+
+function paAddAlert(){
+  var symbol = (document.getElementById('pa-symbol').value||'').trim().toUpperCase();
+  var target = parseFloat(document.getElementById('pa-target').value||'');
+  var note   = (document.getElementById('pa-note').value||'').trim();
+  if(!symbol){ toast('Enter a symbol / asset name','err'); return; }
+  if(isNaN(target)||target<=0){ toast('Enter a valid target price','err'); return; }
+
+  var alert = {
+    id:      Date.now().toString(36) + Math.random().toString(36).slice(2,5),
+    symbol:  symbol,
+    dir:     _paDir,
+    target:  target,
+    note:    note,
+    created: Date.now(),
+    fired:   false,
+    firedAt: null
+  };
+  _paAlerts.push(alert);
+  paSave();
+
+  // clear form
+  document.getElementById('pa-symbol').value  = '';
+  document.getElementById('pa-target').value  = '';
+  document.getElementById('pa-note').value    = '';
+  var patSel = document.getElementById('pa-asset-type'); if(patSel) patSel.value = '';
+  paPopulateSymbolSuggestions();
+
+  paRender();
+  paStartMonitoring();
+  toast('Alert set for ' + symbol + ' ' + (_paDir==='above'?'↑':'↓') + ' ' + target, 'ok');
+}
+
+// ── Remove / clear ────────────────────────────────────────────
+
+function paDeleteAlert(id){
+  _paAlerts = _paAlerts.filter(function(a){ return a.id !== id; });
+  paSave();
+  paRender();
+  if(_paAlerts.filter(function(a){return !a.fired;}).length === 0) paStopMonitoring();
+}
+
+// ── Edit ──────────────────────────────────────────────────────
+
+var _paEditingId = null; // id of alert being edited, or null
+
+function paEditAlert(id){
+  var a = _paAlerts.find(function(x){ return x.id === id; });
+  if(!a) return;
+  _paEditingId = id;
+
+  // Populate form fields
+  var symEl = document.getElementById('pa-symbol');
+  var tgtEl = document.getElementById('pa-target');
+  var noteEl = document.getElementById('pa-note');
+  if(symEl) symEl.value = a.symbol;
+  if(tgtEl) tgtEl.value = a.target;
+  if(noteEl) noteEl.value = a.note || '';
+  paSetDir(a.dir);
+  paOnSymbolChange(); // reflect asset type in dropdown
+
+  // Swap button to Update + show Cancel
+  var addBtn = document.getElementById('pa-add-btn');
+  var cancelBtn = document.getElementById('pa-cancel-edit-btn');
+  var panelTitle = document.getElementById('pa-form-title');
+  if(addBtn){ addBtn.textContent=''; addBtn.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Update Alert'; addBtn.onclick=paUpdateAlert; }
+  if(cancelBtn) cancelBtn.style.display='block';
+  if(panelTitle) panelTitle.childNodes[panelTitle.childNodes.length-1].textContent = ' Edit Alert';
+
+  // Scroll form into view
+  var panel = document.getElementById('pa-add-panel');
+  if(panel) panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  // Highlight the card being edited
+  document.querySelectorAll('.pa-alert-card').forEach(function(c){ c.style.outline=''; });
+  var card = document.getElementById('pa-card-'+id);
+  if(card) card.style.outline='2px solid var(--accent)';
+}
+
+function paUpdateAlert(){
+  if(!_paEditingId) return;
+  var symbol = (document.getElementById('pa-symbol').value||'').trim().toUpperCase();
+  var target = parseFloat(document.getElementById('pa-target').value||'');
+  var note   = (document.getElementById('pa-note').value||'').trim();
+  if(!symbol){ toast('Enter a symbol / asset name','err'); return; }
+  if(isNaN(target)||target<=0){ toast('Enter a valid target price','err'); return; }
+
+  var idx = _paAlerts.findIndex(function(a){ return a.id === _paEditingId; });
+  if(idx === -1){ paCancelEdit(); return; }
+  _paAlerts[idx].symbol = symbol;
+  _paAlerts[idx].dir    = _paDir;
+  _paAlerts[idx].target = target;
+  _paAlerts[idx].note   = note;
+  // Reset fired state if target/direction changed
+  _paAlerts[idx].fired  = false;
+  _paAlerts[idx].firedAt = null;
+
+  paSave();
+  paCancelEdit();
+  paRender();
+  paStartMonitoring();
+  toast('Alert updated for ' + symbol + ' ' + (_paDir==='above'?'↑':'↓') + ' ' + target, 'ok');
+}
+
+function paCancelEdit(){
+  _paEditingId = null;
+  // Reset form
+  var symEl = document.getElementById('pa-symbol');
+  var tgtEl = document.getElementById('pa-target');
+  var noteEl = document.getElementById('pa-note');
+  if(symEl) symEl.value = '';
+  if(tgtEl) tgtEl.value = '';
+  if(noteEl) noteEl.value = '';
+  paSetDir('above');
+  // Restore button
+  var addBtn = document.getElementById('pa-add-btn');
+  var cancelBtn = document.getElementById('pa-cancel-edit-btn');
+  var panelTitle = document.getElementById('pa-form-title');
+  if(addBtn){ addBtn.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Set Alert'; addBtn.onclick=paAddAlert; }
+  if(cancelBtn) cancelBtn.style.display='none';
+  if(panelTitle) panelTitle.childNodes[panelTitle.childNodes.length-1].textContent = ' Add Alert';
+  document.querySelectorAll('.pa-alert-card').forEach(function(c){ c.style.outline=''; });
+}
+
+function paClearFired(){
+  var before = _paAlerts.length;
+  _paAlerts = _paAlerts.filter(function(a){ return !a.fired; });
+  paSave();
+  paRender();
+  var removed = before - _paAlerts.length;
+  if(removed > 0) toast('Removed ' + removed + ' fired alert' + (removed>1?'s':''), 'ok');
+  else toast('No fired alerts to clear','');
+}
+
+// ── Render ────────────────────────────────────────────────────
+
+function paRender(){
+  var list   = document.getElementById('pa-alerts-list');
+  var empty  = document.getElementById('pa-empty-state');
+  var badge  = document.getElementById('pa-alert-count-badge');
+  var navCnt = document.getElementById('nav-alerts-count');
+  if(!list) return;
+
+  var active = _paAlerts.filter(function(a){ return !a.fired; });
+  var fired  = _paAlerts.filter(function(a){ return a.fired; });
+
+  if(badge){
+    if(active.length > 0){ badge.style.display='inline'; badge.textContent=active.length; }
+    else badge.style.display='none';
+  }
+  if(navCnt){
+    if(active.length > 0){ navCnt.style.display='inline'; navCnt.textContent=active.length; }
+    else navCnt.style.display='none';
+  }
+
+  if(_paAlerts.length === 0){
+    if(empty) empty.style.display='block';
+    list.innerHTML = '';
+    list.appendChild(empty||document.createElement('div'));
+    paRenderTickers();
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  var html = '';
+  // active first, then fired
+  var sorted = active.concat(fired);
+  sorted.forEach(function(a){
+    var price  = _paPrices[a.symbol];
+    var hasPrice = price !== undefined && price !== null;
+    var pct = '';
+    var fillW = 0;
+    var fillColor = 'var(--accent)';
+    if(hasPrice && a.target){
+      // progress toward target — we don't know "start" price so use a conceptual bar
+      // For "above": progress = current/target (clamped 0-100)
+      // For "below": progress = target/current (clamped 0-100)
+      if(a.dir === 'above'){
+        fillW = Math.min(100, Math.round((price / a.target) * 100));
+        fillColor = fillW >= 100 ? 'var(--green)' : 'var(--accent)';
+        var diff = ((a.target - price) / a.target * 100).toFixed(2);
+        pct = price < a.target ? diff + '% away' : 'TARGET HIT';
+      } else {
+        fillW = Math.min(100, Math.round((a.target / price) * 100));
+        fillColor = fillW >= 100 ? 'var(--red)' : 'var(--accent)';
+        var diff2 = ((price - a.target) / price * 100).toFixed(2);
+        pct = price > a.target ? diff2 + '% away' : 'TARGET HIT';
+      }
+    }
+
+    var dirClass = a.dir === 'above' ? 'above' : 'below';
+    var dirLabel = a.dir === 'above' ? '↑ Above' : '↓ Below';
+    var cardClass = 'pa-alert-card' + (a.fired ? ' fired' : '');
+    var createdStr = new Date(a.created).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+
+    html += '<div class="' + cardClass + '" id="pa-card-' + a.id + '">';
+    html += '<div class="pa-alert-top">';
+    html += '<span class="pa-alert-symbol">' + escHtml(a.symbol) + '</span>';
+    html += '<span class="pa-alert-dir ' + dirClass + '">' + dirLabel + '</span>';
+    html += '<span class="pa-alert-price">' + paFmtPrice(a.target) + '</span>';
+    html += '<div class="pa-alert-actions">';
+    if(a.fired){
+      html += '<span style="font-size:10px;color:var(--green);font-weight:700;">✓ FIRED</span>';
+    }
+    if(!a.fired){
+      html += '<button class="btn btn-ghost btn-sm btn-icon" onclick="paEditAlert(\'' + a.id + '\')" title="Edit alert"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
+    }
+    html += '<button class="btn btn-danger btn-sm btn-icon" onclick="paDeleteAlert(\'' + a.id + '\')" title="Delete alert"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>';
+    html += '</div></div>'; // .pa-alert-top
+
+    html += '<div class="pa-alert-meta">';
+    html += '<span>Set ' + escHtml(createdStr) + '</span>';
+    if(hasPrice){
+      html += '<span class="pa-current-price">Current: ' + paFmtPrice(price) + '</span>';
+      if(pct) html += '<span style="font-size:10px;font-weight:600;color:' + (pct==='TARGET HIT'?'var(--green)':'var(--text3)') + '">' + pct + '</span>';
+    } else {
+      html += '<span style="font-size:10px;color:var(--text3);font-style:italic">Fetching price…</span>';
+    }
+    html += '</div>'; // .pa-alert-meta
+
+    if(a.note){
+      html += '<div class="pa-alert-note"><span style="opacity:.6;margin-right:4px;">📝</span>' + escHtml(a.note) + '</div>';
+    }
+
+    if(hasPrice && !a.fired){
+      html += '<div class="pa-progress-bar"><div class="pa-progress-fill" style="width:' + fillW + '%;background:' + fillColor + '"></div></div>';
+    }
+
+    if(a.fired && a.firedAt){
+      var firedStr = new Date(a.firedAt).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+      html += '<div style="font-size:10px;color:var(--green);margin-top:5px;">🔔 Alert fired at ' + escHtml(firedStr) + '</div>';
+    }
+
+    html += '</div>'; // .pa-alert-card
+  });
+
+  list.innerHTML = html;
+  paRenderTickers();
+}
+
+function paRenderTickers(){
+  var row = document.getElementById('pa-tickers-row');
+  if(!row) return;
+  var symbols = paGetActiveSymbols();
+  if(symbols.length === 0){ row.innerHTML=''; return; }
+  var html = '';
+  symbols.forEach(function(sym){
+    var p = _paPrices[sym];
+    html += '<span class="pa-ticker-badge">' + escHtml(sym) + (p !== undefined ? ': ' + paFmtPrice(p) : ': …') + '</span>';
+  });
+  row.innerHTML = html;
+}
+
+function paFmtPrice(p){
+  if(p===undefined||p===null) return '—';
+  // auto-decimal: crypto/stocks need different precision
+  if(p >= 1000) return p.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  if(p >= 1)    return p.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4});
+  return p.toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:6});
+}
+
+// ── Monitoring ────────────────────────────────────────────────
+
+function paGetActiveSymbols(){
+  var set = {};
+  _paAlerts.forEach(function(a){ if(!a.fired) set[a.symbol]=true; });
+  return Object.keys(set);
+}
+
+function paUpdateMonitorBar(on){
+  var bar = document.getElementById('pa-monitor-label');
+  if(!bar) return;
+  if(on){
+    bar.className = 'pa-monitoring-bar';
+    bar.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:4px;flex-shrink:0;animation:paBlink 1.5s infinite"></span>Monitoring live';
+  } else {
+    bar.className = 'pa-monitoring-bar off';
+    bar.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:4px;flex-shrink:0;"></span>Monitoring off';
+  }
+}
+
+function paStartMonitoring(){
+  if(_paMonitorInterval) return; // already running
+  var active = _paAlerts.filter(function(a){return !a.fired;});
+  if(active.length === 0) return;
+  paFetchPrices(); // immediate first fetch
+  _paMonitorInterval = setInterval(paFetchPrices, _paPollMs);
+  // Check for deletable messages every minute
+  if(!_paDeleteInterval){
+    _paDeleteInterval = setInterval(paTgDeleteOldMessages, 60000);
+  }
+  paUpdateMonitorBar(true);
+}
+
+function paStopMonitoring(){
+  if(_paMonitorInterval){ clearInterval(_paMonitorInterval); _paMonitorInterval=null; }
+  if(_paDeleteInterval){ clearInterval(_paDeleteInterval); _paDeleteInterval=null; }
+  paUpdateMonitorBar(false);
+}
+
+// Fetch prices from Yahoo Finance (free, no key needed, works from browser via CORS proxy approach)
+// We use the Binance API for crypto, Yahoo for everything else
+function paFetchPrices(){
+  var symbols = paGetActiveSymbols();
+  if(symbols.length === 0){ paStopMonitoring(); return; }
+
+  symbols.forEach(function(sym){
+    paFetchOnePrice(sym, function(price){
+      if(price !== null){
+        _paPrices[sym] = price;
+        paCheckAlerts(sym, price);
+        paRender();
+      }
+    });
+  });
+}
+
+// Detect symbol type and fetch appropriately
+function paFetchOnePrice(sym, cb){
+  var upper = sym.toUpperCase();
+
+  // Crypto detection: ends with USDT, USD, BTC, ETH or is known coin
+  var cryptoPairs = ['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','AVAX','DOT','MATIC','LTC','LINK','UNI','ATOM','TRX','TON','SHIB'];
+  var isCrypto = false;
+  var binancePair = '';
+
+  // If it looks like BTCUSDT or ETHUSDT already
+  if(/^[A-Z]+USDT$/.test(upper) || /^[A-Z]+USD$/.test(upper)){
+    isCrypto = true;
+    binancePair = upper.endsWith('USDT') ? upper : upper.slice(0,-3)+'USDT';
+  } else {
+    cryptoPairs.forEach(function(c){ if(upper===c) isCrypto=true; });
+    if(isCrypto) binancePair = upper + 'USDT';
+  }
+
+  if(isCrypto && binancePair){
+    // Binance public API — no auth needed, CORS allowed
+    fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + binancePair)
+    .then(function(r){ return r.json(); })
+    .then(function(d){ cb(d.price ? parseFloat(d.price) : null); })
+    .catch(function(){ paFetchYahoo(sym, cb); }); // fallback
+    return;
+  }
+
+  // Forex / stocks / indices / gold — use Yahoo Finance via allorigins proxy
+  paFetchYahoo(sym, cb);
+}
+
+function paFetchYahoo(sym, cb){
+  var upper = sym.toUpperCase();
+  // Map common shorthands to Yahoo tickers
+  var yahooMap = {
+    'GOLD':'GC=F','SILVER':'SI=F','OIL':'CL=F','CRUDE':'CL=F','WTI':'CL=F',
+    'BRENT':'BZ=F','NATGAS':'NG=F','CORN':'ZC=F','WHEAT':'ZW=F',
+    'US30':'YM=F','US500':'ES=F','SP500':'ES=F','SPX':'ES=F',
+    'NAS100':'NQ=F','NASDAQ':'NQ=F','DAX':'GC=F',
+    'EURUSD':'EURUSD=X','GBPUSD':'GBPUSD=X','USDJPY':'USDJPY=X',
+    'AUDUSD':'AUDUSD=X','USDCAD':'USDCAD=X','USDCHF':'USDCHF=X',
+    'NZDUSD':'NZDUSD=X','EURGBP':'EURGBP=X','EURJPY':'EURJPY=X',
+    'GBPJPY':'GBPJPY=X','XAUUSD':'GC=F','XAGUSD':'SI=F'
+  };
+  var ticker = yahooMap[upper] || upper;
+  // Add =X for forex pairs if it looks like one (6 letters, no slash)
+  if(!yahooMap[upper] && /^[A-Z]{6}$/.test(upper)){
+    ticker = upper + '=X';
+  }
+
+  var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(ticker) + '?interval=1m&range=1d';
+  // Use allorigins to bypass CORS (free, no key)
+  var proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+
+  fetch(proxy)
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    try{
+      var content = JSON.parse(d.contents);
+      var meta = content.chart.result[0].meta;
+      var price = meta.regularMarketPrice;
+      cb(price ? parseFloat(price) : null);
+    } catch(e){ cb(null); }
+  })
+  .catch(function(){ cb(null); });
+}
+
+// ── Check alerts and fire ─────────────────────────────────────
+
+function paCheckAlerts(sym, price){
+  var fired = false;
+  _paAlerts.forEach(function(a){
+    if(a.fired || a.symbol !== sym) return;
+    var hit = false;
+    if(a.dir === 'above' && price >= a.target) hit = true;
+    if(a.dir === 'below' && price <= a.target) hit = true;
+    if(hit){
+      a.fired  = true;
+      a.firedAt = Date.now();
+      fired = true;
+      paFireAlert(a, price);
+    }
+  });
+  if(fired){
+    paSave();
+    paRender();
+  }
+}
+
+function paFireAlert(a, currentPrice){
+  var msg = paBuildMessage(a, currentPrice);
+
+  if(paIsConfigured()){
+    paTgSendMessage(msg, function(ok, messageId){
+      if(!ok){ console.warn('PA: Telegram send failed for', a.symbol); return; }
+      if(messageId){
+        // Store message_id so we can delete it later if configured
+        a.tgMessageId = messageId;
+        paSave();
+      }
+    });
+  }
+
+  // Also show browser notification as backup (if permission granted)
+  if(window.Notification && Notification.permission === 'granted'){
+    try{
+      new Notification('🔔 ' + a.symbol + ' Alert!', {
+        body: a.symbol + (a.dir==='above'?' ↑ rose above ':' ↓ dropped below ') + paFmtPrice(a.target) + '\nNow: ' + paFmtPrice(currentPrice),
+        icon: ''
+      });
+    } catch(e){}
+  }
+
+  toast('🔔 Alert fired: ' + a.symbol + ' hit ' + paFmtPrice(a.target), 'ok');
+}
+
+// ── Init on page navigation ───────────────────────────────────
+
+async function paPopulateSymbolSuggestions(){
+  var assets = await getAssets();
+  var typeFilter = (document.getElementById('pa-asset-type')||{}).value || '';
+
+  // Populate asset type dropdown (only on first load)
+  var typeSel = document.getElementById('pa-asset-type');
+  if(typeSel && typeSel.options.length <= 1){
+    assets.forEach(function(at){
+      var opt = document.createElement('option');
+      opt.value = at.name; opt.textContent = at.name;
+      typeSel.appendChild(opt);
+    });
+  }
+
+  // Populate symbol select with optgroups
+  var symSel = document.getElementById('pa-symbol');
+  if(!symSel) return;
+  var prevVal = symSel.value;
+  symSel.innerHTML = '<option value="">— select symbol —</option>';
+  assets.forEach(function(at){
+    if(typeFilter && at.name !== typeFilter) return;
+    if(!at.pairs || !at.pairs.length) return;
+    var grp = document.createElement('optgroup');
+    grp.label = at.name;
+    at.pairs.forEach(function(p){
+      var opt = document.createElement('option');
+      opt.value = p.replace(/\//g,'');
+      opt.textContent = p;
+      opt.dataset.assetType = at.name;
+      grp.appendChild(opt);
+    });
+    symSel.appendChild(grp);
+  });
+  // Restore previous selection if still available
+  if(prevVal) symSel.value = prevVal;
+}
+
+// When asset type filter changes — repopulate symbol list
+async function paOnAssetTypeChange(){
+  await paPopulateSymbolSuggestions();
+  // Reset symbol selection since list changed
+  var symSel = document.getElementById('pa-symbol');
+  if(symSel) symSel.value = '';
+}
+
+// When symbol is selected — reflect its asset type in the type dropdown
+function paOnSymbolChange(){
+  var symSel = document.getElementById('pa-symbol');
+  if(!symSel) return;
+  var sel = symSel.options[symSel.selectedIndex];
+  if(!sel) return;
+  var assetType = sel.dataset ? sel.dataset.assetType : '';
+  if(assetType){
+    var typeSel = document.getElementById('pa-asset-type');
+    if(typeSel) typeSel.value = assetType;
+  }
+}
+
+function paInit(){
+  paLoad();
+  paRefreshTgUI();
+  paRender();
+  paPopulateSymbolSuggestions();
+  // Resume monitoring if there are active unfired alerts
+  var active = _paAlerts.filter(function(a){return !a.fired;});
+  if(active.length > 0){
+    paStartMonitoring();
+  }
+  // Delete old Telegram messages if configured
+  paTgDeleteOldMessages();
+  // Browser notification permission is not requested automatically —
+  // the app uses Telegram for alert notifications instead.
+}
+
+// Hook into nav() — init when navigating to price-alerts
+var _paNavOriginal = nav;
+nav = function(id, btn){
+  _paNavOriginal(id, btn);
+  if(id === 'price-alerts') paInit();
+};
+
+// Auto-start monitoring in background if alerts exist (even on other pages)
+(function(){
+  try{
+    var raw = localStorage.getItem(PA_KEY_ALERTS);
+    if(raw){
+      _paAlerts = JSON.parse(raw)||[];
+      var active = _paAlerts.filter(function(a){return !a.fired;});
+      if(active.length > 0){
+        paStartMonitoring();
+        // update nav badge
+        var navCnt = document.getElementById('nav-alerts-count');
+        if(navCnt){ navCnt.style.display='inline'; navCnt.textContent=active.length; }
+      }
+    }
+  } catch(e){}
+})();
 
 
 </script>
