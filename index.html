@@ -498,7 +498,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 .toast{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:9px 14px;font-size:12px;font-weight:500;pointer-events:auto;opacity:0;transform:translateY(8px);transition:all .2s;display:flex;align-items:center;gap:8px;min-width:180px}
 .toast.show{opacity:1;transform:none}
 .toast-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.toast-dot.ok{background:var(--green)}.toast-dot.err{background:var(--red)}
+.toast-dot.ok{background:var(--green)}.toast-dot.err{background:var(--red)}.toast-dot.warn{background:var(--amber)}
 
 /* ── Misc ── */
 .empty-state{text-align:center;padding:44px 16px;color:var(--text3)}
@@ -537,7 +537,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 .history-filter-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:14px;overflow:hidden}
 .history-filter-trigger{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;gap:8px}
 .hist-filter-toggle{gap:5px}
-.hist-filter-count{background:var(--accent);color:#fff;border-radius:4px;font-size:9px;font-weight:700;padding:1px 5px;line-height:1.5}
+
 .history-filter-body{padding:10px 14px 12px;border-top:1px solid var(--border)}
 .hist-filter-row{display:flex;gap:10px;flex-wrap:wrap}
 .hist-filter-group{display:flex;flex-direction:column;gap:3px;min-width:110px;flex:1}
@@ -740,7 +740,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <div style="display:flex;align-items:center;gap:8px">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
             <span style="font-size:13px;font-weight:600">Filters</span>
-            <span class="dash-filter-badge" id="dash-filter-count" style="display:none"></span>
+            
           </div>
           <div style="display:flex;align-items:center;gap:8px">
             <!-- Demo toggle — stops propagation so clicking it doesn't open/close the filter panel -->
@@ -748,7 +748,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               <span id="dash-demo-label">Demo OFF</span>
             </button>
-            <button class="btn btn-ghost btn-sm" id="dash-reset-btn" onclick="event.stopPropagation();resetDashFilters()" style="display:none">Reset</button>
+            
             <svg id="dash-filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
         </div>
@@ -827,13 +827,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <button class="btn btn-ghost btn-sm" onclick="calGoToday()" style="font-size:10px">Today</button>
         </div>
         <div class="cal-toolbar-right">
-          <!-- Session filter (mirrors dashboard) -->
-          <select id="cal-session-filter" style="font-size:11px;padding:4px 28px 4px 8px" onchange="renderCalendar()"><option value="">All sessions</option></select>
-          <!-- Demo toggle for calendar -->
-          <button id="cal-demo-toggle" onclick="toggleCalDemoMode()" title="Toggle demo data view" style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(232,160,48,.35);background:rgba(232,160,48,.08);color:var(--amber);font-family:inherit;letter-spacing:.04em;transition:all .12s;white-space:nowrap;flex-shrink:0">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span id="cal-demo-label">Demo OFF</span>
-          </button>
           <!-- View tabs -->
           <div class="cal-view-tabs">
             <button class="cal-view-tab" data-view="week" onclick="calSetView('week',this)">Week</button>
@@ -844,6 +837,38 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <button class="btn btn-ghost btn-sm" id="cal-set-default-btn" onclick="calSetDefaultView(_calView)" title="Save current view as default on open">Set as default</button>
         </div>
       </div>
+      <!-- Filter panel (collapsible) -->
+      <div class="dash-filter-bar" id="cal-filter-bar">
+        <div class="dash-filter-header" onclick="toggleCalFilters()">
+          <div style="display:flex;align-items:center;gap:8px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span style="font-size:13px;font-weight:600">Filters</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button id="cal-demo-toggle" onclick="event.stopPropagation();toggleCalDemoMode()" title="Toggle demo data view" style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(232,160,48,.35);background:rgba(232,160,48,.08);color:var(--amber);font-family:inherit;letter-spacing:.04em;transition:all .12s">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="cal-demo-label">Demo OFF</span>
+            </button>
+            <svg id="cal-filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="dash-filter-body" id="cal-filter-body" style="display:none">
+          <div class="dash-filter-row">
+            <div class="dash-filter-group">
+              <div class="dash-filter-label">Session</div>
+              <select id="cal-session-filter" onchange="renderCalendar()"><option value="">All sessions</option></select>
+            </div>
+            <div class="dash-filter-group">
+              <div class="dash-filter-label">Trade type</div>
+              <select id="cal-skipped-filter" onchange="renderCalendar()">
+                <option value="taken">Taken trades</option>
+                <option value="skipped">Skipped trades</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Streak bar — context-aware to selected view -->
       <div id="cal-streak-wrap" style="margin-bottom:14px">
         <div class="cal-streak-bar" id="cal-streak-bar"></div>
@@ -920,7 +945,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:2;min-width:180px">
                 <div class="ai-filter-label" style="margin-bottom:4px">API Key</div>
-                <input type="password" id="ai-openrouter-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="sk-or-v1-...">
+                <div style="display:flex;gap:6px"><input type="password" id="ai-openrouter-key" style="flex:1;font-size:11px;padding:5px 8px" placeholder="sk-or-v1-..."><button class="btn btn-ghost btn-sm" onclick="toggleKeyVis('ai-openrouter-key')" title="Show/hide key" style="flex-shrink:0;padding:5px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
               </div>
               <div style="flex:2;min-width:200px">
                 <div class="ai-filter-label" style="margin-bottom:4px;display:flex;align-items:center;gap:6px">Model (free) <span id="ai-openrouter-model-status" style="font-size:10px;color:var(--text3)"></span></div>
@@ -946,7 +971,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:2;min-width:180px">
                 <div class="ai-filter-label" style="margin-bottom:4px">API Key</div>
-                <input type="password" id="ai-groq-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="gsk_...">
+                <div style="display:flex;gap:6px"><input type="password" id="ai-groq-key" style="flex:1;font-size:11px;padding:5px 8px" placeholder="gsk_..."><button class="btn btn-ghost btn-sm" onclick="toggleKeyVis('ai-groq-key')" title="Show/hide key" style="flex-shrink:0;padding:5px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
               </div>
               <div style="flex:2;min-width:200px">
                 <div class="ai-filter-label" style="margin-bottom:4px;display:flex;align-items:center;gap:6px">Model <span id="ai-groq-model-status" style="font-size:10px;color:var(--text3)"></span></div>
@@ -972,7 +997,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:2;min-width:180px">
                 <div class="ai-filter-label" style="margin-bottom:4px">API Key</div>
-                <input type="password" id="ai-gemini-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="AIza...">
+                <div style="display:flex;gap:6px"><input type="password" id="ai-gemini-key" style="flex:1;font-size:11px;padding:5px 8px" placeholder="AIza..."><button class="btn btn-ghost btn-sm" onclick="toggleKeyVis('ai-gemini-key')" title="Show/hide key" style="flex-shrink:0;padding:5px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
               </div>
               <div style="flex:2;min-width:200px">
                 <div class="ai-filter-label" style="margin-bottom:4px;display:flex;align-items:center;gap:6px">Model <span id="ai-gemini-model-status" style="font-size:10px;color:var(--text3)"></span></div>
@@ -998,7 +1023,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div style="display:flex;gap:10px;flex-wrap:wrap">
               <div style="flex:2;min-width:180px">
                 <div class="ai-filter-label" style="margin-bottom:4px">API Key</div>
-                <input type="password" id="ai-cerebras-key" style="width:100%;font-size:11px;padding:5px 8px" placeholder="csk-...">
+                <div style="display:flex;gap:6px"><input type="password" id="ai-cerebras-key" style="flex:1;font-size:11px;padding:5px 8px" placeholder="csk-..."><button class="btn btn-ghost btn-sm" onclick="toggleKeyVis('ai-cerebras-key')" title="Show/hide key" style="flex-shrink:0;padding:5px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
               </div>
               <div style="flex:2;min-width:200px">
                 <div class="ai-filter-label" style="margin-bottom:4px;display:flex;align-items:center;gap:6px">Model <span id="ai-cerebras-model-status" style="font-size:10px;color:var(--text3)"></span></div>
@@ -1591,9 +1616,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <button class="btn btn-ghost btn-sm hist-filter-toggle" onclick="toggleHistFilters()" id="hist-filter-toggle-btn">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
               Filters
-              <span class="hist-filter-count" id="hist-filter-count" style="display:none"></span>
+              
             </button>
-            <div id="hist-active-chips" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+            
           </div>
           <div style="display:flex;gap:6px;align-items:center">
             <input type="text" id="flt-search" placeholder="Search pair, notes…" oninput="renderHistory()" style="font-size:12px;padding:6px 10px;width:180px">
@@ -1601,7 +1626,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg>
               Columns
             </button>
-            <button class="btn btn-ghost btn-sm" id="hist-reset-btn" onclick="resetFilters()" style="display:none">Reset all</button>
+            <button id="hist-demo-toggle" onclick="toggleHistDemoMode()" title="Toggle demo data view" style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(232,160,48,.35);background:rgba(232,160,48,.08);color:var(--amber);font-family:inherit;letter-spacing:.04em;transition:all .12s">
+              ✦ <span id="hist-demo-label">Demo OFF</span>
+            </button>
+            
           </div>
         </div>
         <div class="history-filter-body" id="hist-filter-body" style="display:none">
@@ -1650,6 +1678,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <div style="font-size:15px;font-weight:600">Monte Carlo Simulation</div>
           <div style="font-size:12px;color:var(--text3);margin-top:2px">Simulate future equity paths based on your historical trade outcomes</div>
         </div>
+        <button id="mc-demo-toggle" onclick="toggleMcDemoMode()" title="Toggle demo data view" style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(232,160,48,.35);background:rgba(232,160,48,.08);color:var(--amber);font-family:inherit;letter-spacing:.04em;transition:all .12s;white-space:nowrap;flex-shrink:0">
+          ✦ <span id="mc-demo-label">Demo OFF</span>
+        </button>
       </div>
 
       <!-- Controls -->
@@ -1660,6 +1691,13 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <label class="flabel">Data source</label>
               <select id="mc-session" style="font-size:12px">
                 <option value="">All sessions</option>
+              </select>
+            </div>
+            <div class="frow" style="min-width:130px;margin-bottom:0">
+              <label class="flabel">Trade type</label>
+              <select id="mc-skipped-filter" style="font-size:12px">
+                <option value="taken">Taken trades</option>
+                <option value="skipped">Skipped trades</option>
               </select>
             </div>
             <div class="frow" style="min-width:110px;margin-bottom:0">
@@ -2308,9 +2346,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
       #page-price-alerts .pa-dir-btn.below-on{background:rgba(232,85,85,.1);border-color:rgba(232,85,85,.3);color:var(--red);}
       /* Alert cards */
       #page-price-alerts .pa-alert-list{display:flex;flex-direction:column;gap:8px;}
-      #page-price-alerts .pa-alert-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;position:relative;transition:border-color .12s;}
+      #page-price-alerts .pa-alert-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;position:relative;transition:border-color .18s,background .18s;}
       #page-price-alerts .pa-alert-card.triggered{border-color:rgba(232,160,48,.4);background:rgba(232,160,48,.05);}
-      #page-price-alerts .pa-alert-card.fired{border-color:rgba(52,201,122,.35);background:rgba(52,201,122,.04);opacity:.7;}
+      #page-price-alerts .pa-alert-card.fired{border-color:rgba(52,201,122,.45);background:rgba(14,20,14,.85);box-shadow:0 0 0 1px rgba(52,201,122,.2) inset;}
+      #page-price-alerts .pa-alert-card.fired.fired-below{border-color:rgba(232,85,85,.45);background:rgba(20,10,10,.85);box-shadow:0 0 0 1px rgba(232,85,85,.2) inset;}
       #page-price-alerts .pa-alert-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
       #page-price-alerts .pa-alert-symbol{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--text);background:var(--bg4);border:1px solid var(--border2);border-radius:5px;padding:3px 8px;}
       #page-price-alerts .pa-alert-dir{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;}
@@ -2323,6 +2362,26 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
       #page-price-alerts .pa-current-price{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);}
       #page-price-alerts .pa-progress-bar{height:3px;background:var(--bg4);border-radius:2px;margin-top:8px;overflow:hidden;}
       #page-price-alerts .pa-progress-fill{height:100%;border-radius:2px;transition:width .5s;}
+      #page-price-alerts .pa-card-footer{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap;}
+      #page-price-alerts .pa-updated-ago{font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-left:auto;}
+      #page-price-alerts .pa-routing-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
+      #page-price-alerts .pa-routing-toggle{display:flex;align-items:center;gap:7px;width:100%;padding:8px 11px;background:var(--bg3);border:none;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;}
+      #page-price-alerts .pa-routing-toggle:hover{background:var(--bg4);color:var(--text);}
+      #page-price-alerts .pa-routing-toggle svg:first-child{color:var(--text3);flex-shrink:0;}
+      #page-price-alerts .pa-routing-body-inner{padding:10px 12px 12px;}
+      #page-price-alerts .pa-routing-table{display:flex;flex-direction:column;gap:5px;padding:10px 12px 8px;}
+      #page-price-alerts .pa-routing-row{display:grid;grid-template-columns:80px 1fr;align-items:center;gap:6px;}
+      #page-price-alerts .pa-routing-label{font-size:10px;color:var(--text3);font-weight:600;display:flex;align-items:center;gap:4px;}
+      #page-price-alerts .pa-routing-chain{display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+      #page-price-alerts .pa-routing-step{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600;border:1px solid var(--border);background:var(--bg4);color:var(--text3);white-space:nowrap;}
+      #page-price-alerts .pa-routing-step.active{background:rgba(52,201,122,.1);color:var(--green);border-color:rgba(52,201,122,.25);}
+      #page-price-alerts .pa-routing-step.fallback{background:rgba(232,160,48,.1);color:var(--amber);border-color:rgba(232,160,48,.25);}
+      #page-price-alerts .pa-routing-step.skipped{opacity:.35;}
+      #page-price-alerts .pa-routing-arrow{font-size:9px;color:var(--border2);}
+      #page-price-alerts .pa-routing-note{font-size:9px;color:var(--text3);padding:0 12px 10px;line-height:1.6;}
+      #page-price-alerts .pa-prov-chip{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:3px;background:rgba(52,201,122,.1);color:var(--green);border:1px solid rgba(52,201,122,.2);}
+      #page-price-alerts .pa-prov-chip.fallback{background:rgba(232,160,48,.1);color:var(--amber);border-color:rgba(232,160,48,.25);}
+      #page-price-alerts .pa-prov-chip.fetching{background:rgba(122,130,152,.1);color:var(--text3);border-color:var(--border);}
       /* Setup box */
       #page-price-alerts .pa-setup-box{background:rgba(77,127,255,.05);border:1px solid rgba(77,127,255,.2);border-radius:var(--radius-lg);padding:14px;}
       #page-price-alerts .pa-setup-step{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
@@ -2334,12 +2393,21 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
       #page-price-alerts .pa-connected-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.04em;}
       #page-price-alerts .pa-connected-badge.ok{background:rgba(52,201,122,.1);color:var(--green);border:1px solid rgba(52,201,122,.25);}
       #page-price-alerts .pa-connected-badge.not{background:rgba(232,160,48,.1);color:var(--amber);border:1px solid rgba(232,160,48,.25);}
+      #page-price-alerts .pa-connected-badge.warn{background:rgba(232,160,48,.12);color:var(--amber);border:1px solid rgba(232,160,48,.3);}
       #page-price-alerts .pa-status-dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:paBlink 1.5s infinite;}
+      #page-price-alerts .pa-connected-badge.not .pa-status-dot{animation:none;opacity:.6;}
       @keyframes paBlink{0%,100%{opacity:1}50%{opacity:.35}}
       #page-price-alerts .pa-empty{text-align:center;padding:32px 16px;color:var(--text3);}
       #page-price-alerts .pa-empty svg{width:36px;height:36px;stroke:var(--border2);fill:none;stroke-width:1.5;margin-bottom:10px;}
       #page-price-alerts .pa-monitoring-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(52,201,122,.06);border:1px solid rgba(52,201,122,.2);border-radius:var(--radius);margin-bottom:12px;font-size:11px;color:var(--green);}
+      #page-price-alerts .pa-prov-tab{font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .15s;}
+      #page-price-alerts .pa-prov-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+      #page-price-alerts .pa-prov-tab:hover:not(.active){background:var(--bg4);color:var(--text);}
+      #page-price-alerts .pa-prov-body{font-size:12px;}
       #page-price-alerts .pa-monitoring-bar.off{background:var(--bg3);border-color:var(--border);color:var(--text3);}
+      #page-price-alerts .pa-monitor-dot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;flex-shrink:0;}
+      #page-price-alerts .pa-monitoring-bar:not(.off) .pa-monitor-dot{animation:paBlink 1.5s infinite;}
+      #page-price-alerts .pa-monitoring-bar.off .pa-monitor-dot{animation:none;}
       #page-price-alerts .pa-ticker-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:4px;background:var(--bg4);border:1px solid var(--border);color:var(--text2);font-family:'DM Mono',monospace;}
       </style>
 
@@ -2351,27 +2419,27 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
           <!-- Telegram Setup -->
           <div class="pa-panel">
-            <p class="pa-ptitle">
+            <p class="pa-ptitle" style="cursor:pointer;user-select:none;margin-bottom:0;" onclick="paTgTogglePanel()">
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.068 4.14l4.204 1.582 1.584 4.87a.75.75 0 001.426-.024l1.059-4.232 5.982 5.982a2.25 2.25 0 003.584-1.022L23.767 4.5a2.25 2.25 0 00-2.569-2.067z"/></svg>
               Telegram Notifications
               <span id="pa-tg-badge" class="pa-connected-badge not" style="margin-left:auto">
                 <span class="pa-status-dot"></span> Not configured
               </span>
+              <svg id="pa-tg-panel-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;margin-left:6px;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
             </p>
+            <div id="pa-tg-panel-body" style="display:none;margin-top:14px;">
 
             <!-- Connected state (hidden until configured) -->
             <div id="pa-tg-connected" style="display:none;margin-bottom:12px;">
 
               <!-- Collapsible: Sending to -->
-              <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:2px;">
-                <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:space-between;font-size:11px;" onclick="paTgToggleSection('pa-sending-box','pa-sending-chevron')">
-                  <span style="display:flex;align-items:center;gap:6px;">
-                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
-                    Sending to…
-                  </span>
-                  <svg id="pa-sending-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:10px;">
+                <button onclick="paTgToggleSection('pa-sending-box','pa-sending-chevron')" style="display:flex;align-items:center;gap:7px;width:100%;padding:8px 11px;background:var(--bg3);border:none;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.7"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+                  Sending to…
+                  <svg id="pa-sending-chevron" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
-                <div id="pa-sending-box" style="display:none;margin-top:8px;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);">
+                <div id="pa-sending-box" style="display:none;padding:10px;background:var(--bg);border-top:1px solid var(--border);">
                   <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
                     <div style="font-size:11px;color:var(--text2);">Chat ID: <span id="pa-tg-chat-label" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text)"></span></div>
                     <button class="btn btn-ghost btn-sm" onclick="paTgEdit()">Edit</button>
@@ -2384,36 +2452,79 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               </div>
 
               <!-- Collapsible: Message template -->
-              <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:8px;">
-                <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:space-between;font-size:11px;" onclick="paTgToggleTemplate()">
-                  <span>Customise message template</span>
-                  <svg id="pa-tpl-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:6px;">
+                <button onclick="paTgToggleTemplate()" style="display:flex;align-items:center;gap:7px;width:100%;padding:8px 11px;background:var(--bg3);border:none;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.7"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  Customise message template
+                  <svg id="pa-tpl-chevron" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
-                <div id="pa-tpl-box" style="display:none;margin-top:10px;">
+                <div id="pa-tpl-box" style="display:none;padding:12px;background:var(--bg);border-top:1px solid var(--border);">
+                  <!-- Template body -->
                   <div style="font-size:10px;color:var(--text3);margin-bottom:6px;line-height:1.6;">
-                    Available placeholders: <code>{symbol}</code> <code>{direction}</code> <code>{target}</code> <code>{price}</code> <code>{note}</code> <code>{datetime}</code><br>
-                    Supports Telegram HTML: <code>&lt;b&gt;</code> <code>&lt;i&gt;</code> Emojis ✅
+                    Available: <code>{symbol}</code> <code>{direction}</code> <code>{target}</code> <code>{price}</code> <code>{note}</code> <code>{datetime}</code> — Telegram HTML: <code>&lt;b&gt;</code> <code>&lt;i&gt;</code> ✅
                   </div>
-                  <div class="pa-field" style="margin-bottom:8px;">
+                  <div class="pa-field" style="margin-bottom:6px;">
                     <label>Template</label>
                     <textarea id="pa-tpl-input" rows="7" spellcheck="false" oninput="paTplPreview()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:7px 10px;outline:none;resize:vertical;line-height:1.6;transition:border-color .12s;box-sizing:border-box;"></textarea>
                   </div>
-                  <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;">Preview</div>
-                  <div id="pa-tpl-preview" style="font-size:11px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;white-space:pre-wrap;font-family:'DM Mono',monospace;line-height:1.6;margin-bottom:8px;min-height:40px;"></div>
-                  <div style="display:flex;gap:6px;">
+                  <div style="display:flex;gap:6px;margin-bottom:10px;">
                     <button class="btn btn-ghost btn-sm" style="flex:1" onclick="paTplReset()">Reset to default</button>
                     <button class="btn btn-primary btn-sm" style="flex:1" onclick="paTplSave()">Save template</button>
+                  </div>
+
+                  <!-- Placeholder values -->
+                  <div style="border-top:1px solid var(--border);padding-top:10px;margin-bottom:8px;">
+                    <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;">Placeholder values</div>
+                    <div style="display:grid;grid-template-columns:90px 1fr;gap:6px 8px;align-items:center;margin-bottom:8px;">
+                      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">{direction}</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+                        <input type="text" id="pa-ph-dir-above" placeholder="📈 rose above" oninput="paTplPreview()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 8px;outline:none;width:100%;box-sizing:border-box;">
+                        <input type="text" id="pa-ph-dir-below" placeholder="📉 dropped below" oninput="paTplPreview()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 8px;outline:none;width:100%;box-sizing:border-box;">
+                      </div>
+                      <div style="font-size:9px;color:var(--text3);grid-column:2;margin-top:-3px;display:grid;grid-template-columns:1fr 1fr;gap:5px;"><span>↑ above label</span><span>↓ below label</span></div>
+
+                      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">{note} prefix</div>
+                      <input type="text" id="pa-ph-note-prefix" placeholder="📝 " oninput="paTplPreview()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 8px;outline:none;width:100%;box-sizing:border-box;">
+
+                      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">{datetime}</div>
+                      <select id="pa-ph-datetime-fmt" onchange="paTplPreview()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 8px;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%233d4457' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 7px center;padding-right:22px;">
+                        <option value="locale">Date &amp; time (locale)</option>
+                        <option value="iso">2026-05-27 14:34 (ISO)</option>
+                        <option value="date-only">Date only</option>
+                        <option value="time-only">Time only</option>
+                      </select>
+
+                      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">{symbol}</div>
+                      <div style="font-size:11px;color:var(--text3);font-style:italic;">Dynamic — the alert asset (e.g. EURUSD)</div>
+                      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">{target}</div>
+                      <div style="font-size:11px;color:var(--text3);font-style:italic;">Dynamic — target price you set</div>
+                      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">{price}</div>
+                      <div style="font-size:11px;color:var(--text3);font-style:italic;">Dynamic — current price when fired</div>
+                      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">{note}</div>
+                      <div style="font-size:11px;color:var(--text3);font-style:italic;">Dynamic — note you added to alert</div>
+                    </div>
+                    <div style="display:flex;gap:6px;margin-bottom:10px;">
+                      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="paResetPlaceholderValues()">Reset values</button>
+                      <button class="btn btn-primary btn-sm" style="flex:1" onclick="paSavePlaceholderValues()">Save values</button>
+                    </div>
+                  </div>
+
+                  <!-- Live preview -->
+                  <div style="border-top:1px solid var(--border);padding-top:10px;">
+                    <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;">Live preview</div>
+                    <div id="pa-tpl-preview" style="font-size:11px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;white-space:pre-wrap;font-family:'DM Mono',monospace;line-height:1.6;min-height:40px;"></div>
                   </div>
                 </div>
               </div>
 
               <!-- Collapsible: Auto-delete -->
-              <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:8px;">
-                <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:space-between;font-size:11px;" onclick="paTgToggleSection('pa-delete-box','pa-delete-chevron')">
-                  <span>Auto-delete fired alert messages</span>
-                  <svg id="pa-delete-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:6px;">
+                <button onclick="paTgToggleSection('pa-delete-box','pa-delete-chevron')" style="display:flex;align-items:center;gap:7px;width:100%;padding:8px 11px;background:var(--bg3);border:none;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.7"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                  Auto-delete fired alert messages
+                  <svg id="pa-delete-chevron" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
-                <div id="pa-delete-box" style="display:none;margin-top:10px;">
+                <div id="pa-delete-box" style="display:none;padding:12px;background:var(--bg);border-top:1px solid var(--border);">
                   <select id="pa-delete-days" onchange="paDeleteDaysSave()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 10px;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%233d4457' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 9px center;padding-right:28px;margin-bottom:6px;">
                     <option value="0">Never delete</option>
                     <option value="1">After 1 day</option>
@@ -2454,6 +2565,178 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 Save &amp; Test
               </button>
             </div>
+            </div>
+          </div>
+
+          <!-- Data Provider -->
+          <div class="pa-panel" id="pa-provider-panel">
+            <p class="pa-ptitle" style="cursor:pointer;user-select:none;margin-bottom:0;" onclick="paProviderTogglePanel()">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Price Data Providers
+              <span id="pa-provider-badge" class="pa-connected-badge not" style="margin-left:auto">
+                <span class="pa-status-dot"></span> No polling
+              </span>
+              <svg id="pa-provider-panel-chevron" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;margin-left:6px;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+            </p>
+            <div id="pa-provider-panel-body" style="display:none;margin-top:14px;">
+
+            <!-- Asset type blocks — the core info: what covers what -->
+            <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;">
+              <button onclick="paCoverageToggle()" id="pa-coverage-toggle-btn" style="display:flex;align-items:center;gap:7px;width:100%;padding:8px 11px;background:var(--bg3);border:none;color:var(--text2);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;">
+                Coverage by asset type
+                <svg id="pa-coverage-chevron" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div id="pa-coverage-body" style="display:none;padding:10px;background:var(--bg3);border-top:1px solid var(--border);">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+
+              <style>
+                .cov-row{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);}
+                .cov-row:last-child{border-bottom:none;}
+                .cov-label{font-size:10px;font-weight:600;color:var(--text2);min-width:80px;flex-shrink:0;}
+                .cov-chain{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+                .cov-name{font-size:10px;color:var(--text2);font-weight:500;}
+                .cov-sep{font-size:9px;color:var(--text3);font-style:italic;}
+              </style>
+
+              <!-- Crypto -->
+              <div class="cov-row">
+                <span class="cov-label">🪙 Crypto</span>
+                <div class="cov-chain">
+                  <span class="cov-name">Binance</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">CoinGecko</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Yahoo</span>
+                </div>
+              </div>
+
+              <!-- Forex -->
+              <div class="cov-row">
+                <span class="cov-label">💱 Forex</span>
+                <div class="cov-chain">
+                  <span class="cov-name" id="pa-chain-forex-oanda">Oanda</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Alpha Vantage</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Yahoo</span>
+                </div>
+              </div>
+
+              <!-- Commodities -->
+              <div class="cov-row">
+                <span class="cov-label">🛢 Commodities</span>
+                <div class="cov-chain">
+                  <span class="cov-name">Oanda</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Alpha Vantage</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Yahoo</span>
+                </div>
+              </div>
+
+              <!-- Stocks -->
+              <div class="cov-row">
+                <span class="cov-label">📊 Stocks</span>
+                <div class="cov-chain">
+                  <span class="cov-name">Finnhub</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Alpha Vantage</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Yahoo</span>
+                </div>
+              </div>
+
+              <!-- Indices -->
+              <div class="cov-row">
+                <span class="cov-label">📈 Indices</span>
+                <div class="cov-chain">
+                  <span class="cov-name">Finnhub</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Alpha Vantage</span>
+                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-name">Yahoo</span>
+                </div>
+              </div>
+
+            </div>
+              </div><!-- /pa-coverage-body -->
+            </div><!-- /pa-coverage-wrap -->
+            <div style="font-size:9px;color:var(--text3);margin-bottom:12px;line-height:1.5;">Providers tried left → right. Skipped if no key or request fails. <strong style="color:var(--amber);">⚠ Alpha Vantage: 25 req/day free</strong> — poll interval auto-adjusts.</div>
+
+            <!-- API Keys — single collapsible -->
+            <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;" id="pa-routing-wrap">
+              <button class="pa-routing-toggle" onclick="paRoutingToggle()" id="pa-routing-toggle-btn" style="font-size:11px;font-weight:600;">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                API Keys
+                <span id="pa-keys-configured-count" style="font-size:9px;color:var(--text3);margin-left:4px;"></span>
+                <svg id="pa-routing-chevron" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div id="pa-routing-body" style="display:none;padding:10px;background:var(--bg3);border-top:1px solid var(--border);">
+                <div id="pa-routing-table" style="display:none;"></div><!-- kept for JS compat -->
+                <div style="display:flex;flex-direction:column;gap:6px;">
+
+                <!-- CoinGecko collapsible -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                  <button onclick="paKeyToggle('cg')" style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;width:100%;padding:7px 10px;background:var(--bg4);border:none;color:var(--text2);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;">
+                    <span>🪙 CoinGecko</span>
+                    <span style="font-size:9px;font-weight:500;color:var(--text3);white-space:nowrap;">Optional</span>
+                    <span style="display:flex;align-items:center;gap:5px;"><span id="pa-key-cg-status" style="font-size:9px;color:var(--green);white-space:nowrap;"></span><svg id="pa-key-cg-chev" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg></span>
+                  </button>
+                  <div id="pa-key-cg-body" style="display:none;padding:10px;background:var(--bg3);border-top:1px solid var(--border);">
+                    <div style="display:flex;gap:6px;margin-bottom:5px;"><input type="password" id="pa-coingecko-key" placeholder="CG-xxxxxxxx  (leave blank for free tier)" autocomplete="off" spellcheck="false" style="flex:1;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 8px;outline:none;"><button class="btn btn-ghost btn-sm" onclick="toggleKeyVis('pa-coingecko-key')" title="Show/hide key" style="flex-shrink:0;padding:5px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                    <button class="btn btn-sm" style="width:100%" onclick="paProviderSave('coingecko')">Save</button>
+                  </div>
+                </div>
+
+                <!-- Oanda collapsible -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                  <button onclick="paKeyToggle('oanda')" style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;width:100%;padding:7px 10px;background:var(--bg4);border:none;color:var(--text2);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;">
+                    <span>💱 Oanda</span>
+                    <span style="font-size:9px;font-weight:500;color:var(--text3);white-space:nowrap;">Required</span>
+                    <span style="display:flex;align-items:center;gap:5px;"><span id="pa-key-oanda-status" style="font-size:9px;color:var(--green);white-space:nowrap;"></span><svg id="pa-key-oanda-chev" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg></span>
+                  </button>
+                  <div id="pa-key-oanda-body" style="display:none;padding:10px;background:var(--bg3);border-top:1px solid var(--border);">
+                    <div style="display:flex;gap:6px;margin-bottom:5px;"><input type="password" id="pa-oanda-key" placeholder="Oanda API token" autocomplete="off" spellcheck="false" oninput="paProviderKeyChange('oanda')" style="flex:1;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 8px;outline:none;"><button class="btn btn-ghost btn-sm" onclick="toggleKeyVis('pa-oanda-key')" title="Show/hide key" style="flex-shrink:0;padding:5px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                    <div id="pa-oanda-debug" style="display:none;margin-top:6px;margin-bottom:5px;padding:7px 9px;background:rgba(232,85,85,.07);border:1px solid rgba(232,85,85,.2);border-radius:var(--radius);font-size:10px;font-family:'DM Mono',monospace;color:var(--red);white-space:pre-wrap;word-break:break-all;line-height:1.5;"></div>
+                    <select id="pa-oanda-env" style="width:100%;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:11px;padding:6px 8px;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%233d4457' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 7px center;padding-right:22px;margin-bottom:5px;">
+                      <option value="practice">Practice</option>
+                      <option value="live">Live</option>
+                    </select>
+                    <button class="btn btn-sm" style="width:100%" onclick="paProviderSave('oanda')">Save</button>
+                  </div>
+                </div>
+
+                <!-- Finnhub collapsible -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                  <button onclick="paKeyToggle('finnhub')" style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;width:100%;padding:7px 10px;background:var(--bg4);border:none;color:var(--text2);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;">
+                    <span>📈 Finnhub</span>
+                    <span style="font-size:9px;font-weight:500;color:var(--text3);white-space:nowrap;">Required</span>
+                    <span style="display:flex;align-items:center;gap:5px;"><span id="pa-key-finnhub-status" style="font-size:9px;color:var(--green);white-space:nowrap;"></span><svg id="pa-key-finnhub-chev" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg></span>
+                  </button>
+                  <div id="pa-key-finnhub-body" style="display:none;padding:10px;background:var(--bg3);border-top:1px solid var(--border);">
+                    <div style="display:flex;gap:6px;margin-bottom:5px;"><input type="password" id="pa-finnhub-key" placeholder="Finnhub API key" autocomplete="off" spellcheck="false" oninput="paProviderKeyChange('finnhub')" style="flex:1;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 8px;outline:none;"><button class="btn btn-ghost btn-sm" onclick="toggleKeyVis('pa-finnhub-key')" title="Show/hide key" style="flex-shrink:0;padding:5px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                    <button class="btn btn-sm" style="width:100%" onclick="paProviderSave('finnhub')">Save</button>
+                  </div>
+                </div>
+
+                <!-- Alpha Vantage collapsible -->
+                <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                  <button onclick="paKeyToggle('av')" style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;width:100%;padding:7px 10px;background:var(--bg4);border:none;color:var(--text2);font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .12s;">
+                    <span>🔢 Alpha Vantage</span>
+                    <span style="font-size:9px;font-weight:500;color:var(--text3);white-space:nowrap;">Required</span>
+                    <span style="display:flex;align-items:center;gap:5px;"><span id="pa-key-av-status" style="font-size:9px;color:var(--green);white-space:nowrap;"></span><svg id="pa-key-av-chev" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg></span>
+                  </button>
+                  <div id="pa-key-av-body" style="display:none;padding:10px;background:var(--bg3);border-top:1px solid var(--border);">
+                    <div style="display:flex;gap:6px;margin-bottom:5px;"><input type="password" id="pa-av-key" placeholder="Alpha Vantage API key" autocomplete="off" spellcheck="false" oninput="paProviderKeyChange('av')" style="flex:1;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 8px;outline:none;"><button class="btn btn-ghost btn-sm" onclick="toggleKeyVis('pa-av-key')" title="Show/hide key" style="flex-shrink:0;padding:5px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                    <button class="btn btn-sm" style="width:100%" onclick="paProviderSave('av')">Save</button>
+                  </div>
+                </div>
+
+                </div><!-- /providers stack -->
+              </div>
+            </div>
+
+            </div><!-- /pa-provider-panel-body -->
           </div>
 
           <!-- Add Alert -->
@@ -2489,7 +2772,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             </div>
             <div class="pa-field" style="margin-top:11px;">
               <label>Target Price</label>
-              <input type="number" id="pa-target" step="any" placeholder="e.g. 1.08500">
+              <input type="text" id="pa-target" inputmode="decimal" placeholder="e.g. 1.08500">
             </div>
             <div class="pa-field">
               <label>Note <span style="color:var(--text3);font-size:10px">(optional – sent with alert)</span></label>
@@ -2505,23 +2788,35 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
         <!-- RIGHT column: Active Alerts -->
         <div class="pa-panel">
-          <p class="pa-ptitle" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <p class="pa-ptitle" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
             <span style="display:flex;align-items:center;gap:7px;">
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
               Active Alerts
               <span id="pa-alert-count-badge" style="display:none;font-size:9px;font-weight:700;background:var(--accent);color:#fff;border-radius:10px;padding:1px 6px;letter-spacing:.03em;font-family:'DM Mono',monospace;"></span>
             </span>
             <span style="display:flex;align-items:center;gap:6px;">
-              <span id="pa-monitor-label" class="pa-monitoring-bar off" style="padding:4px 10px;margin:0;font-size:10px;">
-                <span id="pa-monitor-dot" style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:4px;flex-shrink:0"></span>
-                Monitoring off
+              <span id="pa-monitor-label" class="pa-monitoring-bar off" style="padding:4px 10px;margin:0;font-size:10px;gap:5px;">
+                <span class="pa-monitor-dot"></span>
+                <span id="pa-monitor-text">Monitoring off</span>
               </span>
               <button class="btn btn-ghost btn-sm" onclick="paClearFired()" title="Remove triggered alerts">Clear fired</button>
             </span>
           </p>
 
-          <!-- Price ticker display -->
-          <div id="pa-tickers-row" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;min-height:0;"></div>
+          <!-- Poll status — shown when monitoring is active -->
+          <div id="pa-poll-status" style="display:none;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;overflow:hidden;position:relative;">
+              <div id="pa-poll-progress" style="position:absolute;inset:0;right:auto;width:0%;background:rgba(77,127,255,.07);transition:width 1s linear;pointer-events:none;"></div>
+              <span id="pa-poll-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;animation:pa-pulse 2s ease-in-out infinite;position:relative;"></span>
+              <span style="font-size:10px;font-weight:500;color:var(--text3);position:relative;">Next poll</span>
+              <span id="pa-shared-countdown" style="font-size:10px;font-weight:700;color:var(--text2);font-family:'DM Mono',monospace;margin-left:auto;position:relative;"></span>
+            </div>
+          </div>
+          <style>
+            @keyframes pa-pulse{0%,100%{opacity:.5;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+            #pa-poll-dot.polling{background:var(--amber);animation:pa-pulse .6s ease-in-out infinite}
+          </style>
+          <div id="pa-tickers-row" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;min-height:0;"></div>
 
           <div id="pa-alerts-list" class="pa-alert-list">
             <div class="pa-empty" id="pa-empty-state">
@@ -2904,11 +3199,32 @@ function openDB(){
     req.onerror=function(){rej(req.error)};
   });
 }
-function dbPut(store,obj){return new Promise(function(res,rej){var tx=db.transaction(store,'readwrite');var r=tx.objectStore(store).put(obj);r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)};});}
+function dbPut(store,obj){invalidateCache(store);return new Promise(function(res,rej){var tx=db.transaction(store,'readwrite');var r=tx.objectStore(store).put(obj);r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)};});}
 function dbGetAll(store){return new Promise(function(res,rej){var tx=db.transaction(store,'readonly');var r=tx.objectStore(store).getAll();r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)};});}
-function dbDelete(store,id){return new Promise(function(res,rej){var tx=db.transaction(store,'readwrite');var r=tx.objectStore(store).delete(id);r.onsuccess=function(){res()};r.onerror=function(){rej(r.error)};});}
-function dbClear(store){return new Promise(function(res,rej){var tx=db.transaction(store,'readwrite');var r=tx.objectStore(store).clear();r.onsuccess=function(){res()};r.onerror=function(){rej(r.error)};});}
+function dbDelete(store,id){invalidateCache(store);return new Promise(function(res,rej){var tx=db.transaction(store,'readwrite');var r=tx.objectStore(store).delete(id);r.onsuccess=function(){res()};r.onerror=function(){rej(r.error)};});}
+function dbClear(store){invalidateCache(store);return new Promise(function(res,rej){var tx=db.transaction(store,'readwrite');var r=tx.objectStore(store).clear();r.onsuccess=function(){res()};r.onerror=function(){rej(r.error)};});}
 function dbGet(store,id){return new Promise(function(res,rej){var tx=db.transaction(store,'readonly');var r=tx.objectStore(store).get(id);r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)};});}
+
+// ══ In-memory read cache ══════════════════════════
+// Caches the two hot stores (trades, sessions) so multiple render functions
+// that fire in the same tick share one IDB round-trip instead of each
+// issuing their own.  Call invalidateCache(store) whenever a write commits.
+var _dbCache={};
+var _dbCacheInflight={};
+function invalidateCache(store){
+  if(store){delete _dbCache[store];delete _dbCacheInflight[store];}
+  else{_dbCache={};_dbCacheInflight={};}
+}
+function dbGetAllCached(store){
+  if(_dbCache[store])return Promise.resolve(_dbCache[store].slice());
+  if(_dbCacheInflight[store])return _dbCacheInflight[store].then(function(r){return r.slice();});
+  _dbCacheInflight[store]=dbGetAll(store).then(function(rows){
+    _dbCache[store]=rows;
+    delete _dbCacheInflight[store];
+    return rows;
+  });
+  return _dbCacheInflight[store].then(function(r){return r.slice();});
+}
 
 // ══ Settings ══════════════════════════════════════
 async function getSetting(key,def){try{var s=await dbGet('settings',key);return s?s.value:def;}catch(e){return def;}}
@@ -3421,7 +3737,6 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
   }
   var ASSET_PRICE_MAP={
     'Forex Major':{pairs:['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','USD/CAD','NZD/USD'],priceRange:[0.65,155],pipSize:0.0001,qtyRange:[0.01,2.0],decimals:5},
-    'Forex Cross':{pairs:['EUR/GBP','EUR/JPY','GBP/JPY','EUR/AUD','AUD/JPY'],priceRange:[0.85,175],pipSize:0.0001,qtyRange:[0.01,2.0],decimals:5},
     'Commodity':{pairs:['XAU/USD','XAG/USD','OIL/USD'],priceRange:[18,2450],pipSize:0.1,qtyRange:[0.01,1.0],decimals:2},
     'Index':{pairs:['US30','NAS100','US500','UK100'],priceRange:[3500,40000],pipSize:1,qtyRange:[0.01,0.5],decimals:0},
     'Crypto':{pairs:['BTC/USD','ETH/USD'],priceRange:[1500,70000],pipSize:1,qtyRange:[0.001,0.5],decimals:2}
@@ -3676,6 +3991,26 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
     'Conflicting signals across timeframes — no clear edge.',
     'Session time was outside my trading hours, skipped for discipline.'
   ];
+  function fmtDt2(d){var yr=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0');var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');return yr+'-'+mo+'-'+dy+'T'+hh+':'+mm;}
+  // Extra templates specific to skipped trade reflection
+  var skipPostAnalysisTemplates=[
+    '1. In hindsight the setup would have worked, but criteria were not met at entry time.',
+    '1. Good decision to skip — the move was choppy and would likely have stopped out.',
+    '1. Price did follow through but entry model was incomplete. Discipline was correct.',
+    '1. Skipping was correct given HTF bias uncertainty at the time.'
+  ];
+  var skipIssuesTemplates=[
+    '1. Setup was close but LTF confirmation was absent.',
+    '1. HTF and LTF alignment was unclear — correct to stay out.',
+    '1. Entry criteria only partially met — waited for full confirmation.',
+    '1. Risk/reward was marginal at the available entry price.'
+  ];
+  var skipGoodTemplates=[
+    'Maintained discipline and did not force the trade.',
+    'Recognised the setup was incomplete and stayed patient.',
+    'Protected capital by waiting for full confirmation.',
+    'Followed the rules even when the setup looked tempting.'
+  ];
   for(var j=0;j<skippedCount;j++){
     var sAsset=randChoice(assetPool);
     var sPdata=sAsset.data;
@@ -3684,18 +4019,59 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
     if(sPair==='EUR/USD'){sEntry=rnd(1.05,1.12,5);}
     else if(sPair==='GBP/USD'){sEntry=rnd(1.22,1.32,5);}
     else if(sPair==='USD/JPY'){sEntry=rnd(140,158,3);}
+    else if(sPair==='USD/CHF'){sEntry=rnd(0.86,0.94,5);}
+    else if(sPair==='AUD/USD'){sEntry=rnd(0.63,0.70,5);}
+    else if(sPair==='USD/CAD'){sEntry=rnd(1.30,1.40,5);}
+    else if(sPair==='NZD/USD'){sEntry=rnd(0.59,0.65,5);}
+    else if(sPair==='EUR/GBP'){sEntry=rnd(0.84,0.88,5);}
+    else if(sPair==='EUR/JPY'){sEntry=rnd(155,170,3);}
+    else if(sPair==='GBP/JPY'){sEntry=rnd(178,198,3);}
     else if(sPair==='XAU/USD'){sEntry=rnd(1900,2400,2);}
+    else if(sPair==='XAG/USD'){sEntry=rnd(22,30,3);}
+    else if(sPair==='OIL/USD'){sEntry=rnd(70,90,2);}
+    else if(sPair==='US30'){sEntry=rnd(36000,40000,0);}
+    else if(sPair==='NAS100'){sEntry=rnd(16000,19000,1);}
+    else if(sPair==='US500'){sEntry=rnd(4500,5200,1);}
+    else if(sPair==='UK100'){sEntry=rnd(7500,8200,1);}
     else if(sPair==='BTC/USD'){sEntry=rnd(40000,70000,0);}
+    else if(sPair==='ETH/USD'){sEntry=rnd(2000,3800,0);}
     else{sEntry=rnd(sPdata.priceRange[0],sPdata.priceRange[1],sPdata.decimals);}
     var sIsLong=Math.random()>0.5;
     var sSlPct=rnd(0.05,0.4)/100;
-    sSl=sIsLong?parseFloat((sEntry-sEntry*sSlPct).toFixed(sPdata.decimals)):parseFloat((sEntry+sEntry*sSlPct).toFixed(sPdata.decimals));
+    var sSlDist=sEntry*sSlPct;
+    sSl=sIsLong?parseFloat((sEntry-sSlDist).toFixed(sPdata.decimals)):parseFloat((sEntry+sSlDist).toFixed(sPdata.decimals));
+    // Hypothetical exit: what would have happened if taken — used for postAnalysis context only
+    var sTargetRR=rnd(1.5,3.0,1);
+    var sHypExitDist=sSlDist*sTargetRR;
+    var sHypExit=sIsLong?parseFloat((sEntry+sHypExitDist).toFixed(sPdata.decimals)):parseFloat((sEntry-sHypExitDist).toFixed(sPdata.decimals));
+    // Qty based on 1% risk (mirrors taken trade logic)
+    var sAcct=currentEquity;
+    var sRiskDollar=sAcct*0.01;
+    var sQty=parseFloat((sRiskDollar/sSlDist).toFixed(sPdata.decimals<3?4:sPdata.decimals));
+    if(sQty<=0)sQty=0.01;
+    // Entry time — spread across the same window as taken trades
     var sTradeOffset=Math.random()*spreadMs;
     var sEntryDt=new Date(windowStart.getTime()+sTradeOffset);
     if(sEntryDt>hardCap)sEntryDt=new Date(hardCap);
-    function fmtDt2(d){var yr=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0');var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');return yr+'-'+mo+'-'+dy+'T'+hh+':'+mm;}
+    // Exit time — skipped trades still have an observation window (15 min to 4 hours after entry)
+    var sObsDurMs=rnd(15,240,0)*60000;
+    var sExitDt=new Date(sEntryDt.getTime()+sObsDurMs);
+    if(sExitDt>hardCap)sExitDt=new Date(hardCap);
+    var sActualDurMs=sExitDt.getTime()-sEntryDt.getTime();
     var sTradeId=Date.now().toString(36)+Math.random().toString(36).slice(2)+'_skip'+j;
     var sTfBiases={W:randChoice(biasOptions),D:randChoice(biasOptions),'4h':randChoice(biasOptions),'1h':randChoice(biasOptions),'15m':randChoice(biasOptions)};
+    var sSlplace=randChoice(slplaces);
+    var sTpplace=randChoice(tpplaces);
+    var sExitCrit=randChoice(winExitCrits);
+    var sRating=randChoice(ratings);
+    var sError=randChoice(errors);
+    // Hypothetical P/L — what would have happened if taken
+    var sPriceDiff=sIsLong?(sHypExit-sEntry):(sEntry-sHypExit);
+    var sPlDollar=parseFloat((sPriceDiff*sQty).toFixed(2));
+    var sPlPct=parseFloat(((sPlDollar/sAcct)*100).toFixed(4));
+    var sSlDist=Math.abs(sEntry-sSl);
+    var sActualRR=sSlDist?parseFloat((sPriceDiff/sSlDist).toFixed(3)):null;
+    var sWinLoss=sPlDollar>0?1:(sPlDollar<0?0:0.5);
     var skippedTrade={
       id:sTradeId,
       num:String(count+j+1),
@@ -3707,37 +4083,37 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       model:randChoice(models),
       method:randChoice(methods),
       ltf:randChoice(ltfs),
-      rating:'',
-      error:'None',
-      acct:startingEquity,
+      rating:sRating,
+      error:sError,
+      acct:sAcct,
       riskpct:1,
-      riskDollar:parseFloat((startingEquity*0.01).toFixed(2)),
+      riskDollar:parseFloat(sRiskDollar.toFixed(2)),
       entryPrice:sEntry,
       stopLoss:sSl,
-      exitPrice:0,
-      qty:0,
-      targetRR:rnd(1.5,3.0,1),
-      actualRR:null,
-      plDollar:0,
-      plPct:0,
+      exitPrice:sHypExit,
+      qty:sQty,
+      targetRR:sTargetRR,
+      actualRR:sActualRR,
+      plDollar:sPlDollar,
+      plPct:sPlPct,
       entryTime:fmtDt2(sEntryDt),
-      exitTime:'',
-      durationMin:0,
-      winLoss:0,
+      exitTime:fmtDt2(sExitDt),
+      durationMin:sActualDurMs>0?Math.round(sActualDurMs/60000):null,
+      winLoss:sWinLoss,
       skipped:true,
       whySkipped:randChoice(whySkippedTemplates),
-      checklist:makeDemoChecklist(false),
+      checklist:makeDemoChecklist(sWinLoss===1),
       biasNarrative:sTfBiases,
       narrativeNotes:randChoice(narrativeTemplates),
-      setupNotes:'Setup was visible but did not fully meet entry criteria.',
+      setupNotes:'1. Trading within a '+sAsset.assetType+' context, '+sPair+' at key level — setup visible but entry criteria not fully met.',
       ledToTrade:randChoice(ledToTradeTemplates),
-      issuesNotes:'',
-      postAnalysis:'',
-      news:'',
+      issuesNotes:randChoice(skipIssuesTemplates),
+      postAnalysis:randChoice(skipPostAnalysisTemplates),
+      news:'1.',
       tpCriteria:'',
-      tpSlPlace:randChoice(slplaces),
-      tpTpPlace:randChoice(tpplaces),
-      tpExitA:'',
+      tpSlPlace:sSlplace,
+      tpTpPlace:sTpplace,
+      tpExitA:sExitCrit,
       tpRrA:'',
       tpExit:'',
       tpTrail:'No',
@@ -3745,15 +4121,15 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       trailDetail:null,
       tpChangeDetail:null,
       planIf:'Price reaches the '+sPair+' zone around '+sEntry,
-      planIfThen:sIsLong?'Enter long if confirmation appears':'Enter short if confirmation appears',
+      planIfThen:(sIsLong?'Enter long':'Enter short')+' with SL at '+sSl+' targeting '+sHypExit,
       planElseIf:'',
       planElseIfThen:'',
       emoBefore:randChoice(emotionTemplates),
-      emoAfter:'',
-      emoComplete:'',
-      mistakes:'',
-      lessons:'',
-      good:'',
+      emoAfter:randChoice(emotionTemplates),
+      emoComplete:randChoice(emotionTemplates),
+      mistakes:randChoice(mistakeTemplates),
+      lessons:randChoice(lessonTemplates),
+      good:randChoice(skipGoodTemplates),
       imageIds:{'htf-W':[],'htf-D':[],'htf-4h':[],'mtf-1h':[],'mtf-30m':[],'ltf-15m':[],'ltf-5m':[],'setup':[],'postanalysis':[]},
       savedAt:new Date().toISOString(),
       loggedAt:fmtDt2(sEntryDt)+':00'
@@ -3937,7 +4313,7 @@ async function renderSessionsList(){
   }).join('');
 }
 async function populateSessionSelects(restoreSessionId){
-  var sessions=await dbGetAll('sessions');
+  var sessions=await dbGetAllCached('sessions');
   sessions.sort(function(a,b){return new Date(b.startDate)-new Date(a.startDate)});
   // Non-archived sessions only for trade form / filters
   var activeSessions=sessions.filter(function(s){return !s.archived;});
@@ -3986,11 +4362,13 @@ async function populateSessionSelects(restoreSessionId){
 
   var dashF=document.getElementById('dash-session-filter');
   var dv=dashF.value;
+  // Record the auto-default so badge doesn't count it as an active filter
+  _defaultDashSessionId=dashDefaultSession?dashDefaultSession.id:'';
   dashF.innerHTML='<option value="">All sessions</option>'+dashFilterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
-  // Auto-select most recent active session of the relevant type if no filter was previously set
-  if(!dv&&dashDefaultSession){dashF.value=dashDefaultSession.id;}
-  else if(dv&&dashFilterSessions.find(function(s){return s.id===dv;})){dashF.value=dv;}
-  else{dashF.value='';} // previous selection no longer valid (mode switched)
+  // Preserve valid user selection; reset if mode switched; always apply default otherwise
+  if(dv&&dashFilterSessions.find(function(s){return s.id===dv;})){dashF.value=dv;}
+  else if(dashDefaultSession){dashF.value=dashDefaultSession.id;}
+  else{dashF.value='';}
 
   // Calendar session filter — same demo-aware list as dashboard
   var calF2=document.getElementById('cal-session-filter');
@@ -3998,23 +4376,38 @@ async function populateSessionSelects(restoreSessionId){
     var cv=calF2.value;
     calF2.innerHTML='<option value="">All sessions</option>'+dashFilterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
     if(cv&&dashFilterSessions.find(function(s){return s.id===cv;})){calF2.value=cv;}
+    else if(dashDefaultSession){calF2.value=dashDefaultSession.id;}
     else{calF2.value='';}
   }
 
   var hF=document.getElementById('flt-session');
   if(hF){
     var hv=hF.value;
-    hF.innerHTML='<option value="">All sessions</option>'+filterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
-    if(!hv&&defaultFilterSession){hF.value=defaultFilterSession.id;}
-    else if(hv){hF.value=hv;}
+    var histDemoSessions=!!_histDemoMode
+      ?activeSessions.filter(function(s){return !!s.isDemo;})
+      :filterSessions;
+    var histDefaultSession=!!_histDemoMode
+      ?(histDemoSessions[0]||null)
+      :defaultFilterSession;
+    // Record the auto-default so chips don't appear for it
+    _defaultHistSessionId=histDefaultSession?histDefaultSession.id:'';
+    hF.innerHTML='<option value="">All sessions</option>'+histDemoSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
+    if(hv&&histDemoSessions.find(function(s){return s.id===hv;})){hF.value=hv;}
+    else if(histDefaultSession){hF.value=histDefaultSession.id;}
+    else{hF.value='';}
   }
-  // Monte Carlo session select
+  // Monte Carlo session select — also demo-aware (mirrors dashboard mode)
   var mcF=document.getElementById('mc-session');
   if(mcF){
     var mcv=mcF.value;
-    mcF.innerHTML='<option value="">All sessions</option>'+filterSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
-    if(!mcv&&defaultFilterSession){mcF.value=defaultFilterSession.id;}
-    else if(mcv){mcF.value=mcv;}
+    var mcSessions=demoOn
+      ? activeSessions.filter(function(s){return !!s.isDemo;})
+      : filterSessions;
+    var mcDefault=demoOn?(mcSessions[0]||null):defaultFilterSession;
+    mcF.innerHTML='<option value="">All sessions</option>'+mcSessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
+    if(mcv&&mcSessions.find(function(s){return s.id===mcv;})){mcF.value=mcv;}
+    else if(mcDefault){mcF.value=mcDefault.id;}
+    else{mcF.value='';}
   }
   // Calculator backtest session select
   var cbF=document.getElementById('calc-backtest-session');
@@ -4037,12 +4430,12 @@ function nav(id,btn){
   document.getElementById('topbar-title').textContent=p.title;
   document.getElementById('topbar-sub').textContent=p.sub;
   if(id==='dashboard')renderDashboard();
-  if(id==='history'){populateFilters();renderHistory();}
+  if(id==='history'){populateSessionSelects().then(function(){populateFilters();renderHistory();});}
   if(id==='sessions')renderSessionsList();
   if(id==='checklist-editor')renderChecklistEditor();
   if(id==='montecarlo'){resetMonteCarloResults();initMonteCarlo();}
   if(id==='calculator'){calcReset();calcSyncAssets();}
-  if(id==='calendar'){calPopulateSessionFilter();renderCalendar();}
+  if(id==='calendar'){calPopulateSessionFilter().then(function(){renderCalendar();});}
   if(id==='ai-analyzer'){aiAnalyzerInit();}
 }
 function startNewTrade(){
@@ -4403,15 +4796,20 @@ function recalc(){
 }
 
 // ══ Paste zones ═══════════════════════════════════
-document.addEventListener('paste',function(e){
+// Guard: ensure document-level listeners are registered exactly once,
+// even if this script block is ever re-evaluated in a dynamic context.
+if(!window._tjPasteListenerRegistered){
+  window._tjPasteListenerRegistered = true;
+  document.addEventListener('paste',function(e){
   var items=e.clipboardData&&e.clipboardData.items;if(!items)return;
   var imgItem=null;for(var i=0;i<items.length;i++){if(items[i].type.startsWith('image/')){imgItem=items[i];break;}}
   if(!imgItem)return;
   var zone=activePasteZone;
-  if(!zone){var f=document.querySelector('.img-paste-zone.focused');if(f)zone=f.id.replace('paste-zone-','');else zone='htf';}
+  if(!zone){var f=document.querySelector('.img-paste-zone.focused');if(f)zone=f.id.replace('paste-zone-','');else zone='htf-W';}
   var file=imgItem.getAsFile();if(file)addImageToZone(file,zone);
   e.preventDefault();
-});
+  });
+} // end _tjPasteListenerRegistered guard
 function focusPasteZone(zone){
   activePasteZone=zone;
   document.querySelectorAll('.img-paste-zone').forEach(function(z){z.classList.remove('focused')});
@@ -4606,14 +5004,14 @@ async function saveTrade(){
   if(!lessons){toast('Lessons learned is required (Reflection tab)','err');switchTab(3,null);return;}
   var good=document.getElementById('l-good').value.trim();
   if(!good){toast('"What went well" is required (Reflection tab)','err');switchTab(3,null);return;}
-  var num=editingId?(await dbGet('trades',editingId)).num:(await generateTradeNum());
+  var num=editingId?null:(await generateTradeNum()); // for editing, num is read from 'old' below
   var entry=parseFloat(document.getElementById('f-entry').value)||0;
   var sl=parseFloat(document.getElementById('f-sl-price').value)||0;
   var exit=parseFloat(document.getElementById('f-exit').value)||0;
   var qty=parseFloat(document.getElementById('f-qty').value)||0;
   var riskpct=parseFloat(document.getElementById('f-riskpct').value)||0;
   var acct=parseFloat(document.getElementById('f-acct').value)||5000;
-  var type=document.getElementById('f-type-val').value;
+  // type already declared above during validation
   var trr=parseFloat(document.getElementById('f-trr').value)||0;
   var edt=getDT('f-etime-date','f-etime-time');
   var xdt=getDT('f-xtime-date','f-xtime-time');
@@ -4645,9 +5043,10 @@ async function saveTrade(){
   var _emptyIds={'htf-W':[],'htf-D':[],'htf-4h':[],'mtf-1h':[],'mtf-30m':[],'ltf-15m':[],'ltf-5m':[],'setup':[],'postanalysis':[]};
   var imageIds=JSON.parse(JSON.stringify(_emptyIds));
   var oldSessionId=null; // track original session when editing, to rebalance it if the trade is moved
+  var _oldLoggedAt=null;
   if(editingId){
     var old=await dbGet('trades',editingId);
-    if(old){imageIds=JSON.parse(JSON.stringify(old.imageIds||_emptyIds));oldSessionId=old.sessionId||null;}
+    if(old){imageIds=JSON.parse(JSON.stringify(old.imageIds||_emptyIds));oldSessionId=old.sessionId||null;_oldLoggedAt=old.loggedAt||null;num=old.num||num;}
     if(pendingImages._deleted){
       for(var z2 in imageIds)imageIds[z2]=(imageIds[z2]||[]).filter(function(id){return!pendingImages._deleted.includes(id)});
       for(var did of pendingImages._deleted)await dbDelete('images',did);
@@ -4700,7 +5099,7 @@ async function saveTrade(){
     skipped:document.getElementById('f-skipped')?document.getElementById('f-skipped').checked:false,
     whySkipped:document.getElementById('why-skipped-notes')?document.getElementById('why-skipped-notes').value:'',
     htfTf:tfState.htf,mtfTf:tfState.mtf,ltfTf:tfState.ltf,
-    loggedAt:editingId?((await dbGet('trades',editingId)).loggedAt||new Date().toISOString()):new Date().toISOString()
+    loggedAt:editingId?(_oldLoggedAt||new Date().toISOString()):new Date().toISOString()
   };
 
   await dbPut('trades',trade);
@@ -4773,7 +5172,15 @@ async function clearForm(skipCancelEdit){
   // Reset TF pills
   resetTfPills();
   recalc();switchTab(0,null);
-  generateTradeNum().then(function(n){var el=document.getElementById('f-num');if(el)el.value=n;});
+  // Only generate a new trade number when creating a new trade (not when editing an existing one)
+  // The second argument `existingNum` is passed by editTrade() to prevent the async generateTradeNum()
+  // from overwriting the correct trade.num after clearForm returns.
+  var _clearFormExistingNum = arguments[1];
+  if(_clearFormExistingNum != null){
+    var _fnEl=document.getElementById('f-num');if(_fnEl)_fnEl.value=_clearFormExistingNum;
+  } else {
+    generateTradeNum().then(function(n){var el=document.getElementById('f-num');if(el)el.value=n;});
+  }
   // Show the "will be set on save" placeholder for a new trade
   var fla=document.getElementById('f-logged-at');
   if(fla){fla.value='';fla.placeholder='set on first save';}
@@ -4784,7 +5191,7 @@ async function clearForm(skipCancelEdit){
 // ══ Edit trade ════════════════════════════════════
 async function editTrade(id){
   var trade=await dbGet('trades',id);if(!trade)return;
-  editingId=id;await clearForm(true);
+  editingId=id;await clearForm(true,trade.num||'');
   var s=function(elId,val){var el=document.getElementById(elId);if(el&&val!=null)el.value=val;};
   document.getElementById('f-num').value=trade.num||'';
   // Pair
@@ -4818,7 +5225,6 @@ async function editTrade(id){
   s('emo-before',trade.emoBefore);s('emo-after',trade.emoAfter);s('emo-complete',trade.emoComplete);
   s('l-mistakes',trade.mistakes);s('l-lessons',trade.lessons);s('l-good',trade.good);
   setChecklist_state(trade.checklist);setBiasFromData(trade.biasNarrative);
-  if(trade.imageIds)SS_ZONES.forEach(function(z){renderStoredImages(trade.imageIds[z]||[],z);});
   // Restore skipped state
   var skippedCb=document.getElementById('f-skipped');
   if(skippedCb){skippedCb.checked=!!trade.skipped;onSkippedChange();}
@@ -4848,8 +5254,8 @@ async function rebalanceSession(sessionIds){
   if(!Array.isArray(sessionIds))sessionIds=[sessionIds];
   sessionIds=sessionIds.filter(Boolean);
   if(!sessionIds.length)return;
-  var allTrades=await dbGetAll('trades');
-  var allSessions=await dbGetAll('sessions');
+  var allTrades=await dbGetAllCached('trades');
+  var allSessions=await dbGetAllCached('sessions');
   for(var sid of sessionIds){
     var sess=allSessions.find(function(s){return s.id===sid;});
     if(!sess)continue;
@@ -4882,7 +5288,7 @@ var ALL_HISTORY_COLS=[
   {key:'pair',      label:'Pair',      sortVal:function(t){return t.pair||'';},                   render:function(t){return'<td style="font-weight:600;color:var(--text)">'+escHtml(t.pair||'')+'</td>';}},
   {key:'assetType', label:'Asset',     sortVal:function(t){return t.assetType||'';},              render:function(t){return'<td style="color:var(--text2)">'+escHtml(t.assetType||'—')+'</td>';}},
   {key:'type',      label:'Direction', sortVal:function(t){return t.type||'';},                   render:function(t){var typ=t.type||'';return'<td>'+(typ?'<span class="badge '+(typ==='Long'?'badge-green':'badge-red')+'">'+typ+'</span>':'—')+'</td>';}},
-  {key:'result',    label:'Result',    sortVal:function(t){return t.winLoss||0;},                 render:function(t){if(t.skipped)return'<td><span class="skipped-badge">Skipped</span></td>';var win=t.winLoss===1;return'<td><span class="badge '+(win?'badge-green':'badge-red')+'">'+(win?'Win':'Loss')+'</span></td>';}},
+  {key:'result',    label:'Result',    sortVal:function(t){return t.winLoss||0;},                 render:function(t){var win=t.winLoss===1;return'<td><span class="badge '+(win?'badge-green':'badge-red')+'">'+(win?'Win':'Loss')+'</span></td>';}},
   {key:'plDollar',  label:'P/L ($)',   sortVal:function(t){return parseFloat(t.plDollar)||0;},    render:function(t){var pl=parseFloat(t.plDollar)||0;return'<td class="mono" style="color:'+(pl>=0?'var(--green)':'var(--red)')+'">'+((pl>=0?'+':'')+pl.toFixed(2))+'</td>';}},
   {key:'plPct',     label:'P/L (%)',   sortVal:function(t){return parseFloat(t.plPct)||0;},       render:function(t){var p=parseFloat(t.plPct)||0;return'<td class="mono" style="color:'+(p>=0?'var(--green)':'var(--red)')+'">'+((p>=0?'+':'')+p.toFixed(2))+'%</td>';}},
   {key:'actualRR',  label:'RR',        sortVal:function(t){return t.actualRR!=null?parseFloat(t.actualRR):-999;},render:function(t){return'<td class="mono">'+(t.actualRR!=null?parseFloat(t.actualRR).toFixed(2)+'R':'—')+'</td>';}},
@@ -4995,14 +5401,81 @@ function histSortBy(key){
   renderHistory();
 }
 
+// ══ Skipped trade hypothetical P/L enrichment ═════
+// Skipped trades have entryPrice, exitPrice (hypothetical), stopLoss, qty, and type stored,
+// but plDollar / plPct / winLoss / actualRR are saved as 0 / null because no real trade occurred.
+// This function computes those fields on-the-fly from price data so every page can display
+// meaningful hypothetical figures.  It mutates a shallow clone — the DB record is never touched.
+function enrichSkippedPL(trades){
+  return trades.map(function(t){
+    if(!t.skipped)return t;
+    var entry=parseFloat(t.entryPrice)||0;
+    var exit=parseFloat(t.exitPrice)||0;
+    var sl=parseFloat(t.stopLoss)||0;
+    var qty=parseFloat(t.qty)||0;
+    var acct=parseFloat(t.acct)||0;
+    if(!entry||!exit||!qty)return t; // not enough data — leave as-is
+    var isLong=(t.type||'').toLowerCase()==='long';
+    var priceDiff=isLong?(exit-entry):(entry-exit);
+    var plDollar=parseFloat((priceDiff*qty).toFixed(2));
+    var plPct=acct?parseFloat(((plDollar/acct)*100).toFixed(4)):0;
+    var slDist=entry&&sl?Math.abs(entry-sl):0;
+    var actualRR=(slDist&&plDollar!=null&&plDollar!==0)
+      ?parseFloat((priceDiff/slDist).toFixed(3))
+      :null;
+    var winLoss=plDollar>0?1:(plDollar<0?0:0.5);
+    return Object.assign({},t,{plDollar:plDollar,plPct:plPct,winLoss:winLoss,actualRR:actualRR});
+  });
+}
+
 // ══ History ═══════════════════════════════════════
-async function renderHistory(){
-  var trades=await dbGetAll('trades');
-  var sessions=await dbGetAll('sessions');
+// ══ Concurrent render guard ════════════════════════════════════
+// Each render function is async and yields at the first `await`.  If a second
+// call arrives while the first is still running, both would eventually write
+// the DOM — with the slower (stale-data) write landing last.
+//
+// The guard below ensures only one invocation of each render runs at a time.
+// If a call arrives while one is in-flight, a single "pending" re-run is
+// queued; any further arrivals collapse onto that same pending slot so we
+// never build a queue deeper than 1.
+var _renderInflight = {};   // { fnName: true }
+var _renderPending  = {};   // { fnName: true }
+
+function guardedRender(name, fn) {
+  if (_renderInflight[name]) {
+    _renderPending[name] = true;   // coalesce all new arrivals into one re-run
+    return;
+  }
+  _renderInflight[name] = true;
+  Promise.resolve().then(fn).catch(function(e){ console.error('render error ['+name+']', e); }).then(function(){
+    _renderInflight[name] = false;
+    if (_renderPending[name]) {
+      _renderPending[name] = false;
+      guardedRender(name, fn);    // run the coalesced re-render
+    }
+  });
+}
+
+function renderHistory()       { guardedRender('renderHistory',       _renderHistoryImpl); }
+function renderDashboard()     { guardedRender('renderDashboard',     _renderDashboardImpl); }
+function updateSidebarStats()  { guardedRender('updateSidebarStats',  _updateSidebarStatsImpl); }
+
+async function _renderHistoryImpl(){
+  var trades=await dbGetAllCached('trades');
+  var sessions=await dbGetAllCached('sessions');
   var sessMap={};sessions.forEach(function(s){sessMap[s.id]=s;});
   var archivedIds=new Set(sessions.filter(function(s){return s.archived;}).map(function(s){return s.id;}));
-  // Attach session name to each trade for sorting/rendering; exclude archived
-  trades=trades.filter(function(t){return !archivedIds.has(t.sessionId);});
+  // Demo-aware: show real or demo trades depending on _histDemoMode
+  var demoIds=new Set(sessions.filter(function(s){return !!s.isDemo;}).map(function(s){return s.id;}));
+  var histDemoOn=!!_histDemoMode;
+  // Attach session name to each trade; exclude archived; filter to correct mode
+  trades=trades.filter(function(t){
+    if(archivedIds.has(t.sessionId))return false;
+    if(histDemoOn&&!demoIds.has(t.sessionId))return false;
+    if(!histDemoOn&&demoIds.has(t.sessionId))return false;
+    return true;
+  });
+  trades=enrichSkippedPL(trades);
   trades.forEach(function(t){t._sessionName=(sessMap[t.sessionId]&&sessMap[t.sessionId].name)||'';});
 
   var fp=document.getElementById('flt-pair').value,ft=document.getElementById('flt-type').value,
@@ -5089,7 +5562,7 @@ async function populateFilters(){
   if(datf){var datv=datf.value;datf.innerHTML='<option value="">All asset types</option>'+assetTypes.map(function(a){return'<option value="'+escHtml(a)+'">'+escHtml(a)+'</option>'}).join('');datf.value=datv;}
   updateHistChips();
 }
-function resetFilters(){var ids=['flt-pair','flt-type','flt-strategy','flt-result','flt-session','flt-asset-type'];ids.forEach(function(id){var el=document.getElementById(id);if(el)el.selectedIndex=0});var fsk=document.getElementById('flt-skipped');if(fsk)fsk.value='taken';document.getElementById('flt-search').value='';updateHistChips();renderHistory();}
+function resetFilters(){var ids=['flt-pair','flt-type','flt-strategy','flt-result','flt-session','flt-asset-type'];ids.forEach(function(id){var el=document.getElementById(id);if(el)el.selectedIndex=0});var fsk=document.getElementById('flt-skipped');if(fsk)fsk.value='taken';document.getElementById('flt-search').value='';_dashDemoMode=false;_histDemoMode=false;_syncDemoButtons(false);updateHistChips();populateSessionSelects().then(function(){renderHistory();});}
 
 // ══ Detail modal ══════════════════════════════════
 async function openDetail(id){
@@ -5203,9 +5676,9 @@ function openLightbox(src){document.getElementById('lightbox-img').src=src;docum
 function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
 
 // ══ Dashboard ═════════════════════════════════════
-async function renderDashboard(){
-  var allTrades=await dbGetAll('trades');
-  var allSess=await dbGetAll('sessions');
+async function _renderDashboardImpl(){
+  var allTrades=await dbGetAllCached('trades');
+  var allSess=await dbGetAllCached('sessions');
   // Build set of archived session IDs
   var archivedIds=new Set(allSess.filter(function(s){return s.archived;}).map(function(s){return s.id;}));
   // Build sets of demo / real session IDs for mode-aware filtering
@@ -5229,7 +5702,7 @@ async function renderDashboard(){
     if(skipF==='taken'&&t.skipped)return false;
     return true;
   });
-  updateDashFilterBadge();
+  trades=enrichSkippedPL(trades);
   var n=trades.length,wins=trades.filter(function(t){return t.winLoss===1});
   var wr=n?((wins.length/n)*100).toFixed(1):'0';
   var totalPL=trades.reduce(function(a,t){return a+(t.plDollar||0)},0);
@@ -5304,19 +5777,23 @@ async function renderDashboard(){
 
   // Cumulative P/L chart
   if(charts.cumpl)charts.cumpl.destroy();
-  charts.cumpl=new Chart(document.getElementById('chart-cumpl').getContext('2d'),{type:'line',data:{labels:cumPctLabels,datasets:[{label:'Cum. P/L %',data:cumPctData,borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,0.06)',borderWidth:2,pointRadius:cumPctData.length<30?3:0,fill:true,tension:0.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:8,color:'#5a6278',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{callback:function(v){return v.toFixed(1)+'%'},color:'#5a6278',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  var _cvCumpl=document.getElementById('chart-cumpl');
+  if(_cvCumpl)charts.cumpl=new Chart(_cvCumpl.getContext('2d'),{type:'line',data:{labels:cumPctLabels,datasets:[{label:'Cum. P/L %',data:cumPctData,borderColor:'#4f8ef7',backgroundColor:'rgba(79,142,247,0.06)',borderWidth:2,pointRadius:cumPctData.length<30?3:0,fill:true,tension:0.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:8,color:'#5a6278',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{callback:function(v){return v.toFixed(1)+'%'},color:'#5a6278',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}}}}});
   if(charts.wl)charts.wl.destroy();
-  charts.wl=new Chart(document.getElementById('chart-winloss').getContext('2d'),{type:'doughnut',data:{labels:['Wins','Losses'],datasets:[{data:[wins.length,n-wins.length],backgroundColor:['#3ecf8e','#f56565'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b92a8',font:{size:11},padding:10,boxWidth:9}}}}});
+  var _cvWl=document.getElementById('chart-winloss');
+  if(_cvWl)charts.wl=new Chart(_cvWl.getContext('2d'),{type:'doughnut',data:{labels:['Wins','Losses'],datasets:[{data:[wins.length,n-wins.length],backgroundColor:['#3ecf8e','#f56565'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b92a8',font:{size:11},padding:10,boxWidth:9}}}}});
   var sM={};trades.forEach(function(t){var s=(t.strategy||'?').split('(')[0].trim();if(!sM[s])sM[s]={w:0,l:0};if(t.winLoss)sM[s].w++;else sM[s].l++;});
   var sk=Object.keys(sM);
   if(charts.strat)charts.strat.destroy();
-  charts.strat=new Chart(document.getElementById('chart-strategy').getContext('2d'),{type:'bar',data:{labels:sk.map(function(k){return k.length>16?k.slice(0,16)+'…':k}),datasets:[{label:'Wins',data:sk.map(function(k){return sM[k].w}),backgroundColor:'#3ecf8e'},{label:'Losses',data:sk.map(function(k){return sM[k].l}),backgroundColor:'#f56565'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b92a8',font:{size:10},padding:7,boxWidth:9}}},scales:{x:{stacked:true,ticks:{color:'#5a6278',font:{size:10}},grid:{display:false}},y:{stacked:true,ticks:{color:'#5a6278',font:{size:10},stepSize:1},grid:{color:'rgba(255,255,255,.04)'}}}}});
+  var _cvStrat=document.getElementById('chart-strategy');
+  if(_cvStrat)charts.strat=new Chart(_cvStrat.getContext('2d'),{type:'bar',data:{labels:sk.map(function(k){return k.length>16?k.slice(0,16)+'…':k}),datasets:[{label:'Wins',data:sk.map(function(k){return sM[k].w}),backgroundColor:'#3ecf8e'},{label:'Losses',data:sk.map(function(k){return sM[k].l}),backgroundColor:'#f56565'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b92a8',font:{size:10},padding:7,boxWidth:9}}},scales:{x:{stacked:true,ticks:{color:'#5a6278',font:{size:10}},grid:{display:false}},y:{stacked:true,ticks:{color:'#5a6278',font:{size:10},stepSize:1},grid:{color:'rgba(255,255,255,.04)'}}}}});
   var pM={};trades.forEach(function(t){pM[t.pair]=(pM[t.pair]||0)+1});var pk=Object.keys(pM).sort(function(a,b){return pM[b]-pM[a]}).slice(0,6);
   if(charts.pair)charts.pair.destroy();
-  charts.pair=new Chart(document.getElementById('chart-pair').getContext('2d'),{type:'doughnut',data:{labels:pk,datasets:[{data:pk.map(function(k){return pM[k]}),backgroundColor:['#4f8ef7','#3ecf8e','#a78bfa','#f6ad55','#f56565','#64d4fc'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b92a8',font:{size:11},padding:9,boxWidth:9}}}}});
+  var _cvPair=document.getElementById('chart-pair');
+  if(_cvPair)charts.pair=new Chart(_cvPair.getContext('2d'),{type:'doughnut',data:{labels:pk,datasets:[{data:pk.map(function(k){return pM[k]}),backgroundColor:['#4f8ef7','#3ecf8e','#a78bfa','#f6ad55','#f56565','#64d4fc'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#8b92a8',font:{size:11},padding:9,boxWidth:9}}}}});
   // Equity curve chart (uses eqLabels/eqData computed above)
-  var eqMin=eqData.length?Math.min.apply(null,eqData):0;
-  var eqMax=eqData.length?Math.max.apply(null,eqData):0;
+  var eqMin=eqData.length?eqData.reduce(function(a,b){return a<b?a:b;}):0;
+  var eqMax=eqData.length?eqData.reduce(function(a,b){return a>b?a:b;}):0;
   var eqTrending=eqData.length>1&&eqData[eqData.length-1]>=eqData[0];
   var eqColor=eqTrending?'#3ecf8e':'#f56565';
   var eqBgColor=eqTrending?'rgba(62,207,142,0.07)':'rgba(245,101,101,0.07)';
@@ -5325,8 +5802,9 @@ async function renderDashboard(){
     if(eqLabel)eqLabel.textContent='Current: $'+eqData[eqData.length-1].toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
   }
   if(charts.equity)charts.equity.destroy();
-  if(document.getElementById('chart-equity'))
-    charts.equity=new Chart(document.getElementById('chart-equity').getContext('2d'),{type:'line',data:{labels:eqLabels,datasets:[{label:'Equity ($)',data:eqData,borderColor:eqColor,backgroundColor:eqBgColor,borderWidth:2,pointRadius:eqData.length<30?3:0,fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:10,color:'#5a6278',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{callback:function(v){return'$'+v.toLocaleString()},color:'#5a6278',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},suggestedMin:eqMin*0.995,suggestedMax:eqMax*1.005}}}});
+  var _cvEquity=document.getElementById('chart-equity');
+  if(_cvEquity)
+    charts.equity=new Chart(_cvEquity.getContext('2d'),{type:'line',data:{labels:eqLabels,datasets:[{label:'Equity ($)',data:eqData,borderColor:eqColor,backgroundColor:eqBgColor,borderWidth:2,pointRadius:eqData.length<30?3:0,fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:10,color:'#5a6278',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{callback:function(v){return'$'+v.toLocaleString()},color:'#5a6278',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},suggestedMin:eqMin*0.995,suggestedMax:eqMax*1.005}}}});
 
   var recent=trades.slice().sort(function(a,b){return new Date(b.savedAt)-new Date(a.savedAt)}).slice(0,5);
   var recentRows=recent.map(function(t){
@@ -5339,9 +5817,9 @@ async function renderDashboard(){
 }
 
 // ══ Sidebar stats ══════════════════════════════════
-async function updateSidebarStats(){
-  var trades=await dbGetAll('trades');
-  var sessions=await dbGetAll('sessions');
+async function _updateSidebarStatsImpl(){
+  var trades=await dbGetAllCached('trades');
+  var sessions=await dbGetAllCached('sessions');
   var archivedIds=new Set(sessions.filter(function(s){return s.archived;}).map(function(s){return s.id;}));
   trades=trades.filter(function(t){return !archivedIds.has(t.sessionId);});
   var wins=trades.filter(function(t){return t.winLoss===1});
@@ -5354,7 +5832,7 @@ async function exportBackup(){
   // Also capture localStorage keys used by the app
   var localData={};
   var blob=new Blob([JSON.stringify({version:5,exportedAt:new Date().toISOString(),trades,images,sessions,settings,localData},null,2)],{type:'application/json'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tj_data_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tj_data_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},60000);
   toast('Full backup downloaded ('+images.length+' images, '+trades.length+' trades)','ok');
 }
 // ══ Recompute derived fields from raw trade data ══════
@@ -5420,7 +5898,7 @@ async function exportCSV(){
   var trades=await dbGetAll('trades');
   var cols=['num','pair','assetType','type','sessionId','strategy','ltf','rating','riskpct','riskDollar','entryPrice','stopLoss','exitPrice','qty','targetRR','actualRR','plDollar','plPct','durationMin','winLoss','entryTime','exitTime','savedAt'];
   var csv=[cols.join(',')].concat(trades.map(function(t){return cols.map(function(c){var v=t[c]??'';return'"'+String(v).replace(/"/g,'""')+'"'}).join(',')})).join('\n');
-  var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='trades_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(a.href);
+  var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='trades_'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},60000);
   toast('CSV downloaded','ok');
 }
 async function clearAll(){
@@ -5450,54 +5928,72 @@ function toggleDashFilters(){
   body.style.display=open?'none':'block';
   chevron.style.transform=open?'':'rotate(180deg)';
 }
+function toggleCalFilters(){
+  var body=document.getElementById('cal-filter-body');
+  var chevron=document.getElementById('cal-filter-chevron');
+  var open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  chevron.style.transform=open?'':'rotate(180deg)';
+}
 
 // ── Demo mode toggle ───────────────────────────────────────
-var _dashDemoMode=false; // false = real sessions, true = demo sessions
+var _dashDemoMode=false; // false = real sessions, true = demo sessions (shared by dash, cal, mc, hist)
+var _histDemoMode=false;  // alias — kept for backward-compat; always mirrors _dashDemoMode
+// Track auto-selected default session IDs so badge/chips don't count them as active filters
+var _defaultDashSessionId='';
+var _defaultHistSessionId='';
+
+// ── Unified demo-mode sync helper ─────────────────────────────────────────────
+// Call this whenever demo state changes.  It updates every toggle button+label
+// across Dashboard, Calendar, History, and Monte Carlo in one place.
+function _syncDemoButtons(on){
+  var ids=[
+    {btn:'dash-demo-toggle',lbl:'dash-demo-label'},
+    {btn:'cal-demo-toggle', lbl:'cal-demo-label'},
+    {btn:'hist-demo-toggle',lbl:'hist-demo-label'},
+    {btn:'mc-demo-toggle',  lbl:'mc-demo-label'}
+  ];
+  ids.forEach(function(pair){
+    var btn=document.getElementById(pair.btn);
+    var lbl=document.getElementById(pair.lbl);
+    if(btn){btn.style.background=on?'rgba(232,160,48,.22)':'rgba(232,160,48,.08)';btn.style.borderColor=on?'rgba(232,160,48,.6)':'rgba(232,160,48,.35)';}
+    if(lbl)lbl.textContent=on?'Demo ON':'Demo OFF';
+  });
+}
+
 function toggleDemoMode(){
   _dashDemoMode=!_dashDemoMode;
-  var btn=document.getElementById('dash-demo-toggle');
-  var lbl=document.getElementById('dash-demo-label');
-  var calBtn=document.getElementById('cal-demo-toggle');
-  var calLbl=document.getElementById('cal-demo-label');
-  if(_dashDemoMode){
-    if(btn){btn.style.background='rgba(232,160,48,.22)';btn.style.borderColor='rgba(232,160,48,.6)';}
-    if(lbl)lbl.textContent='Demo ON';
-    if(calBtn){calBtn.style.background='rgba(232,160,48,.22)';calBtn.style.borderColor='rgba(232,160,48,.6)';}
-    if(calLbl)calLbl.textContent='Demo ON';
-  } else {
-    if(btn){btn.style.background='rgba(232,160,48,.08)';btn.style.borderColor='rgba(232,160,48,.35)';}
-    if(lbl)lbl.textContent='Demo OFF';
-    if(calBtn){calBtn.style.background='rgba(232,160,48,.08)';calBtn.style.borderColor='rgba(232,160,48,.35)';}
-    if(calLbl)calLbl.textContent='Demo OFF';
-  }
-  // Reset session filter selection since the available options change
+  _histDemoMode=_dashDemoMode;
+  _syncDemoButtons(_dashDemoMode);
   var dashF=document.getElementById('dash-session-filter');
   if(dashF)dashF.value='';
-  // Re-populate selects with correct session list then render
   populateSessionSelects().then(function(){renderDashboard();});
 }
 
 function toggleCalDemoMode(){
   _dashDemoMode=!_dashDemoMode;
-  // Sync both demo buttons
-  var dashBtn=document.getElementById('dash-demo-toggle');
-  var dashLbl=document.getElementById('dash-demo-label');
-  var calBtn=document.getElementById('cal-demo-toggle');
-  var calLbl=document.getElementById('cal-demo-label');
-  if(_dashDemoMode){
-    if(dashBtn){dashBtn.style.background='rgba(232,160,48,.22)';dashBtn.style.borderColor='rgba(232,160,48,.6)';}
-    if(dashLbl)dashLbl.textContent='Demo ON';
-    if(calBtn){calBtn.style.background='rgba(232,160,48,.22)';calBtn.style.borderColor='rgba(232,160,48,.6)';}
-    if(calLbl)calLbl.textContent='Demo ON';
-  } else {
-    if(dashBtn){dashBtn.style.background='rgba(232,160,48,.08)';dashBtn.style.borderColor='rgba(232,160,48,.35)';}
-    if(dashLbl)dashLbl.textContent='Demo OFF';
-    if(calBtn){calBtn.style.background='rgba(232,160,48,.08)';calBtn.style.borderColor='rgba(232,160,48,.35)';}
-    if(calLbl)calLbl.textContent='Demo OFF';
-  }
+  _histDemoMode=_dashDemoMode;
+  _syncDemoButtons(_dashDemoMode);
   var calF=document.getElementById('cal-session-filter');
   if(calF)calF.value='';
   populateSessionSelects().then(function(){renderCalendar();});
+}
+
+function toggleHistDemoMode(){
+  _dashDemoMode=!_dashDemoMode;
+  _histDemoMode=_dashDemoMode;
+  _syncDemoButtons(_dashDemoMode);
+  var hF=document.getElementById('flt-session');if(hF)hF.value='';
+  updateHistChips();
+  populateSessionSelects().then(function(){renderHistory();});
+}
+
+function toggleMcDemoMode(){
+  _dashDemoMode=!_dashDemoMode;
+  _histDemoMode=_dashDemoMode;
+  _syncDemoButtons(_dashDemoMode);
+  var mcF=document.getElementById('mc-session');if(mcF)mcF.value='';
+  populateSessionSelects().then(function(){resetMonteCarloResults();initMonteCarlo();});
 }
 
 function resetDashFilters(){
@@ -5505,26 +6001,12 @@ function resetDashFilters(){
   var dsk=document.getElementById('dash-skipped-filter');if(dsk)dsk.value='taken';
   // Turn demo off
   _dashDemoMode=false;
-  var dashBtn=document.getElementById('dash-demo-toggle');var dashLbl=document.getElementById('dash-demo-label');
-  var calBtn=document.getElementById('cal-demo-toggle');var calLbl=document.getElementById('cal-demo-label');
-  if(dashBtn){dashBtn.style.background='rgba(232,160,48,.08)';dashBtn.style.borderColor='rgba(232,160,48,.35)';}
-  if(dashLbl)dashLbl.textContent='Demo OFF';
-  if(calBtn){calBtn.style.background='rgba(232,160,48,.08)';calBtn.style.borderColor='rgba(232,160,48,.35)';}
-  if(calLbl)calLbl.textContent='Demo OFF';
-  updateDashFilterBadge();
-  document.getElementById('dash-reset-btn').style.display='none';
+  _histDemoMode=false;
+  _syncDemoButtons(false);
+
   populateSessionSelects().then(function(){renderDashboard();});
 }
-function updateDashFilterBadge(){
-  var count=0;
-  ['dash-session-filter','dash-asset-type-filter','dash-pair-filter','dash-strategy-filter'].forEach(function(id){var el=document.getElementById(id);if(el&&el.value)count++;});
-  // Also count demo mode as an active filter
-  if(_dashDemoMode)count++;
-  var badge=document.getElementById('dash-filter-count');
-  var resetBtn=document.getElementById('dash-reset-btn');
-  if(count>0){badge.textContent=count;badge.style.display='inline';if(resetBtn)resetBtn.style.display='inline-flex';}
-  else{badge.style.display='none';if(resetBtn)resetBtn.style.display='none';}
-}
+function updateDashFilterBadge(){}
 
 // ══ History filter chips ═══════════════════════════
 function toggleHistFilters(){
@@ -5533,25 +6015,8 @@ function toggleHistFilters(){
   body.style.display=open?'none':'flex';
   document.getElementById('hist-filter-toggle-btn').classList.toggle('active',!open);
 }
-function updateHistChips(){
-  var labels={
-    'flt-session':'Session','flt-asset-type':'Type','flt-pair':'Pair',
-    'flt-type':'Dir','flt-strategy':'Strategy','flt-result':'Result','flt-skipped':'Type'
-  };
-  var chips='';var count=0;
-  Object.keys(labels).forEach(function(id){
-    var el=document.getElementById(id);if(!el||!el.value)return;
-    count++;
-    var txt=el.options[el.selectedIndex].text;
-    chips+='<span class="hist-chip" onclick="clearHistFilter(\''+id+'\')" title="Remove filter">'+escHtml(labels[id])+': '+escHtml(txt)+' ×</span>';
-  });
-  document.getElementById('hist-active-chips').innerHTML=chips;
-  var badge=document.getElementById('hist-filter-count');
-  var resetBtn=document.getElementById('hist-reset-btn');
-  if(count>0){badge.textContent=count;badge.style.display='inline';if(resetBtn)resetBtn.style.display='inline-flex';}
-  else{badge.style.display='none';if(resetBtn)resetBtn.style.display='none';}
-}
-function clearHistFilter(id){var el=document.getElementById(id);if(el)el.selectedIndex=0;updateHistChips();renderHistory();}
+function updateHistChips(){}
+function clearHistFilter(id){var el=document.getElementById(id);if(el)el.selectedIndex=0;renderHistory();}
 
 // ══ Import CSV ════════════════════════════════════
 async function importCSV(input){
@@ -5578,7 +6043,7 @@ async function importCSV(input){
       if(!existing.has(key)){recomputeTradeFields(trade);await dbPut('trades',trade);added++;existing.add(key);}
     }
     toast('Imported '+added+' trades from CSV','ok');
-    renderDashboard();updateSidebarStats();
+    await refreshUI();
   }catch(e){toast('CSV error: '+e.message,'err');console.error(e);}
   input.value='';
 }
@@ -5646,7 +6111,9 @@ async function loadSavedTheme(){
 }
 
 // ══ Global Esc key handler ════════════════════════
-document.addEventListener('keydown',function(e){
+if(!window._tjKeydownListenerRegistered){
+  window._tjKeydownListenerRegistered = true;
+  document.addEventListener('keydown',function(e){
   if(e.key!=='Escape')return;
   // Close in priority order: lightbox → detail → modals
   if(document.getElementById('lightbox').classList.contains('open')){closeLightbox();return;}
@@ -5661,7 +6128,8 @@ document.addEventListener('keydown',function(e){
       return;
     }
   }
-});
+  });
+} // end _tjKeydownListenerRegistered guard
 
 // ══ Init ══════════════════════════════════════════
 openDB().then(async function(){
@@ -5706,21 +6174,14 @@ function resetMonteCarloResults(){
 }
 
 async function initMonteCarlo(){
+  // Sync demo toggle button to current global state
+  _syncDemoButtons(_dashDemoMode);
+  // mc-session is already populated & defaulted by populateSessionSelects (called at startup and
+  // after every session save / demo-mode toggle).  We just need to ensure the equity field is filled.
   var sessions=await dbGetAll('sessions');
   sessions=sessions.filter(function(s){return !s.archived;});
   sessions.sort(function(a,b){return new Date(b.startDate)-new Date(a.startDate)});
   var sel=document.getElementById('mc-session');
-  var cur=sel?sel.value:'';
-  if(sel){
-    sel.innerHTML='<option value="">All sessions</option>'+sessions.map(function(s){return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>'}).join('');
-    // Auto-select active session if none was previously selected
-    if(cur){
-      sel.value=cur;
-    } else {
-      var activeSession=sessions.find(function(s){return isSessionActive(s);})||null;
-      if(activeSession)sel.value=activeSession.id;
-    }
-  }
   // Load saved defaults — prefer IndexedDB, fall back to localStorage
   var mcDefs={};
   try{var mcS=await getSetting('tj-mc-defaults',null);if(mcS)mcDefs=mcS;else{var mcLs=localStorage.getItem('tj-mc-defaults');if(mcLs){mcDefs=JSON.parse(mcLs);setSetting('tj-mc-defaults',mcDefs);}}}catch(e){}
@@ -5760,9 +6221,27 @@ async function runMonteCarlo(){
   var allTrades=await dbGetAll('trades');
   var allSess=await dbGetAll('sessions');
   var archivedIds=new Set(allSess.filter(function(s){return s.archived;}).map(function(s){return s.id;}));
-  var pool=sesId?allTrades.filter(function(t){return t.sessionId===sesId&&!archivedIds.has(t.sessionId);}):allTrades.filter(function(t){return !archivedIds.has(t.sessionId);});
+  var demoIds=new Set(allSess.filter(function(s){return !!s.isDemo;}).map(function(s){return s.id;}));
+  var mcDemoOn=!!_dashDemoMode;
+  var mcSkipF=(document.getElementById('mc-skipped-filter')||{}).value||'taken';
+  var pool=sesId
+    ?allTrades.filter(function(t){
+        if(t.sessionId!==sesId||archivedIds.has(t.sessionId))return false;
+        if(mcSkipF==='taken'&&t.skipped)return false;
+        if(mcSkipF==='skipped'&&!t.skipped)return false;
+        return true;
+      })
+    :allTrades.filter(function(t){
+        if(archivedIds.has(t.sessionId))return false;
+        if(mcDemoOn&&!demoIds.has(t.sessionId))return false;
+        if(!mcDemoOn&&demoIds.has(t.sessionId))return false;
+        if(mcSkipF==='taken'&&t.skipped)return false;
+        if(mcSkipF==='skipped'&&!t.skipped)return false;
+        return true;
+      });
+  pool=enrichSkippedPL(pool);
   // Use plPct for sampling (% gain per trade relative to account at time of trade)
-  var returns=pool.filter(function(t){return t.plPct!=null;}).map(function(t){return t.plPct/100;}); // as decimal
+  var returns=pool.filter(function(t){return t.plPct!=null&&t.plPct!==0;}).map(function(t){return t.plPct/100;}); // as decimal
   if(returns.length<3){toast('Not enough trades (need 3+) in selected data','err');return;}
 
   // Run simulations
@@ -5899,7 +6378,6 @@ async function runMonteCarlo(){
 
 var DEFAULT_ASSET_TYPES=[
   {name:'Forex Major',pairs:['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','USD/CAD','NZD/USD']},
-  {name:'Forex Cross',pairs:['EUR/GBP','EUR/JPY','GBP/JPY','EUR/AUD','AUD/JPY']},
   {name:'Commodity',pairs:['XAU/USD','XAG/USD','OIL/USD']},
   {name:'Index',pairs:['US30','NAS100','US500','UK100']},
   {name:'Crypto',pairs:['BTC/USD','ETH/USD']}
@@ -6588,18 +7066,48 @@ async function ghApplyConfigData(data){
   if(data.calcCapital!=null){await setSetting('tj-calc-capital',data.calcCapital);localStorage.setItem('tj-calc-capital',data.calcCapital);}
   if(data.demoDefaults){await setSetting('tj-demo-defaults',data.demoDefaults);}
 }
+// ── Debounce utility for GitHub sync calls ────────────────────
+// Coalesces rapid repeated calls with the same key into a single
+// deferred execution, preventing API rate-limit hammering when the
+// user makes several quick changes (e.g. drag-reordering checklist
+// items or adding multiple pairs in a row).
+var _ghSyncTimers = {};
+function ghDebounce(fn, key, ms){
+  if(_ghSyncTimers[key]) clearTimeout(_ghSyncTimers[key]);
+  _ghSyncTimers[key] = setTimeout(function(){
+    delete _ghSyncTimers[key];
+    fn();
+  }, ms || 1500);
+}
+
 // Silently push tj_config.json after any checklist/strategies/assets change
 // Note: bkp/config_backup.json is only updated on Manual Backup — not here
-async function ghAutoSyncConfig(){
-  var cfg=ghGetConfig();
-  if(!cfg.user||!cfg.repo||!cfg.token)return;
-  await ghPushConfigFile(cfg);
+function ghAutoSyncConfig(){
+  ghDebounce(function(){
+    var cfg=ghGetConfig();
+    if(!cfg.user||!cfg.repo||!cfg.token)return;
+    ghPushConfigFile(cfg);
+  }, 'config', 1500);
 }
 
 // ── Alerts file helpers ────────────────────────────────────────
 async function ghPushAlertsFile(cfg){
   try{
-    var payload={version:1,exportedAt:new Date().toISOString(),alerts:_paAlerts};
+    var tg = paGetTg ? paGetTg() : {token:'',chatId:''};
+    var payload={
+      version:2,
+      exportedAt:new Date().toISOString(),
+      alerts:_paAlerts,
+      config:{
+        token:   tg.token,
+        chatId:  tg.chatId,
+        template: localStorage.getItem(PA_KEY_TEMPLATE) || '',
+        placeholders: paGetPlaceholders ? paGetPlaceholders() : {},
+        deleteDays: localStorage.getItem('tj-pa-delete-days') || '0',
+        provider:   localStorage.getItem(PA_KEY_PROVIDER)  || 'yahoo',
+        oandaEnv:   localStorage.getItem(PA_KEY_OANDA_ENV) || 'practice'
+      }
+    };
     var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
     var sha=await ghGetFileSHAByPath(cfg,GH_ALERTS_FILE);
     var body={message:'TJ alerts — '+new Date().toISOString().slice(0,16).replace('T',' '),content:content};
@@ -6614,13 +7122,15 @@ async function ghPushAlertsFile(cfg){
 
 // Silently push tjalert.json after any alert add/remove/change
 // Note: bkp/alerts_backup.json is only updated on Manual Backup — not here
-async function ghAutoSyncAlerts(){
-  var cfg=ghGetConfig();
-  if(!cfg.user||!cfg.repo||!cfg.token)return;
-  await ghPushAlertsFile(cfg);
+function ghAutoSyncAlerts(){
+  ghDebounce(function(){
+    var cfg=ghGetConfig();
+    if(!cfg.user||!cfg.repo||!cfg.token)return;
+    ghPushAlertsFile(cfg);
+  }, 'alerts', 1500);
 }
 
-// Pull alerts from tjalert.json and merge into local storage
+// Pull alerts from tjalert.json and restore config
 async function ghPullAlertsFile(cfg){
   try{
     var raw=await ghFetchFileContent(cfg,GH_ALERTS_FILE);
@@ -6629,8 +7139,24 @@ async function ghPullAlertsFile(cfg){
     var remote=Array.isArray(data)?data:(data.alerts||[]);
     if(remote.length){
       _paAlerts=remote;
-      paSave();
+      localStorage.setItem(PA_KEY_ALERTS, JSON.stringify(_paAlerts));
     }
+    // Restore config
+    var c = data.config || {};
+    if(c.token)      localStorage.setItem(PA_KEY_TOKEN,  c.token);
+    if(c.chatId)     localStorage.setItem(PA_KEY_CHATID, c.chatId);
+    if(c.template)   localStorage.setItem(PA_KEY_TEMPLATE, c.template);
+    if(c.placeholders && Object.keys(c.placeholders).length){
+      localStorage.setItem(PA_KEY_PLACEHOLDERS, JSON.stringify(c.placeholders));
+    }
+    if(c.deleteDays !== undefined) localStorage.setItem('tj-pa-delete-days', c.deleteDays);
+    // Restore data provider settings (keys stay local — never synced)
+    if(c.provider)  localStorage.setItem(PA_KEY_PROVIDER,  c.provider);
+    if(c.oandaEnv)  localStorage.setItem(PA_KEY_OANDA_ENV, c.oandaEnv);
+    // Refresh provider config cache and UI if already rendered
+    if(typeof paLoadConfig === 'function') paLoadConfig();
+    if(typeof paProviderUIInit === 'function')   paProviderUIInit();
+    if(typeof paProviderBadgeRefresh === 'function') paProviderBadgeRefresh();
   }catch(e){console.warn('Alerts pull error:',e.message);}
 }
 
@@ -6741,6 +7267,11 @@ function ghClearConfig(){
 }
 function ghToggleTokenVis(){
   var inp=document.getElementById('gh-token');
+  if(!inp)return;
+  inp.type=inp.type==='password'?'text':'password';
+}
+function toggleKeyVis(inputId){
+  var inp=document.getElementById(inputId);
   if(!inp)return;
   inp.type=inp.type==='password'?'text':'password';
 }
@@ -6951,8 +7482,15 @@ async function ghSnapshot(type,name){
         body:JSON.stringify(cfgBody)
       });
       // Also overwrite the single alerts backup file (bkp/alerts_backup.json)
+      // Only write if there are actually alerts to back up — never overwrite with an empty array
       try{
-        var alertsPayload={version:1,exportedAt:new Date().toISOString(),alerts:_paAlerts};
+        if(_paAlerts && _paAlerts.length > 0){
+        var alertsPayload={version:2,exportedAt:new Date().toISOString(),alerts:_paAlerts,config:{
+          provider:      localStorage.getItem(PA_KEY_PROVIDER)       || 'yahoo',
+          oandaEnv:      localStorage.getItem(PA_KEY_OANDA_ENV)      || 'practice',
+          finnhubKey:    localStorage.getItem(PA_KEY_FINNHUB_KEY)    || '',
+          coingeckoKey:  localStorage.getItem(PA_KEY_COINGECKO_KEY)  || ''
+        }};
         var alertsContent=btoa(unescape(encodeURIComponent(JSON.stringify(alertsPayload,null,2))));
         var alertsBkpSha=await ghGetFileSHAByPath(cfg,GH_BKP_ALERTS_FILE);
         var alertsBkpBody={message:'TJ alerts backup — '+ts,content:alertsContent};
@@ -6962,8 +7500,10 @@ async function ghSnapshot(type,name){
           headers:{'Authorization':'token '+cfg.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
           body:JSON.stringify(alertsBkpBody)
         });
+        }
       }catch(ae){console.warn('Alerts backup error:',ae.message);}
-      toast('Manual backup saved — trades snapshot + config backup + alerts backup updated','ok');
+      var alertsBkpMsg=(_paAlerts&&_paAlerts.length>0)?'trades snapshot + config backup + alerts backup updated':'trades snapshot + config backup updated (no alerts to back up)';
+      toast('Manual backup saved — '+alertsBkpMsg,'ok');
     } else {
       toast('Snapshot saved to GitHub bkp/trades/','ok');
     }
@@ -7468,7 +8008,7 @@ function ghDownloadPagesWorkflow(){
 '        id: deployment\n'+
 '        uses: actions/deploy-pages@v4\n';
   var blob=new Blob([yml],{type:'text/yaml'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='deploy.yml';a.click();URL.revokeObjectURL(a.href);
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='deploy.yml';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},60000);
   toast('deploy.yml downloaded — add it to .github/workflows/ in your repo','ok');
 }
 
@@ -7760,9 +8300,14 @@ async function calPopulateSessionFilter(){
   sel.innerHTML='<option value="">All sessions</option>'+sessions.map(function(s){
     return'<option value="'+s.id+'">'+escHtml(s.name)+'</option>';
   }).join('');
-  // Keep existing selection only if it still exists in the new list
-  if(existing&&sessions.find(function(s){return s.id===existing;}))sel.value=existing;
-  else sel.value='';
+  if(existing&&sessions.find(function(s){return s.id===existing;})){
+    sel.value=existing;
+  } else {
+    // Auto-select the most recent active session as default
+    var today=new Date().toISOString().slice(0,10);
+    var active=sessions.find(function(s){return s.startDate<=today&&(!s.endDate||s.endDate>=today);});
+    sel.value=active?active.id:(sessions[0]?sessions[0].id:'');
+  }
 }
 
 // ── Main render entry ─────────────────────────────────────
@@ -7773,14 +8318,17 @@ async function renderCalendar(){
   var demoIds=new Set(allSess.filter(function(s){return !!s.isDemo;}).map(function(s){return s.id;}));
   var demoOn=!!_dashDemoMode;
   var sesF=(document.getElementById('cal-session-filter')||{}).value||'';
+  var calSkipF=(document.getElementById('cal-skipped-filter')||{}).value||'taken';
   _calTrades=allTrades.filter(function(t){
     if(archivedIds.has(t.sessionId))return false;
     if(demoOn&&!demoIds.has(t.sessionId))return false;
     if(!demoOn&&demoIds.has(t.sessionId))return false;
     if(sesF&&t.sessionId!==sesF)return false;
-    if(t.skipped)return false; // only real trades
+    if(calSkipF==='taken'&&t.skipped)return false;
+    if(calSkipF==='skipped'&&!t.skipped)return false;
     return true;
   });
+  _calTrades=enrichSkippedPL(_calTrades);
 
   // Render streak bar (always visible regardless of view)
   calRenderStreakBar(_calTrades);
@@ -7913,9 +8461,9 @@ function calRenderMonth(){
   var byDay=calGroupByDay(_calTrades);
   // Max values for heat normalisation
   var allCounts=Object.values(byDay).map(function(v){return v.length;});
-  var maxCount=allCounts.length?Math.max.apply(null,allCounts):1;
+  var maxCount=allCounts.length?allCounts.reduce(function(a,b){return a>b?a:b;}):1;
   var allPl=Object.values(byDay).map(function(v){return Math.abs(v.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0));});
-  var maxAbsPl=allPl.length?Math.max.apply(null,allPl):1;
+  var maxAbsPl=allPl.length?allPl.reduce(function(a,b){return a>b?a:b;}):1;
 
   // First day of month & grid padding
   var firstDay=new Date(y,m,1).getDay(); // 0=Sun
@@ -8130,9 +8678,9 @@ function calRenderWeek(){
 
   // Max values for heat normalisation (same as month view)
   var allCounts=Object.values(byDay).map(function(v){return v.length;});
-  var maxCount=allCounts.length?Math.max.apply(null,allCounts):1;
+  var maxCount=allCounts.length?allCounts.reduce(function(a,b){return a>b?a:b;}):1;
   var allPl=Object.values(byDay).map(function(v){return Math.abs(v.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0));});
-  var maxAbsPl=allPl.length?Math.max.apply(null,allPl):1;
+  var maxAbsPl=allPl.length?allPl.reduce(function(a,b){return a>b?a:b;}):1;
 
   var html='<div class="cal-week-grid">';
   for(var i=0;i<7;i++){
@@ -8251,8 +8799,8 @@ function calRenderYear(){
     allMoAbsPl.push(Math.abs(moPl0));
     allMoCnts.push(moCnt0);
   }
-  var maxMoAbsPl=Math.max.apply(null,allMoAbsPl)||1;
-  var maxMoCnt=Math.max.apply(null,allMoCnts)||1;
+  var maxMoAbsPl=allMoAbsPl.length?allMoAbsPl.reduce(function(a,b){return a>b?a:b;}):0;maxMoAbsPl=maxMoAbsPl||1;
+  var maxMoCnt=allMoCnts.length?allMoCnts.reduce(function(a,b){return a>b?a:b;}):0;maxMoCnt=maxMoCnt||1;
 
   function moHeatClass(cnt,pl){
     if(!cnt)return'';
@@ -8507,7 +9055,9 @@ async function aiAnalyzerInit(){
 function aiToggleDemoMode(){
   _aiDemoMode=!_aiDemoMode;
   _dashDemoMode=_aiDemoMode;
+  _histDemoMode=_aiDemoMode;
   aiUpdateDemoToggle();
+  _syncDemoButtons(_aiDemoMode);
   aiPopulateSessionFilter();
 }
 function aiUpdateDemoToggle(){
@@ -9027,6 +9577,7 @@ async function runAiAnalysis(){
       if(typeF==='skipped'&&!t.skipped)return false;
       return true;
     });
+    trades=enrichSkippedPL(trades);
 
     if(!trades.length){
       container.innerHTML='<div class="ai-empty-state"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M21.17 8H12V2.83"/><circle cx="12" cy="12" r="2"/></svg><p>No trades found for the selected filters. Try "All sessions" or change the trade type filter.</p></div>';
@@ -9357,16 +9908,77 @@ _calDate=new Date();
 
 var _paAlerts = [];          // array of alert objects
 var _paPrices = {};          // { symbol: currentPrice }
+var _paPriceUpdatedAt = {};  // { symbol: timestampMs } — when price was last fetched
+var _paLastPollAt = 0;       // timestamp (ms) of the most recently completed poll
 var _paMonitorInterval = null;
 var _paDeleteInterval  = null;
+var _paCountdownInterval = null; // ticks every second to update per-card countdown
+var _paNextPollAt = 0;           // timestamp (ms) of the next scheduled poll
 var _paDir = 'above';        // default direction for new alert
-var _paPollMs = 15000;       // poll every 15 seconds
-var PA_KEY_ALERTS = 'tj-price-alerts';
-var PA_KEY_TOKEN  = 'tj-pa-tg-token';
-var PA_KEY_CHATID = 'tj-pa-tg-chatid';
+var _paPollMs = 120000;      // poll interval (ms) — recomputed on monitoring start
+
+// Minimum safe poll interval per provider (free-tier rate limits).
+// binance   : no key, 1200 req/min weight limit → 15 s is fine
+// yahoo     : unofficial allorigins proxy, undocumented limit → 60 s base, scales +15s/symbol
+// coingecko : free tier ~30 req/min (no key) or 50/min (demo key) → 60 s is safe
+// finnhub   : free tier 60 calls/min → 15 s is fine
+// av        : free tier = 25 req/DAY → interval computed dynamically based on symbol count
+//             formula: ceil(24h / 25 / n_symbols), floored at 30 min, capped at 4 hours
+// oanda     : practice/live accounts allow 100 req/s → 15 s is fine
+var PA_PROVIDER_MIN_POLL_MS = {
+  binance:    15  * 1000,        // 15 s
+  coingecko:  60  * 1000,        // 60 s — conservative for free tier
+  yahoo:      60  * 1000,        // 60 s base (scaled up per symbol count)
+  finnhub:    15  * 1000,        // 15 s — free tier: 60 calls/min
+  av:         30  * 60 * 1000,   // 30 min base (dynamically scaled by paComputePollMs)
+  oanda:      15  * 1000         // 15 s — practice/live: 100 req/s
+};
+var PA_KEY_ALERTS       = 'tj-price-alerts';
+var PA_KEY_TOKEN        = 'tj-pa-tg-token';
+var PA_KEY_CHATID       = 'tj-pa-tg-chatid';
+var PA_KEY_PROVIDER     = 'tj-pa-provider';   // legacy global (not used for routing; per-asset chains now)
+var PA_KEY_AV_KEY       = 'tj-pa-av-key';
+var PA_KEY_OANDA_KEY    = 'tj-pa-oanda-key';
+var PA_KEY_OANDA_ENV    = 'tj-pa-oanda-env';  // 'practice' | 'live'
+var PA_KEY_FINNHUB_KEY  = 'tj-pa-finnhub-key';
+var PA_KEY_COINGECKO_KEY= 'tj-pa-coingecko-key'; // optional — works free without key too
 
 var PA_KEY_TEMPLATE = 'tj-pa-tg-template';
+var PA_KEY_PLACEHOLDERS = 'tj-pa-placeholders';
 var PA_DEFAULT_TEMPLATE = '\u{1F514} <b>Price Alert Triggered!</b>\n\n<b>{symbol}</b> {direction} <b>{target}</b>\nCurrent price: <b>{price}</b>\n{note}\n<i>\u{1F551} {datetime}</i>\n<i>\u2014 JournUp Price Alerts</i>';
+
+// ── Provider config cache ─────────────────────────────────────
+// These four values are read on every poll tick (once per symbol per interval).
+// Caching them avoids synchronous localStorage I/O in the hot path.
+// Call paLoadConfig() once at init and after any settings save.
+var _paConfig = { provider: 'yahoo', avKey: '', oandaKey: '', oandaEnv: 'practice', finnhubKey: '', coingeckoKey: '' };
+function paLoadConfig(){
+  _paConfig.provider     = localStorage.getItem(PA_KEY_PROVIDER)      || 'yahoo';
+  _paConfig.avKey        = localStorage.getItem(PA_KEY_AV_KEY)        || '';
+  _paConfig.oandaKey     = localStorage.getItem(PA_KEY_OANDA_KEY)     || '';
+  _paConfig.oandaEnv     = localStorage.getItem(PA_KEY_OANDA_ENV)     || 'practice';
+  _paConfig.finnhubKey   = localStorage.getItem(PA_KEY_FINNHUB_KEY)   || '';
+  _paConfig.coingeckoKey = localStorage.getItem(PA_KEY_COINGECKO_KEY) || '';
+}
+
+var PA_DEFAULT_PLACEHOLDERS = {
+  dirAbove:   '\u{1F4C8} rose above',
+  dirBelow:   '\u{1F4C9} dropped below',
+  notePrefix: '\u{1F4DD} ',
+  datetimeFmt: 'locale'   // 'locale' | 'iso' | 'date-only' | 'time-only'
+};
+
+function paGetPlaceholders(){
+  try{
+    var raw = localStorage.getItem(PA_KEY_PLACEHOLDERS);
+    if(raw){ var p = JSON.parse(raw); return Object.assign({}, PA_DEFAULT_PLACEHOLDERS, p); }
+  }catch(e){}
+  return Object.assign({}, PA_DEFAULT_PLACEHOLDERS);
+}
+
+function paSetPlaceholders(obj){
+  localStorage.setItem(PA_KEY_PLACEHOLDERS, JSON.stringify(obj));
+}
 
 function paGetTemplate(){
   var saved = localStorage.getItem(PA_KEY_TEMPLATE);
@@ -9384,11 +9996,21 @@ function paGetTemplate(){
 }
 
 function paBuildMessage(a, currentPrice){
-  var dir = a.dir === 'above' ? '\u{1F4C8} rose above' : '\u{1F4C9} dropped below';
-  var noteStr = a.note ? '\n\u{1F4DD} ' + a.note : '';
+  var ph = paGetPlaceholders();
+  var dir = a.dir === 'above' ? ph.dirAbove : ph.dirBelow;
+  var noteStr = a.note ? '\n' + ph.notePrefix + a.note : '';
   var now = new Date();
-  var dateStr = now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})
-              + ' ' + now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  var dateStr;
+  if(ph.datetimeFmt === 'iso'){
+    dateStr = now.toISOString().slice(0,16).replace('T',' ');
+  } else if(ph.datetimeFmt === 'date-only'){
+    dateStr = now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+  } else if(ph.datetimeFmt === 'time-only'){
+    dateStr = now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  } else {
+    dateStr = now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})
+            + ' ' + now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  }
   return paGetTemplate()
     .replace(/\{symbol\}/g, a.symbol)
     .replace(/\{direction\}/g, dir)
@@ -9417,6 +10039,7 @@ function paTgToggleTemplate(){
   if(chev) chev.style.transform = open ? 'rotate(180deg)' : '';
   if(open && inp){
     inp.value = paGetTemplate();
+    paLoadPlaceholderUI();
     paTplPreview();
   }
 }
@@ -9425,23 +10048,41 @@ function paTplPreview(){
   var inp = document.getElementById('pa-tpl-input');
   var prev = document.getElementById('pa-tpl-preview');
   if(!inp || !prev) return;
-  var sample = {symbol:'EUR/USD', dir:'above', target:1.0850, note:''};
-  var sampleDate = new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})
-                 + ' ' + new Date().toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  // Read live values from inputs if open, else fall back to saved
+  var ph = paGetPlaceholders();
+  var dirAboveEl = document.getElementById('pa-ph-dir-above');
+  var dirBelowEl = document.getElementById('pa-ph-dir-below');
+  var notePfxEl  = document.getElementById('pa-ph-note-prefix');
+  var fmtEl      = document.getElementById('pa-ph-datetime-fmt');
+  var dirAbove  = (dirAboveEl  && dirAboveEl.value  !== '') ? dirAboveEl.value  : ph.dirAbove;
+  var datetimeFmt = (fmtEl && fmtEl.value) ? fmtEl.value : ph.datetimeFmt;
+  var now = new Date();
+  var sampleDate;
+  if(datetimeFmt === 'iso'){
+    sampleDate = now.toISOString().slice(0,16).replace('T',' ');
+  } else if(datetimeFmt === 'date-only'){
+    sampleDate = now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+  } else if(datetimeFmt === 'time-only'){
+    sampleDate = now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  } else {
+    sampleDate = now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})
+               + ' ' + now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  }
   var txt = inp.value
-    .replace(/\{symbol\}/g, sample.symbol)
-    .replace(/\{direction\}/g, '\u{1F4C8} rose above')
-    .replace(/\{target\}/g, paFmtPrice(sample.target))
+    .replace(/\{symbol\}/g, 'EUR/USD')
+    .replace(/\{direction\}/g, dirAbove)
+    .replace(/\{target\}/g, paFmtPrice(1.0850))
     .replace(/\{price\}/g, paFmtPrice(1.0851))
-    .replace(/\{note\}/g, sample.note ? '\n\u{1F4DD} ' + sample.note : '')
+    .replace(/\{note\}/g, '')
     .replace(/\{datetime\}/g, sampleDate);
-  // strip HTML tags for plain preview
   prev.textContent = txt.replace(/<[^>]+>/g, '');
 }
 
 function paTplReset(){
   var inp = document.getElementById('pa-tpl-input');
   if(inp){ inp.value = PA_DEFAULT_TEMPLATE; paTplPreview(); }
+  localStorage.setItem(PA_KEY_TEMPLATE, PA_DEFAULT_TEMPLATE);
+  ghAutoSyncAlerts();
 }
 
 function paTplSave(){
@@ -9450,7 +10091,41 @@ function paTplSave(){
   var val = inp.value.trim();
   if(!val){ toast('Template cannot be empty','err'); return; }
   localStorage.setItem(PA_KEY_TEMPLATE, val);
+  ghAutoSyncAlerts();
   toast('Message template saved','ok');
+}
+
+function paLoadPlaceholderUI(){
+  var ph = paGetPlaceholders();
+  var f = function(id, val){ var el=document.getElementById(id); if(el) el.value=val; };
+  f('pa-ph-dir-above',   ph.dirAbove);
+  f('pa-ph-dir-below',   ph.dirBelow);
+  f('pa-ph-note-prefix', ph.notePrefix);
+  var fmtSel = document.getElementById('pa-ph-datetime-fmt');
+  if(fmtSel) fmtSel.value = ph.datetimeFmt;
+  paTplPreview();
+}
+
+function paSavePlaceholderValues(){
+  var g = function(id){ var el=document.getElementById(id); return el ? el.value : ''; };
+  var fmtSel = document.getElementById('pa-ph-datetime-fmt');
+  var ph = {
+    dirAbove:    g('pa-ph-dir-above')    || PA_DEFAULT_PLACEHOLDERS.dirAbove,
+    dirBelow:    g('pa-ph-dir-below')    || PA_DEFAULT_PLACEHOLDERS.dirBelow,
+    notePrefix:  g('pa-ph-note-prefix'),
+    datetimeFmt: fmtSel ? fmtSel.value : 'locale'
+  };
+  paSetPlaceholders(ph);
+  ghAutoSyncAlerts();
+  paTplPreview();
+  toast('Placeholder values saved','ok');
+}
+
+function paResetPlaceholderValues(){
+  paSetPlaceholders(Object.assign({}, PA_DEFAULT_PLACEHOLDERS));
+  paLoadPlaceholderUI();
+  ghAutoSyncAlerts();
+  toast('Placeholder values reset to defaults','ok');
 }
 
 
@@ -9512,10 +10187,223 @@ function paDeleteDaysSave(){
   var sel = document.getElementById('pa-delete-days');
   if(!sel) return;
   localStorage.setItem('tj-pa-delete-days', sel.value);
+  ghAutoSyncAlerts();
   toast(sel.value === '0' ? 'Auto-delete disabled' : 'Alert messages will be deleted after ' + sel.value + ' day(s)', 'ok');
 }
 
+function paSetProvider(p, btn){
+  localStorage.setItem(PA_KEY_PROVIDER, p);
+  paLoadConfig();
+  paProviderBadgeRefresh();
+  ghAutoSyncAlerts();
+}
+
+function paProviderKeyChange(p){
+  // live preview of save button state — nothing needed currently
+}
+
+function paProviderSave(p){
+  if(p === 'av'){
+    var key = (document.getElementById('pa-av-key').value || '').trim();
+    if(!key){ toast('Enter your Alpha Vantage API key','err'); return; }
+    localStorage.setItem(PA_KEY_AV_KEY, key);
+    toast('Alpha Vantage key saved','ok');
+  } else if(p === 'oanda'){
+    var key2 = (document.getElementById('pa-oanda-key').value || '').trim();
+    if(!key2){ toast('Enter your Oanda API token','err'); return; }
+    var env2 = document.getElementById('pa-oanda-env').value || 'practice';
+    localStorage.setItem(PA_KEY_OANDA_KEY, key2);
+    localStorage.setItem(PA_KEY_OANDA_ENV, env2);
+    toast('Oanda settings saved','ok');
+  } else if(p === 'finnhub'){
+    var key3 = (document.getElementById('pa-finnhub-key').value || '').trim();
+    if(!key3){ toast('Enter your Finnhub API key','err'); return; }
+    localStorage.setItem(PA_KEY_FINNHUB_KEY, key3);
+    toast('Finnhub key saved','ok');
+  } else if(p === 'coingecko'){
+    var key4 = (document.getElementById('pa-coingecko-key').value || '').trim();
+    // CoinGecko key is optional — save even if empty (allows clearing)
+    localStorage.setItem(PA_KEY_COINGECKO_KEY, key4);
+    toast(key4 ? 'CoinGecko Demo key saved' : 'CoinGecko key cleared (free tier active)','ok');
+  }
+  paLoadConfig();
+  paProviderBadgeRefresh();
+  // Refresh key status badges
+  var cgStatus = document.getElementById('pa-key-cg-status');
+  var oaStatus = document.getElementById('pa-key-oanda-status');
+  var fhStatus = document.getElementById('pa-key-finnhub-status');
+  var cgKey2 = localStorage.getItem(PA_KEY_COINGECKO_KEY) || '';
+  var oaKey2 = localStorage.getItem(PA_KEY_OANDA_KEY)     || '';
+  var fhKey2 = localStorage.getItem(PA_KEY_FINNHUB_KEY)   || '';
+  if(cgStatus) cgStatus.textContent = cgKey2 ? '✓ saved' : '';
+  if(oaStatus) oaStatus.textContent = oaKey2 ? '✓ saved' : '';
+  if(fhStatus) fhStatus.textContent = fhKey2 ? '✓ saved' : '';
+  // Refresh key count
+  var countEl2 = document.getElementById('pa-keys-configured-count');
+  if(countEl2){
+    var avKey3 = localStorage.getItem(PA_KEY_AV_KEY) || '';
+    var n2 = (oaKey2?1:0) + (fhKey2?1:0) + (avKey3?1:0);
+    countEl2.textContent = n2 > 0 ? '(' + n2 + ' saved)' : '(none saved)';
+  }
+  ghAutoSyncAlerts();
+}
+
+// ── Routing table toggle ──────────────────────────────────────
+// ── API Keys section toggle ───────────────────────────────────
+function paRoutingToggle(){
+  var body = document.getElementById('pa-routing-body');
+  var chev = document.getElementById('pa-routing-chevron');
+  var countEl = document.getElementById('pa-keys-configured-count');
+  if(!body) return;
+  var isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? 'block' : 'none';
+  if(chev) chev.style.transform = isHidden ? 'rotate(180deg)' : '';
+  // Update configured key count in header
+  if(countEl){
+    var n = 0;
+    if(localStorage.getItem(PA_KEY_OANDA_KEY))   n++;
+    if(localStorage.getItem(PA_KEY_FINNHUB_KEY)) n++;
+    if(localStorage.getItem(PA_KEY_AV_KEY))      n++;
+    countEl.textContent = n > 0 ? '(' + n + ' saved)' : '(none saved)';
+  }
+}
+
+function paCoverageToggle(){
+  var body = document.getElementById('pa-coverage-body');
+  var chev = document.getElementById('pa-coverage-chevron');
+  if(!body) return;
+  var isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? 'block' : 'none';
+  if(chev) chev.style.transform = isHidden ? 'rotate(180deg)' : '';
+}
+
+function paKeyToggle(provider){
+  var body = document.getElementById('pa-key-' + provider + '-body');
+  var chev = document.getElementById('pa-key-' + provider + '-chev');
+  if(!body) return;
+  var isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? 'block' : 'none';
+  if(chev) chev.style.transform = isHidden ? 'rotate(180deg)' : '';
+}
+
+// Build live routing table rows
+function paRoutingTableRefresh(){
+  var tbl = document.getElementById('pa-routing-table');
+  if(!tbl) return;
+
+  var rows = [
+    { label: '🪙 Crypto',    type: 'crypto' },
+    { label: '💱 Forex',     type: 'forex' },
+    { label: '🛢 Commodity', type: 'commodity' },
+    { label: '📊 Stock',     type: 'stock' },
+    { label: '📈 Index',     type: 'index' }
+  ];
+
+  var html = '';
+  rows.forEach(function(r){
+    var chain      = paGetProviderChain(r.type);
+    var activeProv = _paActiveProviders[r.type];   // null if never polled
+    var isFallback = _paProviderFailed[r.type];
+    var avKey      = _paConfig.avKey;
+    var oandaKey   = _paConfig.oandaKey;
+    var finnhubKey = _paConfig.finnhubKey;
+
+    html += '<div class="pa-routing-row">';
+    html += '<span class="pa-routing-label">' + r.label + '</span>';
+    html += '<span class="pa-routing-chain">';
+
+    chain.forEach(function(p, i){
+      if(i > 0) html += '<span class="pa-routing-arrow">›</span>';
+      var label = PA_PROVIDER_LABELS[p] || p;
+      // Determine if this provider has no key (would be skipped)
+      var noKey = (p === 'av' && !avKey) || (p === 'oanda' && !oandaKey) || (p === 'finnhub' && !finnhubKey);
+      var cls = 'pa-routing-step';
+      var prefix = '';
+      if(activeProv){
+        if(p === activeProv){
+          cls += isFallback ? ' fallback' : ' active';
+          prefix = isFallback ? '⚠ ' : '✓ ';
+        } else {
+          cls += ' skipped';
+        }
+      } else if(noKey){
+        cls += ' skipped';
+      }
+      html += '<span class="' + cls + '">' + prefix + label + '</span>';
+    });
+
+    html += '</span></div>';
+  });
+
+  tbl.innerHTML = html;
+}
+
+function paProviderBadgeRefresh(){
+  var badge = document.getElementById('pa-provider-badge');
+  if(!badge) return;
+
+  if(_paMonitorInterval){
+    var anyFailed = Object.keys(_paProviderFailed).some(function(k){ return _paProviderFailed[k]; });
+    if(anyFailed){
+      badge.className = 'pa-connected-badge warn';
+      badge.innerHTML = '<span class="pa-status-dot"></span> Fallback';
+    } else {
+      badge.className = 'pa-connected-badge ok';
+      badge.innerHTML = '<span class="pa-status-dot"></span> Polling';
+    }
+  } else {
+    badge.className = 'pa-connected-badge not';
+    badge.innerHTML = '<span class="pa-status-dot"></span> No polling';
+  }
+  // Keep the routing table live if it's currently open
+  var routingBody = document.getElementById('pa-routing-body');
+  if(routingBody && routingBody.style.display !== 'none') paRoutingTableRefresh();
+}
+
+// paProviderLastBadgeRefresh removed — badge element gone; delegate to paProviderBadgeRefresh
+function paProviderLastBadgeRefresh(){ paProviderBadgeRefresh(); }
+
+function paProviderUIInit(){
+  // Restore saved keys into the new collapsible fields
+  var avKey       = localStorage.getItem(PA_KEY_AV_KEY)        || '';
+  var oandaKey    = localStorage.getItem(PA_KEY_OANDA_KEY)     || '';
+  var oandaEnv    = localStorage.getItem(PA_KEY_OANDA_ENV)     || 'practice';
+  var finnhubKey  = localStorage.getItem(PA_KEY_FINNHUB_KEY)   || '';
+  var cgKey       = localStorage.getItem(PA_KEY_COINGECKO_KEY) || '';
+  var avEl    = document.getElementById('pa-av-key');
+  var okEl    = document.getElementById('pa-oanda-key');
+  var oeEl    = document.getElementById('pa-oanda-env');
+  var fhEl    = document.getElementById('pa-finnhub-key');
+  var cgEl    = document.getElementById('pa-coingecko-key');
+  if(avEl)  avEl.value  = avKey;
+  if(okEl)  okEl.value  = oandaKey;
+  if(oeEl)  oeEl.value  = oandaEnv;
+  if(fhEl)  fhEl.value  = finnhubKey;
+  if(cgEl)  cgEl.value  = cgKey;
+  // Update key status badges in the collapsible headers
+  var cgStatus = document.getElementById('pa-key-cg-status');
+  var oaStatus = document.getElementById('pa-key-oanda-status');
+  var fhStatus = document.getElementById('pa-key-finnhub-status');
+  if(cgStatus) cgStatus.textContent = cgKey ? '✓ saved' : '';
+  if(oaStatus) oaStatus.textContent = oandaKey ? '✓ saved' : '';
+  if(fhStatus) fhStatus.textContent = finnhubKey ? '✓ saved' : '';
+  // Update key count badge in API Keys collapsible header
+  var countEl = document.getElementById('pa-keys-configured-count');
+  if(countEl){
+    var n = (oandaKey?1:0) + (finnhubKey?1:0) + (avKey?1:0);
+    countEl.textContent = n > 0 ? '(' + n + ' saved)' : '(none saved)';
+  }
+  paProviderBadgeRefresh();
+}
+
 function paTgEdit(){
+  // Auto-open the Telegram panel if collapsed
+  var panelBody = document.getElementById('pa-tg-panel-body');
+  var panelChev = document.getElementById('pa-tg-panel-chevron');
+  if(panelBody && panelBody.style.display === 'none'){
+    panelBody.style.display = 'block';
+    if(panelChev) panelChev.style.transform = 'rotate(180deg)';
+  }
   var form = document.getElementById('pa-tg-setup-form');
   var connected = document.getElementById('pa-tg-connected');
   // Close all collapsibles
@@ -9543,6 +10431,7 @@ function paTgSave(){
   localStorage.setItem(PA_KEY_TOKEN,  token);
   localStorage.setItem(PA_KEY_CHATID, chatId);
   paRefreshTgUI();
+  ghAutoSyncAlerts();
   paTgSendMessage('✅ JournUp Price Alerts connected!\n\nYou will receive alerts here when your price targets are hit.', function(ok){
     if(ok){ toast('Connected! Test message sent to Telegram','ok'); }
     else  { toast('Saved, but test message failed — check your token/chat ID','err'); }
@@ -9612,7 +10501,8 @@ function paSetDir(dir){
 
 function paAddAlert(){
   var symbol = (document.getElementById('pa-symbol').value||'').trim().toUpperCase();
-  var target = parseFloat(document.getElementById('pa-target').value||'');
+  var rawInput = (document.getElementById('pa-target').value||'').replace(/,/g,'').trim();
+  var target = parseFloat(rawInput);
   var note   = (document.getElementById('pa-note').value||'').trim();
   if(!symbol){ toast('Enter a symbol / asset name','err'); return; }
   if(isNaN(target)||target<=0){ toast('Enter a valid target price','err'); return; }
@@ -9622,6 +10512,7 @@ function paAddAlert(){
     symbol:  symbol,
     dir:     _paDir,
     target:  target,
+    targetStr: rawInput, // preserve exact digits the user typed for display
     note:    note,
     created: Date.now(),
     fired:   false,
@@ -9644,8 +10535,17 @@ function paAddAlert(){
 
 // ── Remove / clear ────────────────────────────────────────────
 
+// Remove price and toast-throttle entries for symbols that no longer
+// appear in any alert, preventing unbounded growth of both maps.
+function paPruneOrphanedSymbols(){
+  var live = new Set(_paAlerts.map(function(a){ return (a.symbol||'').toUpperCase(); }));
+  Object.keys(_paPrices).forEach(function(sym){ if(!live.has(sym)) delete _paPrices[sym]; });
+  Object.keys(_paFallbackToastAt).forEach(function(sym){ if(!live.has(sym)) delete _paFallbackToastAt[sym]; });
+}
+
 function paDeleteAlert(id){
   _paAlerts = _paAlerts.filter(function(a){ return a.id !== id; });
+  paPruneOrphanedSymbols();
   paSave();
   paRender();
   if(_paAlerts.filter(function(a){return !a.fired;}).length === 0) paStopMonitoring();
@@ -9691,7 +10591,8 @@ function paEditAlert(id){
 function paUpdateAlert(){
   if(!_paEditingId) return;
   var symbol = (document.getElementById('pa-symbol').value||'').trim().toUpperCase();
-  var target = parseFloat(document.getElementById('pa-target').value||'');
+  var rawInput = (document.getElementById('pa-target').value||'').replace(/,/g,'').trim();
+  var target = parseFloat(rawInput);
   var note   = (document.getElementById('pa-note').value||'').trim();
   if(!symbol){ toast('Enter a symbol / asset name','err'); return; }
   if(isNaN(target)||target<=0){ toast('Enter a valid target price','err'); return; }
@@ -9701,6 +10602,7 @@ function paUpdateAlert(){
   _paAlerts[idx].symbol = symbol;
   _paAlerts[idx].dir    = _paDir;
   _paAlerts[idx].target = target;
+  _paAlerts[idx].targetStr = rawInput;
   _paAlerts[idx].note   = note;
   // Reset fired state if target/direction changed
   _paAlerts[idx].fired  = false;
@@ -9736,6 +10638,7 @@ function paCancelEdit(){
 function paClearFired(){
   var before = _paAlerts.length;
   _paAlerts = _paAlerts.filter(function(a){ return !a.fired; });
+  paPruneOrphanedSymbols();
   paSave();
   paRender();
   var removed = before - _paAlerts.length;
@@ -9745,6 +10648,32 @@ function paClearFired(){
 
 // ── Render ────────────────────────────────────────────────────
 
+// ── Shared price-fields computation ──────────────────────────
+// Pure function — no DOM access. Returns the price-dependent display
+// values for one alert so both paRender and paUpdatePrices use the
+// same logic without duplicating it.
+function paComputePriceFields(a, price){
+  var hasPrice = price !== undefined && price !== null;
+  var pct = '';
+  var fillW = 0;
+  var fillColor = 'var(--accent)';
+  if(hasPrice && a.target){
+    if(a.dir === 'above'){
+      fillW = Math.min(100, Math.round((price / a.target) * 100));
+      fillColor = fillW >= 100 ? 'var(--green)' : 'var(--accent)';
+      var diff = ((a.target - price) / a.target * 100).toFixed(2);
+      pct = price < a.target ? diff + '% away' : 'TARGET HIT';
+    } else {
+      fillW = Math.min(100, Math.round((a.target / price) * 100));
+      fillColor = fillW >= 100 ? 'var(--red)' : 'var(--accent)';
+      var diff2 = ((price - a.target) / price * 100).toFixed(2);
+      pct = price > a.target ? diff2 + '% away' : 'TARGET HIT';
+    }
+  }
+  return { hasPrice: hasPrice, pct: pct, fillW: fillW, fillColor: fillColor };
+}
+
+// ── Full structural render (used when cards are added/removed/reordered) ──
 function paRender(){
   var list   = document.getElementById('pa-alerts-list');
   var empty  = document.getElementById('pa-empty-state');
@@ -9778,40 +10707,22 @@ function paRender(){
   var sorted = active.concat(fired);
   sorted.forEach(function(a){
     var price  = _paPrices[a.symbol];
-    var hasPrice = price !== undefined && price !== null;
-    var pct = '';
-    var fillW = 0;
-    var fillColor = 'var(--accent)';
-    if(hasPrice && a.target){
-      // progress toward target — we don't know "start" price so use a conceptual bar
-      // For "above": progress = current/target (clamped 0-100)
-      // For "below": progress = target/current (clamped 0-100)
-      if(a.dir === 'above'){
-        fillW = Math.min(100, Math.round((price / a.target) * 100));
-        fillColor = fillW >= 100 ? 'var(--green)' : 'var(--accent)';
-        var diff = ((a.target - price) / a.target * 100).toFixed(2);
-        pct = price < a.target ? diff + '% away' : 'TARGET HIT';
-      } else {
-        fillW = Math.min(100, Math.round((a.target / price) * 100));
-        fillColor = fillW >= 100 ? 'var(--red)' : 'var(--accent)';
-        var diff2 = ((price - a.target) / price * 100).toFixed(2);
-        pct = price > a.target ? diff2 + '% away' : 'TARGET HIT';
-      }
-    }
+    var f = paComputePriceFields(a, price);
 
     var dirClass = a.dir === 'above' ? 'above' : 'below';
     var dirLabel = a.dir === 'above' ? '↑ Above' : '↓ Below';
-    var cardClass = 'pa-alert-card' + (a.fired ? ' fired' : '');
+    var cardClass = 'pa-alert-card' + (a.fired ? (' fired' + (a.dir === 'below' ? ' fired-below' : '')) : '');
     var createdStr = new Date(a.created).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 
     html += '<div class="' + cardClass + '" id="pa-card-' + a.id + '">';
     html += '<div class="pa-alert-top">';
     html += '<span class="pa-alert-symbol">' + escHtml(a.symbol) + '</span>';
     html += '<span class="pa-alert-dir ' + dirClass + '">' + dirLabel + '</span>';
-    html += '<span class="pa-alert-price">' + paFmtPrice(a.target) + '</span>';
+    html += '<span class="pa-alert-price">' + (a.targetStr || paFmtPrice(a.target)) + '</span>';
     html += '<div class="pa-alert-actions">';
     if(a.fired){
-      html += '<span style="font-size:10px;color:var(--green);font-weight:700;">✓ FIRED</span>';
+      var firedLabelColor = a.dir === 'below' ? 'var(--red)' : 'var(--green)';
+      html += '<span style="font-size:10px;color:' + firedLabelColor + ';font-weight:700;">✓ FIRED</span>';
     }
     if(!a.fired){
       html += '<button class="btn btn-ghost btn-sm btn-icon" onclick="paEditAlert(\'' + a.id + '\')" title="Edit alert"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
@@ -9819,13 +10730,16 @@ function paRender(){
     html += '<button class="btn btn-danger btn-sm btn-icon" onclick="paDeleteAlert(\'' + a.id + '\')" title="Delete alert"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>';
     html += '</div></div>'; // .pa-alert-top
 
+    // Price-dynamic section — these spans/divs are targeted by paUpdatePrices
     html += '<div class="pa-alert-meta">';
     html += '<span>Set ' + escHtml(createdStr) + '</span>';
-    if(hasPrice){
-      html += '<span class="pa-current-price">Current: ' + paFmtPrice(price) + '</span>';
-      if(pct) html += '<span style="font-size:10px;font-weight:600;color:' + (pct==='TARGET HIT'?'var(--green)':'var(--text3)') + '">' + pct + '</span>';
+    if(f.hasPrice){
+      html += '<span class="pa-current-price" data-pa-price="' + a.id + '">Current: ' + paFmtPrice(price) + '</span>';
+      if(f.pct) html += '<span class="pa-pct-label" data-pa-pct="' + a.id + '" style="font-size:10px;font-weight:600;color:' + (f.pct==='TARGET HIT'?'var(--green)':'var(--text3)') + '">' + f.pct + '</span>';
+      else       html += '<span class="pa-pct-label" data-pa-pct="' + a.id + '" style="font-size:10px;font-weight:600;"></span>';
     } else {
-      html += '<span style="font-size:10px;color:var(--text3);font-style:italic">Fetching price…</span>';
+      html += '<span class="pa-current-price" data-pa-price="' + a.id + '" style="font-size:10px;color:var(--text3);font-style:italic">Fetching price…</span>';
+      html += '<span class="pa-pct-label" data-pa-pct="' + a.id + '"></span>';
     }
     html += '</div>'; // .pa-alert-meta
 
@@ -9833,13 +10747,36 @@ function paRender(){
       html += '<div class="pa-alert-note"><span style="opacity:.6;margin-right:4px;">📝</span>' + escHtml(a.note) + '</div>';
     }
 
-    if(hasPrice && !a.fired){
-      html += '<div class="pa-progress-bar"><div class="pa-progress-fill" style="width:' + fillW + '%;background:' + fillColor + '"></div></div>';
+    // Progress bar — always rendered (hidden when no price via zero width)
+    if(!a.fired){
+      html += '<div class="pa-progress-bar" data-pa-bar="' + a.id + '"><div class="pa-progress-fill" style="width:' + (f.hasPrice ? f.fillW : 0) + '%;background:' + f.fillColor + '"></div></div>';
     }
 
     if(a.fired && a.firedAt){
       var firedStr = new Date(a.firedAt).toLocaleDateString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-      html += '<div style="font-size:10px;color:var(--green);margin-top:5px;">🔔 Alert fired at ' + escHtml(firedStr) + '</div>';
+      var firedColor = a.dir === 'below' ? 'var(--red)' : 'var(--green)';
+      var firedBg    = a.dir === 'below' ? 'rgba(232,85,85,.08)'  : 'rgba(52,201,122,.08)';
+      var firedBd    = a.dir === 'below' ? 'rgba(232,85,85,.2)'   : 'rgba(52,201,122,.2)';
+      var firedIcon  = a.dir === 'below' ? '🔔' : '🔔';
+      html += '<div style="margin-top:8px;padding:8px 10px;background:' + firedBg + ';border:1px solid ' + firedBd + ';border-radius:5px;display:flex;align-items:center;gap:8px;">';
+      html += '<span style="font-size:16px;line-height:1;">' + firedIcon + '</span>';
+      html += '<div>';
+      html += '<div style="font-size:11px;font-weight:700;color:' + firedColor + ';">Alert triggered</div>';
+      html += '<div style="font-size:10px;color:var(--text3);margin-top:1px;">at ' + escHtml(firedStr) + '</div>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    // Provider + countdown footer (only for active/unfired alerts)
+    if(!a.fired){
+      var assetType  = paDetectAssetType(a.symbol.toUpperCase());
+      var provChain  = paGetProviderChain(assetType);
+      // Resolve first reachable provider for initial render
+      var resolvedProv = paResolveProvider(assetType);
+      var provLabel    = PA_PROVIDER_LABELS[resolvedProv] || resolvedProv;
+      html += '<div class="pa-card-footer">';
+      html += '<span class="pa-prov-chip fetching" data-pa-prov="' + a.id + '" title="Data provider for ' + escHtml(a.symbol) + '">⏳ ' + escHtml(provLabel) + '</span>';
+      html += '</div>';
     }
 
     html += '</div>'; // .pa-alert-card
@@ -9849,25 +10786,120 @@ function paRender(){
   paRenderTickers();
 }
 
+// ── Surgical price-only update (used on every poll tick) ──────
+// Walks only the price-dependent nodes — no innerHTML rebuild,
+// no reflow of static card structure.
+function paUpdatePrices(){
+  _paAlerts.forEach(function(a){
+    var price = _paPrices[a.symbol];
+    var f = paComputePriceFields(a, price);
+
+    // Current price span
+    var priceEl = document.querySelector('[data-pa-price="' + a.id + '"]');
+    if(priceEl){
+      if(f.hasPrice){
+        priceEl.textContent = 'Current: ' + paFmtPrice(price);
+        priceEl.style.fontStyle = '';
+        priceEl.style.color = '';
+      } else {
+        priceEl.textContent = 'Fetching price\u2026';
+        priceEl.style.fontStyle = 'italic';
+        priceEl.style.color = 'var(--text3)';
+      }
+    }
+
+    // % away / TARGET HIT label
+    var pctEl = document.querySelector('[data-pa-pct="' + a.id + '"]');
+    if(pctEl){
+      pctEl.textContent = f.pct;
+      pctEl.style.color = f.pct === 'TARGET HIT' ? 'var(--green)' : 'var(--text3)';
+    }
+
+    // Progress bar fill
+    var barWrap = document.querySelector('[data-pa-bar="' + a.id + '"]');
+    if(barWrap){
+      var fill = barWrap.firstElementChild;
+      if(fill){
+        fill.style.width = (f.hasPrice ? f.fillW : 0) + '%';
+        fill.style.background = f.fillColor;
+      }
+    }
+    // Provider chip + last-updated — update after each successful price fetch
+    if(!a.fired){
+      var assetType = paDetectAssetType(a.symbol.toUpperCase());
+      var activeProv = _paActiveProviders[assetType];
+      var isFallback = _paProviderFailed[assetType];
+      var chipEl = document.querySelector('[data-pa-prov="' + a.id + '"]');
+      if(chipEl && activeProv){
+        var provLabel = PA_PROVIDER_LABELS[activeProv] || activeProv;
+        chipEl.textContent = (isFallback ? '⚠ ' : '✓ ') + provLabel;
+        chipEl.className = 'pa-prov-chip' + (isFallback ? ' fallback' : '');
+        chipEl.title = (isFallback ? 'Fallback active: ' : 'Provider: ') + provLabel + ' (' + assetType + ')';
+      }
+      paUpdateAgoLabel(a);
+    }
+  });
+
+  paRenderTickers();
+}
+
+// Format seconds into a compact "ago" string
+function paFmtAgo(secsAgo){
+  if(secsAgo < 5)  return 'just now';
+  if(secsAgo < 60) return secsAgo + 's ago';
+  var m = Math.floor(secsAgo / 60);
+  var s = secsAgo % 60;
+  return s > 0 ? m + 'm ' + s + 's ago' : m + 'm ago';
+}
+// Note: already compact — no extra spaces
+
+// Update the "X s ago" label for a single alert card
+function paUpdateAgoLabel(a){
+  var el = document.querySelector('[data-pa-updated="' + a.id + '"]');
+  if(!el) return;
+  var ts = _paPriceUpdatedAt[a.symbol];
+  if(!ts){ el.textContent = ''; return; }
+  var secsAgo = Math.round((Date.now() - ts) / 1000);
+  el.textContent = paFmtAgo(secsAgo);
+}
+
+// Called every second by the countdown ticker to keep ago labels fresh
+function paRefreshAllAgoLabels(){
+  _paAlerts.forEach(function(a){ if(!a.fired) paUpdateAgoLabel(a); });
+}
+
 function paRenderTickers(){
   var row = document.getElementById('pa-tickers-row');
   if(!row) return;
   var symbols = paGetActiveSymbols();
   if(symbols.length === 0){ row.innerHTML=''; return; }
-  var html = '';
+  // Update existing ticker badges in-place; only rebuild if count changed
+  var existing = row.querySelectorAll('.pa-ticker-badge');
+  if(existing.length !== symbols.length){
+    // Symbol count changed — rebuild
+    var html = '';
+    symbols.forEach(function(sym){
+      var p = _paPrices[sym];
+      html += '<span class="pa-ticker-badge" data-pa-ticker="' + escHtml(sym) + '">' + escHtml(sym) + (p !== undefined ? ': ' + paFmtPrice(p) : ': \u2026') + '</span>';
+    });
+    row.innerHTML = html;
+    return;
+  }
+  // Same symbol count — update text in-place
   symbols.forEach(function(sym){
+    var el = row.querySelector('[data-pa-ticker="' + sym + '"]');
     var p = _paPrices[sym];
-    html += '<span class="pa-ticker-badge">' + escHtml(sym) + (p !== undefined ? ': ' + paFmtPrice(p) : ': …') + '</span>';
+    if(el) el.textContent = sym + (p !== undefined ? ': ' + paFmtPrice(p) : ': \u2026');
   });
-  row.innerHTML = html;
 }
 
 function paFmtPrice(p){
   if(p===undefined||p===null) return '—';
-  // auto-decimal: crypto/stocks need different precision
-  if(p >= 1000) return p.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-  if(p >= 1)    return p.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4});
-  return p.toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:6});
+  // Use toString() to preserve full precision without capping significant figures
+  var s = parseFloat(p).toString();
+  var parts = s.split('.');
+  var intPart = parseInt(parts[0], 10).toLocaleString();
+  return parts.length > 1 ? intPart + '.' + parts[1] : intPart;
 }
 
 // ── Monitoring ────────────────────────────────────────────────
@@ -9879,34 +10911,168 @@ function paGetActiveSymbols(){
 }
 
 function paUpdateMonitorBar(on){
-  var bar = document.getElementById('pa-monitor-label');
+  var bar  = document.getElementById('pa-monitor-label');
+  var txt  = document.getElementById('pa-monitor-text');
   if(!bar) return;
-  if(on){
-    bar.className = 'pa-monitoring-bar';
-    bar.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:4px;flex-shrink:0;animation:paBlink 1.5s infinite"></span>Monitoring live';
-  } else {
-    bar.className = 'pa-monitoring-bar off';
-    bar.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;margin-right:4px;flex-shrink:0;"></span>Monitoring off';
-  }
+  bar.className = 'pa-monitoring-bar' + (on ? '' : ' off');
+  if(txt) txt.textContent = on ? 'Monitoring live' : 'Monitoring off';
 }
+
+// ── 2c: Compute the poll interval based on active providers ──
+// Walks all active alert symbols, resolves their provider chain,
+// filters out providers with no key configured, and picks the
+// most conservative (longest) minimum interval from those in use.
+// This ensures free-tier quotas (e.g. AV 25 req/day) are respected
+// without hardcoding a fixed poll rate for everyone.
+// Returns a summary of which provider will serve each active symbol.
+// { provider: count, ... } e.g. { binance: 3, yahoo: 2, av: 1 }
+// Used for interval computation and the poll-info display.
+function paGetProviderUsageSummary(){
+  var symbols   = paGetActiveSymbols();
+  var avKey     = _paConfig.avKey;
+  var oandaKey  = _paConfig.oandaKey;
+  var finnhubKey= _paConfig.finnhubKey;
+  var counts = {};
+  symbols.forEach(function(sym){
+    var assetType = paDetectAssetType(sym.toUpperCase());
+    var chain     = paGetProviderChain(assetType);
+    var resolved  = 'yahoo'; // default last-resort
+    for(var i = 0; i < chain.length; i++){
+      var p = chain[i];
+      if(p === 'av'      && !avKey)      continue;
+      if(p === 'oanda'   && !oandaKey)   continue;
+      if(p === 'finnhub' && !finnhubKey) continue;
+      resolved = p;
+      break;
+    }
+    counts[resolved] = (counts[resolved] || 0) + 1;
+  });
+  return counts;
+}
+
+function paComputePollMs(){
+  var usage  = paGetProviderUsageSummary();
+  var maxMs  = PA_PROVIDER_MIN_POLL_MS.yahoo; // base floor
+
+  Object.keys(usage).forEach(function(p){
+    var n  = usage[p];
+    var ms = PA_PROVIDER_MIN_POLL_MS[p] || PA_PROVIDER_MIN_POLL_MS.yahoo;
+
+    // Alpha Vantage: 25 req/day free tier → safe interval = (24h / 25) * N symbols
+    // = 3456000 ms * N, floored at 30 min, capped at 4 hours.
+    if(p === 'av'){
+      var avDayMs   = 24 * 60 * 60 * 1000;  // 24 hours in ms
+      var avQuota   = 25;                     // free-tier daily quota
+      var avPerPoll = n;                      // one req per symbol per poll
+      ms = Math.ceil(avDayMs / avQuota * avPerPoll);
+      ms = Math.max(ms, 30 * 60 * 1000);     // floor: 30 min
+      ms = Math.min(ms, 4 * 60 * 60 * 1000);// cap:   4 hours
+    }
+
+    // Yahoo proxy: scale conservatively with symbol count (undocumented limit)
+    // Base 60 s; add 15 s per additional symbol beyond 1, max 5 min
+    if(p === 'yahoo' && n > 1){
+      ms = Math.min(60000 + (n - 1) * 15000, 5 * 60 * 1000);
+    }
+
+    if(ms > maxMs) maxMs = ms;
+  });
+
+  return maxMs;
+}
+
+// Format milliseconds as a human-readable string (e.g. "2m 35s", "45s")
+function paFormatPollInterval(ms){
+  var totalSec = Math.round(ms / 1000);
+  if(totalSec >= 60){
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    return s > 0 ? m + 'm ' + s + 's' : m + 'm';
+  }
+  return totalSec + 's';
+}
+
+// Refresh the poll-interval info line inside the provider panel
+function paPollInfoRefresh(){ /* removed — status shown via paProviderBadgeRefresh */ }
+
+// Countdown tick: updates the poll status block and ago labels every second.
+function paCountdownTick(){
+  var statusEl   = document.getElementById('pa-poll-status');
+  var nextEl     = document.getElementById('pa-shared-countdown');
+  var progressEl = document.getElementById('pa-poll-progress');
+  var dotEl      = document.getElementById('pa-poll-dot');
+  if(!statusEl) return;
+  if(!_paMonitorInterval){
+    statusEl.style.display = 'none';
+    return;
+  }
+  statusEl.style.display = '';
+  var now      = Date.now();
+  var secsLeft = Math.max(0, Math.round((_paNextPollAt - now) / 1000));
+  var polling  = secsLeft === 0;
+
+  // Countdown text
+  if(nextEl){
+    nextEl.textContent = polling ? 'Polling…' : paFormatPollInterval(secsLeft * 1000);
+  }
+
+  // Progress bar — fills as poll approaches (100% = polling now)
+  if(progressEl && _paPollMs > 0){
+    var pct = polling ? 100 : Math.round((1 - secsLeft / (_paPollMs / 1000)) * 100);
+    progressEl.style.width = Math.min(100, Math.max(0, pct)) + '%';
+  }
+
+  // Dot — amber + fast pulse when actively polling
+  if(dotEl){
+    if(polling){ dotEl.classList.add('polling'); } else { dotEl.classList.remove('polling'); }
+  }
+
+  // Refresh all "X ago" labels on alert cards
+  paRefreshAllAgoLabels();
+}
+
 
 function paStartMonitoring(){
   if(_paMonitorInterval) return; // already running
   var active = _paAlerts.filter(function(a){return !a.fired;});
   if(active.length === 0) return;
+  // Compute a rate-limit-safe poll interval based on which providers are in use
+  _paPollMs = paComputePollMs();
+  // Set next-poll timestamp (immediate first fetch, so next scheduled poll is now + interval)
+  _paNextPollAt = Date.now() + _paPollMs;
   paFetchPrices(); // immediate first fetch
-  _paMonitorInterval = setInterval(paFetchPrices, _paPollMs);
+  _paMonitorInterval = setInterval(function(){
+    _paNextPollAt = Date.now() + _paPollMs;
+    paFetchPrices();
+  }, _paPollMs);
+  // Countdown ticker — every second
+  if(!_paCountdownInterval){
+    _paCountdownInterval = setInterval(paCountdownTick, 1000);
+  }
+  paCountdownTick(); // immediate first tick so cards show right away
   // Check for deletable messages every minute
   if(!_paDeleteInterval){
     _paDeleteInterval = setInterval(paTgDeleteOldMessages, 60000);
   }
   paUpdateMonitorBar(true);
+  paPollInfoRefresh();
 }
 
 function paStopMonitoring(){
   if(_paMonitorInterval){ clearInterval(_paMonitorInterval); _paMonitorInterval=null; }
   if(_paDeleteInterval){ clearInterval(_paDeleteInterval); _paDeleteInterval=null; }
+  if(_paCountdownInterval){ clearInterval(_paCountdownInterval); _paCountdownInterval=null; }
+  _paNextPollAt = 0;
+  var statusEl = document.getElementById('pa-poll-status');
+  if(statusEl) statusEl.style.display = 'none';
+  _paLastProvider = null;
+  _paActiveProviders = { crypto: null, forex: null, commodity: null, stock: null, index: null };
+  _paProviderFailed  = { crypto: false, forex: false, commodity: false, stock: false, index: false };
+  _paPriceUpdatedAt  = {};
+  _paLastPollAt = 0;
+  paProviderLastBadgeRefresh();
   paUpdateMonitorBar(false);
+  paPollInfoRefresh();
 }
 
 // Fetch prices from Yahoo Finance (free, no key needed, works from browser via CORS proxy approach)
@@ -9915,69 +11081,264 @@ function paFetchPrices(){
   var symbols = paGetActiveSymbols();
   if(symbols.length === 0){ paStopMonitoring(); return; }
 
+  // Track how many fetches are still pending so we re-render exactly once
+  // after all symbols have resolved (instead of once per symbol).
+  var pending = symbols.length;
+  var needRender = false;
+
   symbols.forEach(function(sym){
     paFetchOnePrice(sym, function(price){
       if(price !== null){
         _paPrices[sym] = price;
+        _paPriceUpdatedAt[sym] = Date.now();
         paCheckAlerts(sym, price);
-        paRender();
+        needRender = true;
+      }
+      // Decrement regardless of success/failure so we never get stuck
+      pending--;
+      if(pending === 0){
+        _paLastPollAt = Date.now();
+        if(needRender) paUpdatePrices();
       }
     });
   });
 }
 
-// Detect symbol type and fetch appropriately
-function paFetchOnePrice(sym, cb){
+// ── Provider-aware price fetch ────────────────────────────────
+
+// ── 1a: Asset-type detection helper ──────────────────────────
+// Returns one of: 'crypto' | 'forex' | 'commodity' | 'index' | 'stock'
+// This is a synchronous best-effort heuristic; no async asset list needed.
+function paDetectAssetType(sym){
   var upper = sym.toUpperCase();
 
-  // Crypto detection: ends with USDT, USD, BTC, ETH or is known coin
-  var cryptoPairs = ['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','AVAX','DOT','MATIC','LTC','LINK','UNI','ATOM','TRX','TON','SHIB'];
-  var isCrypto = false;
-  var binancePair = '';
+  // Crypto: ends in USDT, or matches a well-known coin ticker
+  var knownCrypto = ['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','AVAX','DOT','MATIC','LTC','LINK','UNI','ATOM','TRX','TON','SHIB'];
+  if(/^[A-Z]+USDT$/.test(upper)) return 'crypto';
+  if(knownCrypto.indexOf(upper) !== -1) return 'crypto';
+  if(/^[A-Z]+USD$/.test(upper) && knownCrypto.indexOf(upper.slice(0,-3)) !== -1) return 'crypto';
 
-  // If it looks like BTCUSDT or ETHUSDT already
-  if(/^[A-Z]+USDT$/.test(upper) || /^[A-Z]+USD$/.test(upper)){
-    isCrypto = true;
-    binancePair = upper.endsWith('USDT') ? upper : upper.slice(0,-3)+'USDT';
-  } else {
-    cryptoPairs.forEach(function(c){ if(upper===c) isCrypto=true; });
-    if(isCrypto) binancePair = upper + 'USDT';
-  }
+  // Commodities: gold, silver, oil shorthands and XAU/XAG pairs
+  var commodities = ['XAUUSD','XAGUSD','GOLD','SILVER','OIL','CRUDE','WTI','BRENT','NATGAS','CORN','WHEAT'];
+  if(commodities.indexOf(upper) !== -1) return 'commodity';
 
-  if(isCrypto && binancePair){
-    // Binance public API — no auth needed, CORS allowed
-    fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + binancePair)
-    .then(function(r){ return r.json(); })
-    .then(function(d){ cb(d.price ? parseFloat(d.price) : null); })
-    .catch(function(){ paFetchYahoo(sym, cb); }); // fallback
-    return;
-  }
+  // Indices
+  var indices = ['US30','US500','SP500','SPX','NAS100','NASDAQ','DAX','UK100','GDAXI','YM=F','ES=F','NQ=F'];
+  if(indices.indexOf(upper) !== -1) return 'index';
 
-  // Forex / stocks / indices / gold — use Yahoo Finance via allorigins proxy
-  paFetchYahoo(sym, cb);
+  // Forex: exactly 6 alpha chars (EURUSD, GBPUSD, …) or known pairs
+  if(/^[A-Z]{6}$/.test(upper)) return 'forex';
+
+  // Default: treat as stock/ETF
+  return 'stock';
 }
 
+// ── 1b: Per-asset-type provider preference map ────────────────
+// Defines the provider chain per asset class (main → fallback → last resort).
+// Crypto:    Binance → CoinGecko → Yahoo
+// Forex:     Oanda   → Alpha Vantage → Yahoo
+// Commodity: Oanda   → Alpha Vantage → Yahoo
+// Stock:     Finnhub → Alpha Vantage → Yahoo
+// Index:     Finnhub → Alpha Vantage → Yahoo
+//
+// 'binance'   = Binance REST (crypto only, free, no key)
+// 'coingecko' = CoinGecko REST (crypto, free, optional key)
+// 'oanda'     = Oanda v20 (forex + CFD indices/commodities, key required)
+// 'finnhub'   = Finnhub (stocks/indices, free tier key required)
+// 'av'        = Alpha Vantage (stocks, forex, crypto, key required)
+// 'yahoo'     = Yahoo Finance via allorigins proxy (free, no key, broad coverage)
+var PA_ASSET_PROVIDER_MAP = {
+  crypto:    ['binance', 'coingecko', 'yahoo'],
+  forex:     ['oanda', 'av', 'yahoo'],
+  commodity: ['oanda', 'av', 'yahoo'],
+  stock:     ['finnhub', 'av', 'yahoo'],
+  index:     ['finnhub', 'av', 'yahoo']
+};
+
+// Returns the ordered provider chain for a given asset type.
+// Provider chains are now fixed per-asset-type; the global provider setting
+// is kept for backwards-compatibility but no longer overrides the chains.
+function paGetProviderChain(assetType){
+  var base = PA_ASSET_PROVIDER_MAP[assetType] || ['yahoo'];
+  return base.slice(); // return a copy
+}
+
+// Returns the first reachable provider for a given asset type based on configured keys.
+// Used for the initial provider chip render before a real fetch has confirmed anything.
+function paResolveProvider(assetType){
+  var chain      = paGetProviderChain(assetType);
+  var avKey      = localStorage.getItem(PA_KEY_AV_KEY)      || '';
+  var oandaKey   = localStorage.getItem(PA_KEY_OANDA_KEY)   || '';
+  var finnhubKey = localStorage.getItem(PA_KEY_FINNHUB_KEY) || '';
+  for(var i = 0; i < chain.length; i++){
+    var p = chain[i];
+    if(p === 'av'      && !avKey)      continue;
+    if(p === 'oanda'   && !oandaKey)   continue;
+    if(p === 'finnhub' && !finnhubKey) continue;
+    return p;
+  }
+  return 'yahoo';
+}
+
+
+// Crypto via Binance is always attempted first (free, no auth).
+// For everything else, the chosen provider is used with Yahoo as fallback.
+
+// Throttle fallback toasts: record last toast time per symbol so we don't
+// spam on every 15-second poll. Show at most once per 5 minutes per symbol.
+var _paFallbackToastAt = {}; // { symbol: timestampMs }
+var PA_FALLBACK_TOAST_THROTTLE_MS = 5 * 60 * 1000; // 5 minutes
+
+// Tracks which provider successfully served the most recent price fetch.
+// Reset to null on monitoring stop; updated by succeed() in paFetchOnePrice.
+var _paLastProvider = null; // legacy — kept for backwards compat; mirrors _paActiveProviders
+// Per-asset-type active provider tracking.
+// Keys: 'crypto' | 'forex' | 'commodity' | 'stock' | 'index'
+// Values: provider string e.g. 'binance', 'yahoo', etc., or null if never fetched
+var _paActiveProviders = { crypto: null, forex: null, commodity: null, stock: null, index: null };
+// Per-asset-type flag: true if we fell back away from the primary provider
+var _paProviderFailed  = { crypto: false, forex: false, commodity: false, stock: false, index: false };
+
+var PA_PROVIDER_LABELS = {
+  binance:    'Binance',
+  coingecko:  'CoinGecko',
+  oanda:      'Oanda',
+  finnhub:    'Finnhub',
+  av:         'Alpha Vantage',
+  yahoo:      'Yahoo Finance'
+};
+
+function paFetchOnePrice(sym, cb){
+  var upper = sym.toUpperCase();
+  var assetType = paDetectAssetType(upper);
+  var chain     = paGetProviderChain(assetType);
+
+  // Build Binance pair string for crypto (used when 'binance' appears in chain)
+  var binancePair = '';
+  if(assetType === 'crypto'){
+    if(/^[A-Z]+USDT$/.test(upper)){
+      binancePair = upper;
+    } else if(/^[A-Z]+USD$/.test(upper)){
+      binancePair = upper.slice(0, -3) + 'USDT';
+    } else {
+      binancePair = upper + 'USDT';
+    }
+  }
+
+  // Walk the provider chain, trying each in order and falling back on null/error.
+  var originalFirst = null;
+
+  function tryNext(remaining){
+    if(remaining.length === 0){ cb(null); return; }
+    var provider = remaining[0];
+    var rest     = remaining.slice(1);
+
+    // ── Helper: call cb with price, showing a fallback toast if we fell back ──
+    function succeed(price){
+      var didFallback = (originalFirst && provider !== originalFirst);
+      if(didFallback){
+        var now = Date.now();
+        var lastAt = _paFallbackToastAt[upper] || 0;
+        if(now - lastAt > PA_FALLBACK_TOAST_THROTTLE_MS){
+          _paFallbackToastAt[upper] = now;
+          var fromLabel = PA_PROVIDER_LABELS[originalFirst] || originalFirst;
+          var toLabel   = PA_PROVIDER_LABELS[provider]      || provider;
+          toast('⚠️ ' + sym + ': ' + fromLabel + ' failed — switched to ' + toLabel, 'warn');
+        }
+      }
+      // Update per-asset-type tracking
+      _paActiveProviders[assetType] = provider;
+      _paProviderFailed[assetType]  = !!didFallback;
+      _paLastProvider = provider; // legacy compat
+      paProviderLastBadgeRefresh();
+      cb(price);
+    }
+
+    if(provider === 'binance'){
+      if(!binancePair){ tryNext(rest); return; }
+      if(originalFirst === null) originalFirst = provider;
+      fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + binancePair)
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var price = d.price ? parseFloat(d.price) : null;
+        if(price !== null){ succeed(price); } else { tryNext(rest); }
+      })
+      .catch(function(){ tryNext(rest); });
+      return;
+    }
+
+    if(provider === 'coingecko'){
+      if(assetType !== 'crypto'){ tryNext(rest); return; }
+      if(originalFirst === null) originalFirst = provider;
+      paFetchCoinGecko(sym, _paConfig.coingeckoKey, function(price){
+        if(price !== null){ succeed(price); } else { tryNext(rest); }
+      });
+      return;
+    }
+
+    if(provider === 'finnhub'){
+      var finnhubKey = _paConfig.finnhubKey;
+      if(!finnhubKey){ tryNext(rest); return; } // skip — no key configured
+      if(originalFirst === null) originalFirst = provider;
+      paFetchFinnhub(sym, finnhubKey, function(price){
+        if(price !== null){ succeed(price); } else { tryNext(rest); }
+      });
+      return;
+    }
+
+    if(provider === 'av'){
+      var avKey = _paConfig.avKey;
+      if(!avKey){ tryNext(rest); return; } // skip — no key configured
+      if(originalFirst === null) originalFirst = provider;
+      paFetchAlphaVantage(sym, avKey, function(price){
+        if(price !== null){ succeed(price); } else { tryNext(rest); }
+      });
+      return;
+    }
+
+    if(provider === 'oanda'){
+      var oandaKey = _paConfig.oandaKey;
+      var oandaEnv = _paConfig.oandaEnv;
+      if(!oandaKey){ tryNext(rest); return; } // skip — no key configured
+      if(originalFirst === null) originalFirst = provider;
+      paFetchOanda(sym, oandaKey, oandaEnv, function(price){
+        if(price !== null){ succeed(price); } else { tryNext(rest); }
+      });
+      return;
+    }
+
+    if(provider === 'yahoo'){
+      if(originalFirst === null) originalFirst = provider;
+      paFetchYahoo(sym, function(price){
+        if(price !== null){ succeed(price); } else { tryNext(rest); }
+      });
+      return;
+    }
+
+    // Unknown provider entry — skip
+    tryNext(rest);
+  }
+
+  tryNext(chain);
+}
+
+// ── Yahoo Finance (free, allorigins proxy) ────────────────────
 function paFetchYahoo(sym, cb){
   var upper = sym.toUpperCase();
-  // Map common shorthands to Yahoo tickers
   var yahooMap = {
     'GOLD':'GC=F','SILVER':'SI=F','OIL':'CL=F','CRUDE':'CL=F','WTI':'CL=F',
     'BRENT':'BZ=F','NATGAS':'NG=F','CORN':'ZC=F','WHEAT':'ZW=F',
     'US30':'YM=F','US500':'ES=F','SP500':'ES=F','SPX':'ES=F',
-    'NAS100':'NQ=F','NASDAQ':'NQ=F','DAX':'GC=F',
+    'NAS100':'NQ=F','NASDAQ':'NQ=F','DAX':'GDAXI',
     'EURUSD':'EURUSD=X','GBPUSD':'GBPUSD=X','USDJPY':'USDJPY=X',
     'AUDUSD':'AUDUSD=X','USDCAD':'USDCAD=X','USDCHF':'USDCHF=X',
     'NZDUSD':'NZDUSD=X','EURGBP':'EURGBP=X','EURJPY':'EURJPY=X',
     'GBPJPY':'GBPJPY=X','XAUUSD':'GC=F','XAGUSD':'SI=F'
   };
   var ticker = yahooMap[upper] || upper;
-  // Add =X for forex pairs if it looks like one (6 letters, no slash)
-  if(!yahooMap[upper] && /^[A-Z]{6}$/.test(upper)){
-    ticker = upper + '=X';
-  }
+  if(!yahooMap[upper] && /^[A-Z]{6}$/.test(upper)) ticker = upper + '=X';
 
   var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(ticker) + '?interval=1m&range=1d';
-  // Use allorigins to bypass CORS (free, no key)
   var proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
 
   fetch(proxy)
@@ -9993,6 +11354,228 @@ function paFetchYahoo(sym, cb){
   .catch(function(){ cb(null); });
 }
 
+// ── CoinGecko (crypto only, free tier, optional API key) ──────
+// Used as fallback for crypto when Binance fails.
+// Free without a key (50 calls/min). Pass a Demo key for slightly higher limits.
+function paFetchCoinGecko(sym, apiKey, cb){
+  var upper = sym.toUpperCase();
+  // Map symbol to CoinGecko coin ID
+  var cgMap = {
+    'BTC':'bitcoin','BTCUSDT':'bitcoin','BTCUSD':'bitcoin',
+    'ETH':'ethereum','ETHUSDT':'ethereum','ETHUSD':'ethereum',
+    'BNB':'binancecoin','BNBUSDT':'binancecoin',
+    'SOL':'solana','SOLUSDT':'solana',
+    'XRP':'ripple','XRPUSDT':'ripple',
+    'ADA':'cardano','ADAUSDT':'cardano',
+    'DOGE':'dogecoin','DOGEUSDT':'dogecoin',
+    'AVAX':'avalanche-2','AVAXUSDT':'avalanche-2',
+    'DOT':'polkadot','DOTUSDT':'polkadot',
+    'MATIC':'matic-network','MATICUSDT':'matic-network',
+    'LTC':'litecoin','LTCUSDT':'litecoin',
+    'LINK':'chainlink','LINKUSDT':'chainlink',
+    'UNI':'uniswap','UNIUSDT':'uniswap',
+    'ATOM':'cosmos','ATOMUSDT':'cosmos',
+    'TRX':'tron','TRXUSDT':'tron',
+    'TON':'the-open-network','TONUSDT':'the-open-network',
+    'SHIB':'shiba-inu','SHIBUSDT':'shiba-inu'
+  };
+  // For xUSDT / xUSD symbols not in map, try stripping suffix and lowercasing
+  var coinId = cgMap[upper];
+  if(!coinId){
+    var base = upper.replace(/USDT$|USD$/,'').toLowerCase();
+    coinId = base; // best-effort — CoinGecko uses lowercase coin ids
+  }
+  var url = 'https://api.coingecko.com/api/v3/simple/price?ids=' + encodeURIComponent(coinId) + '&vs_currencies=usd';
+  if(apiKey) url += '&x_cg_demo_api_key=' + encodeURIComponent(apiKey);
+  var proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+  fetch(proxy)
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    try{
+      var content = JSON.parse(d.contents);
+      var price = content[coinId] && content[coinId].usd;
+      cb(price ? parseFloat(price) : null);
+    } catch(e){ cb(null); }
+  })
+  .catch(function(){ cb(null); });
+}
+
+// ── Finnhub (stocks and indices, free tier, key required) ─────
+// Free tier: 60 API calls/minute.
+function paFetchFinnhub(sym, apiKey, cb){
+  var upper = sym.toUpperCase();
+  // Map common index shorthands to Yahoo-style tickers that Finnhub also supports
+  var finnhubMap = {
+    'US30':  'DJI','SP500':'^GSPC','SPX':'^GSPC','US500':'^GSPC',
+    'NAS100':'^NDX','NASDAQ':'^NDX','DAX':'^GDAXI','UK100':'^FTSE',
+    'GOLD':'OANDA:XAU_USD','XAUUSD':'OANDA:XAU_USD',
+    'SILVER':'OANDA:XAG_USD','XAGUSD':'OANDA:XAG_USD'
+  };
+  var ticker = finnhubMap[upper] || upper;
+  var url = 'https://finnhub.io/api/v1/quote?symbol=' + encodeURIComponent(ticker) + '&token=' + encodeURIComponent(apiKey);
+  var proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+  fetch(proxy)
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    try{
+      var content = JSON.parse(d.contents);
+      // Finnhub returns { c: current, h: high, l: low, o: open, pc: prev close }
+      var price = content.c;
+      cb((price && price !== 0) ? parseFloat(price) : null);
+    } catch(e){ cb(null); }
+  })
+  .catch(function(){ cb(null); });
+}
+
+// ── Alpha Vantage ─────────────────────────────────────────────
+// Supports: stocks, forex (FX_INTRADAY), crypto (CRYPTO_INTRADAY)
+function paFetchAlphaVantage(sym, apiKey, cb){
+  var upper = sym.toUpperCase();
+
+  // Forex pairs: 6 alpha chars  e.g. EURUSD, GBPUSD
+  var isForex = /^[A-Z]{6}$/.test(upper);
+  // Commodity / index shorthands mapped to AV equivalents
+  var avCommodityMap = {
+    'GOLD':'XAUUSD','SILVER':'XAGUSD','XAUUSD':'XAUUSD','XAGUSD':'XAGUSD'
+  };
+
+  var url;
+  if(isForex || avCommodityMap[upper]){
+    var pair = avCommodityMap[upper] || upper;
+    var fromCcy = pair.slice(0,3);
+    var toCcy   = pair.slice(3,6);
+    url = 'https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE'
+        + '&from_currency=' + fromCcy
+        + '&to_currency='   + toCcy
+        + '&apikey=' + encodeURIComponent(apiKey);
+
+    var proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    fetch(proxy)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      try{
+        var content = JSON.parse(d.contents);
+        var rate = content['Realtime Currency Exchange Rate']['5. Exchange Rate'];
+        cb(rate ? parseFloat(rate) : null);
+      } catch(e){ cb(null); }
+    })
+    .catch(function(){ cb(null); });
+    return;
+  }
+
+  // Stocks / ETFs — use GLOBAL_QUOTE
+  url = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE'
+      + '&symbol=' + encodeURIComponent(upper)
+      + '&apikey=' + encodeURIComponent(apiKey);
+
+  var proxy2 = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+  fetch(proxy2)
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    try{
+      var content = JSON.parse(d.contents);
+      var price = content['Global Quote']['05. price'];
+      cb(price ? parseFloat(price) : null);
+    } catch(e){ cb(null); }
+  })
+  .catch(function(){ cb(null); });
+}
+
+// ── Oanda v20 REST API ────────────────────────────────────────
+// Supports: forex pairs, CFDs on indices/commodities using Oanda instrument names.
+// IMPORTANT: Oanda v20 requires an Authorization header. Browsers block this via
+// CORS (allorigins strips custom headers; direct fetch is blocked by Oanda's CORS
+// policy for browser origins). A 5-second AbortSignal timeout ensures fast
+// fallback to the next provider (Yahoo Finance) rather than hanging.
+function paFetchOanda(sym, apiKey, env, cb){
+  var upper = sym.toUpperCase();
+
+  // Map common shorthand names to Oanda instrument format (BASE_QUOTE)
+  var oandaMap = {
+    'EURUSD':'EUR_USD','GBPUSD':'GBP_USD','USDJPY':'USD_JPY',
+    'AUDUSD':'AUD_USD','USDCAD':'USD_CAD','USDCHF':'USD_CHF',
+    'NZDUSD':'NZD_USD','EURGBP':'EUR_GBP','EURJPY':'EUR_JPY',
+    'GBPJPY':'GBP_JPY','XAUUSD':'XAU_USD','XAGUSD':'XAG_USD',
+    'GOLD':'XAU_USD','SILVER':'XAG_USD',
+    'US30':'US30_USD','US500':'SPX500_USD','SP500':'SPX500_USD',
+    'NAS100':'NAS100_USD','NASDAQ':'NAS100_USD',
+    'OIL':'WTICO_USD','WTI':'WTICO_USD','CRUDE':'WTICO_USD','BRENT':'BCO_USD'
+  };
+
+  // Auto-convert XXXYYY → XXX_YYY for 6-char forex pairs not in map
+  var instrument;
+  if(oandaMap[upper]){
+    instrument = oandaMap[upper];
+  } else if(/^[A-Z]{6}$/.test(upper)){
+    instrument = upper.slice(0,3) + '_' + upper.slice(3,6);
+  } else if(/^[A-Z]+_[A-Z]+$/.test(upper)){
+    instrument = upper; // already in Oanda format
+  } else {
+    cb(null); // unsupported symbol for Oanda
+    return;
+  }
+
+  var host = (env === 'live')
+    ? 'https://api-fxtrade.oanda.com'
+    : 'https://api-fxpractice.oanda.com';
+
+  // Use pricing endpoint (single quote, no candle subscription needed)
+  var directUrl = host + '/v3/instruments/' + instrument + '/candles?count=1&price=M&granularity=S5';
+
+  // Route through corsproxy.io so the Authorization header is forwarded —
+  // Oanda's API does not include CORS headers for browser requests.
+  var apiUrl = 'https://corsproxy.io/?' + encodeURIComponent(directUrl);
+
+  var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var timeoutId = controller ? setTimeout(function(){ controller.abort(); }, 8000) : null;
+
+  var fetchOpts = {
+    headers: { 'Authorization': 'Bearer ' + apiKey }
+  };
+  if(controller) fetchOpts.signal = controller.signal;
+
+  var _oandaDebugEl = document.getElementById('pa-oanda-debug');
+
+  fetch(apiUrl, fetchOpts)
+  .then(function(r){
+    if(timeoutId) clearTimeout(timeoutId);
+    var status = r.status;
+    if(!r.ok){
+      return r.text().then(function(body){
+        var msg = 'HTTP ' + status + ' — ' + body.slice(0, 300);
+        if(_oandaDebugEl){ _oandaDebugEl.style.display=''; _oandaDebugEl.textContent = 'URL: ' + apiUrl + '\nError: ' + msg; }
+        throw new Error(msg);
+      });
+    }
+    return r.json();
+  })
+  .then(function(d){
+    try{
+      var mid = d.candles[d.candles.length-1].mid;
+      var price = parseFloat(mid.c); // close of last candle
+      if(isNaN(price)){
+        if(_oandaDebugEl){ _oandaDebugEl.style.display=''; _oandaDebugEl.textContent = 'URL: ' + apiUrl + '\nParsed NaN from response: ' + JSON.stringify(d).slice(0,300); }
+        cb(null);
+      } else {
+        if(_oandaDebugEl){ _oandaDebugEl.style.display='none'; _oandaDebugEl.textContent=''; }
+        cb(price);
+      }
+    } catch(e){
+      if(_oandaDebugEl){ _oandaDebugEl.style.display=''; _oandaDebugEl.textContent = 'URL: ' + apiUrl + '\nParse error: ' + e.message + '\nResponse: ' + JSON.stringify(d).slice(0,300); }
+      cb(null);
+    }
+  })
+  .catch(function(err){
+    if(timeoutId) clearTimeout(timeoutId);
+    var msg = err && err.message ? err.message : String(err);
+    if(_oandaDebugEl && _oandaDebugEl.textContent === ''){
+      _oandaDebugEl.style.display='';
+      _oandaDebugEl.textContent = 'URL: ' + apiUrl + '\nNetwork/CORS error: ' + msg;
+    }
+    cb(null);
+  });
+}
+
 // ── Check alerts and fire ─────────────────────────────────────
 
 function paCheckAlerts(sym, price){
@@ -10006,6 +11589,9 @@ function paCheckAlerts(sym, price){
       a.fired  = true;
       a.firedAt = Date.now();
       fired = true;
+      // Immediately update this card's DOM class for instant visual feedback
+      var cardEl = document.getElementById('pa-card-' + a.id);
+      if(cardEl) cardEl.className = 'pa-alert-card fired' + (a.dir === 'below' ? ' fired-below' : '');
       paFireAlert(a, price);
     }
   });
@@ -10033,13 +11619,13 @@ function paFireAlert(a, currentPrice){
   if(window.Notification && Notification.permission === 'granted'){
     try{
       new Notification('🔔 ' + a.symbol + ' Alert!', {
-        body: a.symbol + (a.dir==='above'?' ↑ rose above ':' ↓ dropped below ') + paFmtPrice(a.target) + '\nNow: ' + paFmtPrice(currentPrice),
+        body: a.symbol + (a.dir==='above'?' ↑ rose above ':' ↓ dropped below ') + (a.targetStr || paFmtPrice(a.target)) + '\nNow: ' + paFmtPrice(currentPrice),
         icon: ''
       });
     } catch(e){}
   }
 
-  toast('🔔 Alert fired: ' + a.symbol + ' hit ' + paFmtPrice(a.target), 'ok');
+  toast('🔔 Alert fired: ' + a.symbol + ' hit ' + (a.targetStr || paFmtPrice(a.target)), 'ok');
 }
 
 // ── Init on page navigation ───────────────────────────────────
@@ -10102,9 +11688,29 @@ function paOnSymbolChange(){
   }
 }
 
+function paTgTogglePanel(){
+  var body = document.getElementById('pa-tg-panel-body');
+  var chev = document.getElementById('pa-tg-panel-chevron');
+  if(!body) return;
+  var open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  if(chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+}
+
+function paProviderTogglePanel(){
+  var body = document.getElementById('pa-provider-panel-body');
+  var chev = document.getElementById('pa-provider-panel-chevron');
+  if(!body) return;
+  var open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  if(chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+}
+
 function paInit(){
   paLoad();
+  paLoadConfig();
   paRefreshTgUI();
+  paProviderUIInit();
   paRender();
   paPopulateSymbolSuggestions();
   // Resume monitoring if there are active unfired alerts
