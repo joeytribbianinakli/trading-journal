@@ -584,7 +584,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 .ai-result-card-body li{margin-bottom:4px}
 .ai-result-card-body strong{color:var(--text);font-weight:600}
 .ai-score-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.ai-score-card{flex:1;min-width:120px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;text-align:center}
+.ai-score-card{flex:1;min-width:130px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;text-align:center;display:flex;flex-direction:column;align-items:center}
 .ai-score-val{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin-bottom:4px}
 .ai-score-lbl{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
 .ai-score-val.grade-a{color:var(--green)}
@@ -616,10 +616,31 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 .ai-model-tab.active{background:var(--accent);color:#fff}
 .ai-model-tab:hover:not(.active){background:var(--bg4);color:var(--text)}
 
+/* ── AI Analyzer collapsible cards ── */
+.ai-result-card-header{cursor:pointer;user-select:none;transition:background .12s;justify-content:space-between}
+.ai-result-card-header:hover{background:var(--bg3)}
+.ai-card-chevron{width:14px;height:14px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:transform .2s;margin-left:auto}
+.ai-result-card.collapsed .ai-card-chevron{transform:rotate(-90deg)}
+.ai-result-card.collapsed > .ai-result-card-body{display:none}
+.ai-result-card.collapsed{border-bottom:none}
+.ai-result-card-header .ai-result-card-title{flex:1}
+/* Expand/Collapse all toolbar */
+.ai-collapse-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-bottom:10px}
+.ai-collapse-toolbar-label{font-size:10px;color:var(--text3);margin-right:2px}
+.ai-coach-body{padding:12px;display:flex;flex-direction:column;gap:8px}
+
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* ── JS-render utility classes ── */
+.js-stat-lbl{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+.js-stat-cell{padding:12px 14px;border-right:1px solid var(--border)}
+.js-val-lg{font-size:20px;font-weight:700;font-family:'DM Mono',monospace}
+.js-pre{font-size:12px;color:var(--text2);white-space:pre-wrap}
+.js-hint{font-size:11px;color:var(--text3)}
+.js-hint-mt{font-size:10px;color:var(--text3);margin-top:2px}
 </style>
 <script>
 (function(){
@@ -1621,7 +1642,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             
           </div>
           <div style="display:flex;gap:6px;align-items:center">
-            <input type="text" id="flt-search" placeholder="Search pair, notes…" oninput="renderHistory()" style="font-size:12px;padding:6px 10px;width:180px">
+            <input type="text" id="flt-search" placeholder="Search pair, notes…" oninput="_debouncedRenderHistory()" style="font-size:12px;padding:6px 10px;width:180px">
             <button class="btn btn-ghost btn-sm" onclick="openColumnManager()" title="Customize columns">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg>
               Columns
@@ -1724,7 +1745,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <label class="flabel">Starting equity ($)</label>
               <input type="number" id="mc-equity" value="5000" step="any" style="font-size:12px">
             </div>
-            <button class="btn btn-primary" style="align-self:flex-end" onclick="runMonteCarlo()">
+            <button class="btn btn-primary" id="mc-run-btn" style="align-self:flex-end" onclick="runMonteCarlo()">
               <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Run simulation
             </button>
             <button class="btn btn-ghost btn-sm" style="align-self:flex-end" title="Save current inputs as defaults" onclick="mcSaveDefaults()">
@@ -3171,6 +3192,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
+// ── Utility: debounce ────────────────────────────
+function debounce(fn, ms){ var t; return function(){ clearTimeout(t); t = setTimeout(fn, ms); }; }
+
 // ══ DB ════════════════════════════════════════════
 var DB_NAME='TradingJournal',DB_VER=4,db=null;
 var SS_ZONES=['htf-W','htf-D','htf-4h','mtf-1h','mtf-30m','ltf-15m','ltf-5m','setup','postanalysis'];
@@ -5457,6 +5481,7 @@ function guardedRender(name, fn) {
 }
 
 function renderHistory()       { guardedRender('renderHistory',       _renderHistoryImpl); }
+var _debouncedRenderHistory = debounce(renderHistory, 250);
 function renderDashboard()     { guardedRender('renderDashboard',     _renderDashboardImpl); }
 function updateSidebarStats()  { guardedRender('updateSidebarStats',  _updateSidebarStatsImpl); }
 
@@ -5596,7 +5621,7 @@ async function openDetail(id){
   if(trade.biasNarrative){var bArr=[];for(var tf in trade.biasNarrative){var v=trade.biasNarrative[tf];if(v&&v!=='neutral')bArr.push('<span class="badge '+(v==='bull'?'badge-green':'badge-red')+'">'+tf+': '+(v==='bull'?'Bullish':'Bearish')+'</span>');}if(bArr.length)biasHtml='<div class="detail-section-title">Narrative bias</div><div class="pill-row">'+bArr.join('')+'</div>';}
   var planHtml='';
   if(trade.planIf||trade.planElseIf){planHtml='<div class="detail-section-title">Trade plan</div><div class="plan-block" style="pointer-events:none">'+(trade.planIf?'<div class="plan-line"><span class="plan-kw">→ if</span><span style="color:var(--text2);font-size:12px;padding-left:6px;white-space:pre-wrap">'+escHtml(trade.planIf)+'</span></div>':'')+(trade.planIfThen?'<div class="plan-line" style="margin-left:18px"><span class="plan-kw then">then</span><span style="color:var(--text2);font-size:12px;padding-left:6px;white-space:pre-wrap">'+escHtml(trade.planIfThen)+'</span></div>':'')+(trade.planElseIf?'<div class="plan-line" style="margin-top:6px"><span class="plan-kw">→ else if</span><span style="color:var(--text2);font-size:12px;padding-left:6px;white-space:pre-wrap">'+escHtml(trade.planElseIf)+'</span></div>':'')+(trade.planElseIfThen?'<div class="plan-line" style="margin-left:18px"><span class="plan-kw then">then</span><span style="color:var(--text2);font-size:12px;padding-left:6px;white-space:pre-wrap">'+escHtml(trade.planElseIfThen)+'</span></div>':'')+'</div>';}
-  var noteRow=function(lbl,val){return val?'<div class="detail-item"><div class="di-label">'+lbl+'</div><div class="di-val" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(val)+'</div></div>':'';};
+  var noteRow=function(lbl,val){return val?'<div class="detail-item"><div class="di-label">'+lbl+'</div><div class="di-val js-pre">'+escHtml(val)+'</div></div>':'';};
   // Build unmet checklist HTML (only items marked 'no', grouped by section)
   var checklistUnmetHtml=(function(){
     var cl=trade.checklist||{};
@@ -5652,9 +5677,9 @@ async function openDetail(id){
     +checklistUnmetHtml
     +(trade.emoBefore||trade.emoAfter||trade.emoComplete?
       '<div class="detail-section-title">Emotions</div><div class="detail-grid">'
-      +(trade.emoBefore?'<div class="detail-item"><div class="di-label">Before trade</div><div class="di-val" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.emoBefore)+'</div></div>':'')
-      +(trade.emoAfter?'<div class="detail-item"><div class="di-label">After trade</div><div class="di-val" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.emoAfter)+'</div></div>':'')
-      +(trade.emoComplete?'<div class="detail-item"><div class="di-label">Session complete</div><div class="di-val" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.emoComplete)+'</div></div>':'')
+      +(trade.emoBefore?'<div class="detail-item"><div class="di-label">Before trade</div><div class="di-val js-pre">'+escHtml(trade.emoBefore)+'</div></div>':'')
+      +(trade.emoAfter?'<div class="detail-item"><div class="di-label">After trade</div><div class="di-val js-pre">'+escHtml(trade.emoAfter)+'</div></div>':'')
+      +(trade.emoComplete?'<div class="detail-item"><div class="di-label">Session complete</div><div class="di-val js-pre">'+escHtml(trade.emoComplete)+'</div></div>':'')
       +'</div>':'')
     +(trade.narrativeNotes?'<div class="detail-section-title">Narrative</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.narrativeNotes)+'</div>':'')
     +(trade.setupNotes?'<div class="detail-section-title">Setup</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.setupNotes)+'</div>':'')
@@ -5664,8 +5689,8 @@ async function openDetail(id){
     +(trade.issuesNotes&&trade.issuesNotes!='1.'?'<div class="detail-section-title">Issues</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.issuesNotes)+'</div>':'')
     +imgSections
     +(trade.mistakes||trade.lessons||trade.good?'<div class="detail-section-title">Lessons</div><div class="detail-grid">'+noteRow('Mistakes',trade.mistakes)+noteRow('Lessons learned',trade.lessons)+noteRow('What went well',trade.good)+'</div>':'')
-    +(trade.postAnalysis&&trade.postAnalysis!='1.'?'<div class="detail-section-title">Post-journal</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.postAnalysis)+'</div>':'')
-    +(trade.news&&trade.news!='1.'?'<div class="detail-section-title">News</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+escHtml(trade.news)+'</div>':'')
+    +(trade.postAnalysis&&trade.postAnalysis!='1.'?'<div class="detail-section-title">Post-journal</div><div class="js-pre">'+escHtml(trade.postAnalysis)+'</div>':'')
+    +(trade.news&&trade.news!='1.'?'<div class="detail-section-title">News</div><div class="js-pre">'+escHtml(trade.news)+'</div>':'')
     +'<div style="height:16px"></div>';
   document.getElementById('detail-overlay').classList.add('open');
 }
@@ -5832,7 +5857,7 @@ async function exportBackup(){
   // Also capture localStorage keys used by the app
   var localData={};
   var blob=new Blob([JSON.stringify({version:5,exportedAt:new Date().toISOString(),trades,images,sessions,settings,localData},null,2)],{type:'application/json'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tj_data_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},60000);
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tj_data_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
   toast('Full backup downloaded ('+images.length+' images, '+trades.length+' trades)','ok');
 }
 // ══ Recompute derived fields from raw trade data ══════
@@ -5898,7 +5923,7 @@ async function exportCSV(){
   var trades=await dbGetAll('trades');
   var cols=['num','pair','assetType','type','sessionId','strategy','ltf','rating','riskpct','riskDollar','entryPrice','stopLoss','exitPrice','qty','targetRR','actualRR','plDollar','plPct','durationMin','winLoss','entryTime','exitTime','savedAt'];
   var csv=[cols.join(',')].concat(trades.map(function(t){return cols.map(function(c){var v=t[c]??'';return'"'+String(v).replace(/"/g,'""')+'"'}).join(',')})).join('\n');
-  var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='trades_'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},60000);
+  var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='trades_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(a.href);
   toast('CSV downloaded','ok');
 }
 async function clearAll(){
@@ -5918,7 +5943,7 @@ function toast(msg,type){
   requestAnimationFrame(function(){el.classList.add('show')});
   setTimeout(function(){el.classList.remove('show');setTimeout(function(){el.remove()},300)},3500);
 }
-function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escHtml(s){if(!s)return'';return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];})}
 
 // ══ Dashboard filter helpers ═══════════════════════
 function toggleDashFilters(){
@@ -6244,19 +6269,30 @@ async function runMonteCarlo(){
   var returns=pool.filter(function(t){return t.plPct!=null&&t.plPct!==0;}).map(function(t){return t.plPct/100;}); // as decimal
   if(returns.length<3){toast('Not enough trades (need 3+) in selected data','err');return;}
 
-  // Run simulations
+  // Run simulations (chunked — 50 runs per frame so the UI stays responsive)
   var allPaths=[];
-  for(var r=0;r<runs;r++){
-    var eq=startingEquity;
-    var path=[eq];
-    for(var t=0;t<tradesPerSim;t++){
-      var sample=returns[Math.floor(Math.random()*returns.length)];
-      eq=eq*(1+sample);
-      if(eq<0)eq=0;
-      path.push(parseFloat(eq.toFixed(2)));
+  var mcBtn=document.getElementById('mc-run-btn');
+  if(mcBtn){mcBtn.disabled=true;mcBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"\/></svg><span id="mc-run-label">Running\u2026 0%<\/span>';}
+  await new Promise(function(resolve){
+    var r=0,CHUNK=50;
+    function step(){
+      var end=Math.min(r+CHUNK,runs);
+      for(;r<end;r++){
+        var eq=startingEquity,path=[eq];
+        for(var t=0;t<tradesPerSim;t++){
+          var sample=returns[Math.floor(Math.random()*returns.length)];
+          eq=eq*(1+sample);if(eq<0)eq=0;
+          path.push(parseFloat(eq.toFixed(2)));
+        }
+        allPaths.push(path);
+      }
+      var lbl=document.getElementById('mc-run-label');
+      if(lbl)lbl.textContent='Running\u2026 '+Math.round(r/runs*100)+'%';
+      if(r<runs)setTimeout(step,0);else resolve();
     }
-    allPaths.push(path);
-  }
+    step();
+  });
+  if(mcBtn){mcBtn.disabled=false;mcBtn.innerHTML='<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"\/></svg>Run simulation';}
 
   // Compute percentile paths at each step
   var pctLabels=['Start'];
@@ -7518,8 +7554,8 @@ async function ghListSnapshots(){
   var cfg=ghGetConfig();
   var el=document.getElementById('gh-snapshot-list');
   if(!el)return;
-  if(!cfg.user||!cfg.repo||!cfg.token){el.innerHTML='<div style="font-size:11px;color:var(--text3)">GitHub not configured.</div>';return;}
-  el.innerHTML='<div style="font-size:11px;color:var(--text3)">Loading…</div>';
+  if(!cfg.user||!cfg.repo||!cfg.token){el.innerHTML='<div class="js-hint">GitHub not configured.</div>';return;}
+  el.innerHTML='<div class="js-hint">Loading…</div>';
   try{
     // Get default branch SHA first
     var branchResp=await fetch('https://api.github.com/repos/'+cfg.user+'/'+cfg.repo+'/git/ref/heads/main?_='+Date.now(),{
@@ -7604,7 +7640,7 @@ async function ghListSnapshots(){
         +'<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)">'
         +'<div>'
         +'<div style="font-size:12px;font-weight:600;color:var(--text)">config_backup.json</div>'
-        +'<div style="font-size:10px;color:var(--text3);margin-top:2px">Strategies · Checklist · Asset pairs · Column layout · Theme · Calendar view · MC defaults · Calculator capital · Demo defaults</div>'
+        +'<div class="js-hint-mt">Strategies · Checklist · Asset pairs · Column layout · Theme · Calendar view · MC defaults · Calculator capital · Demo defaults</div>'
         +'</div>'
         +'<button class="btn btn-ghost btn-sm" style="color:var(--purple);flex-shrink:0" onclick="ghRestoreConfigBackup()">'
         +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Restore config'
@@ -8008,7 +8044,7 @@ function ghDownloadPagesWorkflow(){
 '        id: deployment\n'+
 '        uses: actions/deploy-pages@v4\n';
   var blob=new Blob([yml],{type:'text/yaml'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='deploy.yml';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},60000);
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='deploy.yml';a.click();URL.revokeObjectURL(a.href);
   toast('deploy.yml downloaded — add it to .github/workflows/ in your repo','ok');
 }
 
@@ -8311,9 +8347,10 @@ async function calPopulateSessionFilter(){
 }
 
 // ── Main render entry ─────────────────────────────────────
-async function renderCalendar(){
-  var allTrades=await dbGetAll('trades');
-  var allSess=await dbGetAll('sessions');
+function renderCalendar(){ guardedRender('renderCalendar', _renderCalendarImpl); }
+async function _renderCalendarImpl(){
+  var allTrades=await dbGetAllCached('trades');
+  var allSess=await dbGetAllCached('sessions');
   var archivedIds=new Set(allSess.filter(function(s){return s.archived;}).map(function(s){return s.id;}));
   var demoIds=new Set(allSess.filter(function(s){return !!s.isDemo;}).map(function(s){return s.id;}));
   var demoOn=!!_dashDemoMode;
@@ -8450,7 +8487,7 @@ function calClickStreakDay(dateKey){
   _calView='month';
   document.querySelectorAll('.cal-view-tab').forEach(function(b){b.classList.toggle('active',b.dataset.view==='month');});
   _calSelectedDay=dateKey;
-  renderCalendar().then(function(){calShowDayDetail(dateKey);});
+  _renderCalendarImpl().then(function(){calShowDayDetail(dateKey);});
 }
 
 // ── MONTH VIEW ────────────────────────────────────────────
@@ -8632,11 +8669,11 @@ function calRenderMonth(){
         '</div>'+
       '</div>'+
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0;padding:0">'+
-        '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Trades</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+monthTrades.length+'</div></div>'+
-        '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Win Rate</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+moWinRate+'%</div><div style="font-size:10px;color:var(--text3);margin-top:2px"><span style="color:var(--green)">'+moWins+'W</span> / <span style="color:var(--red)">'+moLosses+'L</span></div></div>'+
-        (moAvgRR!=null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Avg RR</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+moAvgRR.toFixed(2)+'R</div></div>':'')+
-        (moBestDay!==null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Best Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--green)">'+calPlFmt(moBestDay)+'</div></div>':'')+
-        (moWorstDay!==null?'<div style="padding:12px 14px"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Worst Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--red)">'+calPlFmt(moWorstDay)+'</div></div>':'')+
+        '<div class="js-stat-cell"><div class="js-stat-lbl">Trades</div><div class="js-val-lg">'+monthTrades.length+'</div></div>'+
+        '<div class="js-stat-cell"><div class="js-stat-lbl">Win Rate</div><div class="js-val-lg">'+moWinRate+'%</div><div class="js-hint-mt"><span style="color:var(--green)">'+moWins+'W</span> / <span style="color:var(--red)">'+moLosses+'L</span></div></div>'+
+        (moAvgRR!=null?'<div class="js-stat-cell"><div class="js-stat-lbl">Avg RR</div><div class="js-val-lg">'+moAvgRR.toFixed(2)+'R</div></div>':'')+
+        (moBestDay!==null?'<div class="js-stat-cell"><div class="js-stat-lbl">Best Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--green)">'+calPlFmt(moBestDay)+'</div></div>':'')+
+        (moWorstDay!==null?'<div style="padding:12px 14px"><div class="js-stat-lbl">Worst Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--red)">'+calPlFmt(moWorstDay)+'</div></div>':'')+
       '</div>'+
     '</div>';
     monthSummaryHtml='<details class="cal-summary-details" style="margin-top:12px">'+
@@ -8767,11 +8804,11 @@ function calRenderWeek(){
       '</div>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0;padding:0">'+
-      '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Trades</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+weekTrades.length+'</div></div>'+
-      '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Win Rate</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+wWinRate+'%</div><div style="font-size:10px;color:var(--text3);margin-top:2px"><span style="color:var(--green)">'+wWins+'W</span> / <span style="color:var(--red)">'+wLosses+'L</span></div></div>'+
-      (avgRR!=null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Avg RR</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+avgRR.toFixed(2)+'R</div></div>':'')+
-      (wBestDay!==null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Best Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--green)">'+calPlFmt(wBestDay)+'</div></div>':'')+
-      (wWorstDay!==null?'<div style="padding:12px 14px"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Worst Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--red)">'+calPlFmt(wWorstDay)+'</div></div>':'')+
+      '<div class="js-stat-cell"><div class="js-stat-lbl">Trades</div><div class="js-val-lg">'+weekTrades.length+'</div></div>'+
+      '<div class="js-stat-cell"><div class="js-stat-lbl">Win Rate</div><div class="js-val-lg">'+wWinRate+'%</div><div class="js-hint-mt"><span style="color:var(--green)">'+wWins+'W</span> / <span style="color:var(--red)">'+wLosses+'L</span></div></div>'+
+      (avgRR!=null?'<div class="js-stat-cell"><div class="js-stat-lbl">Avg RR</div><div class="js-val-lg">'+avgRR.toFixed(2)+'R</div></div>':'')+
+      (wBestDay!==null?'<div class="js-stat-cell"><div class="js-stat-lbl">Best Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--green)">'+calPlFmt(wBestDay)+'</div></div>':'')+
+      (wWorstDay!==null?'<div style="padding:12px 14px"><div class="js-stat-lbl">Worst Day</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--red)">'+calPlFmt(wWorstDay)+'</div></div>':'')+
     '</div>'+
   '</div>';
 
@@ -8933,12 +8970,12 @@ function calRenderYear(){
         '</div>'+
       '</div>'+
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0;padding:0">'+
-        '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Trades</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+yrTrades.length+'</div></div>'+
-        '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Win Rate</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+yrWinRate+'%</div><div style="font-size:10px;color:var(--text3);margin-top:2px"><span style="color:var(--green)">'+yrWins+'W</span> / <span style="color:var(--red)">'+yrLosses+'L</span></div></div>'+
-        (yrAvgRR!=null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Avg RR</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+yrAvgRR.toFixed(2)+'R</div></div>':'')+
-        '<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Active Months</div><div style="font-size:20px;font-weight:700;font-family:\'DM Mono\',monospace">'+activeMonths.length+' / 12</div></div>'+
-        (yrBestMo!==null?'<div style="padding:12px 14px;border-right:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Best Month</div><div style="font-size:14px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--green)">'+calPlFmt(yrBestMo)+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px">'+yrBestMoName+'</div></div>':'')+
-        (yrWorstMo!==null?'<div style="padding:12px 14px"><div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">Worst Month</div><div style="font-size:14px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--red)">'+calPlFmt(yrWorstMo)+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px">'+yrWorstMoName+'</div></div>':'')+
+        '<div class="js-stat-cell"><div class="js-stat-lbl">Trades</div><div class="js-val-lg">'+yrTrades.length+'</div></div>'+
+        '<div class="js-stat-cell"><div class="js-stat-lbl">Win Rate</div><div class="js-val-lg">'+yrWinRate+'%</div><div class="js-hint-mt"><span style="color:var(--green)">'+yrWins+'W</span> / <span style="color:var(--red)">'+yrLosses+'L</span></div></div>'+
+        (yrAvgRR!=null?'<div class="js-stat-cell"><div class="js-stat-lbl">Avg RR</div><div class="js-val-lg">'+yrAvgRR.toFixed(2)+'R</div></div>':'')+
+        '<div class="js-stat-cell"><div class="js-stat-lbl">Active Months</div><div class="js-val-lg">'+activeMonths.length+' / 12</div></div>'+
+        (yrBestMo!==null?'<div class="js-stat-cell"><div class="js-stat-lbl">Best Month</div><div style="font-size:14px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--green)">'+calPlFmt(yrBestMo)+'</div><div class="js-hint-mt">'+yrBestMoName+'</div></div>':'')+
+        (yrWorstMo!==null?'<div style="padding:12px 14px"><div class="js-stat-lbl">Worst Month</div><div style="font-size:14px;font-weight:700;font-family:\'DM Mono\',monospace;color:var(--red)">'+calPlFmt(yrWorstMo)+'</div><div class="js-hint-mt">'+yrWorstMoName+'</div></div>':'')+
       '</div>'+
     '</div>';
     html+='<details class="cal-summary-details" style="margin-top:12px">'+
@@ -9556,8 +9593,8 @@ async function runAiAnalysis(){
 
   try{
     // Fetch trades
-    var allTrades=await dbGetAll('trades');
-    var allSessions=await dbGetAll('sessions');
+    var allTrades=await dbGetAllCached('trades');
+    var allSessions=await dbGetAllCached('sessions');
 
     var sesF=(document.getElementById('ai-session-filter')||{}).value||'';
     var typeF=(document.getElementById('ai-trade-type-filter')||{}).value||'taken';
@@ -9628,6 +9665,15 @@ function aiRenderResults(m,scores,aiText,sessionInfo,totalCount,typeF){
 
   var html='<div class="ai-result-area">';
 
+  // Expand / Collapse all toolbar
+  html+='<div class="ai-collapse-toolbar">';
+  html+='<span class="ai-collapse-toolbar-label">Sections:</span>';
+  html+='<button class="btn btn-sm btn-ghost" onclick="aiExpandCollapseAll(true)" title="Expand all sections">';
+  html+='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"/></svg>Expand all</button>';
+  html+='<button class="btn btn-sm btn-ghost" onclick="aiExpandCollapseAll(false)" title="Collapse all sections">';
+  html+='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>Collapse all</button>';
+  html+='</div>';
+
   // Session header
   html+='<div class="ai-result-card">';
   html+='<div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:var(--accent)"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="ai-result-card-title">Session Overview'+(sessionInfo?' — '+escHtml(sessionInfo.name):'')+'</div></div>';
@@ -9638,7 +9684,6 @@ function aiRenderResults(m,scores,aiText,sessionInfo,totalCount,typeF){
   html+='<span class="ai-stat-mini">'+(m.winRate*100).toFixed(0)+'% win rate</span>';
   if(m.avgRR!=null)html+='<span class="ai-stat-mini">'+m.avgRR.toFixed(2)+'R avg</span>';
   if(m.avgCL!=null)html+='<span class="ai-stat-mini" style="color:'+(m.avgCL>=0.8?'var(--green)':m.avgCL>=0.6?'var(--amber)':'var(--red)')+'">'+Math.round(m.avgCL*100)+'% checklist</span>';
-  html+='<span class="ai-stat-mini">'+m.totalTrades+(typeF==='skipped'?' skipped':' taken')+'</span>';
   html+='</div>';
 
   // Strategy bars
@@ -9661,6 +9706,17 @@ function aiRenderResults(m,scores,aiText,sessionInfo,totalCount,typeF){
   html+='<div class="ai-result-card">';
   html+='<div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:var(--purple)"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="ai-result-card-title">Performance Scores</div></div>';
   html+='<div class="ai-result-card-body"><div class="ai-score-row">';
+  // Build justification text for each score
+  var rrStr=m.avgRR!=null?m.avgRR.toFixed(2)+'R avg':'no RR data';
+  var clStr=m.avgCL!=null?Math.round(m.avgCL*100)+'% checklist':'no checklist';
+  var errTotal=Object.values(m.errorCounts||{}).reduce(function(a,v){return a+v;},0);
+  var scoreJustify={
+    overall:'Weighted blend of all four scores (performance 30%, adherence 25%, discipline 25%, journaling 20%)',
+    perf:(m.winRate*100).toFixed(0)+'% win rate · '+rrStr+(scores.perf>=70?' — solid execution':scores.perf>=50?' — room to improve RR or win rate':' — focus on entry quality and exits'),
+    process:clStr+(m.riskStdev!=null?' · risk stdev ±'+m.riskStdev.toFixed(2)+'%':'')+(scores.process>=70?' — rules followed consistently':scores.process>=50?' — some rule gaps':' — checklist or sizing needs work'),
+    journal:Math.round(m.avgRefl*100)+'% reflection · '+Math.round(m.avgPlan*100)+'% plan quality'+(scores.journal>=70?' — well documented':scores.journal>=50?' — reflection or planning needs depth':' — fill setup notes, plans and post-analysis'),
+    discipline:errTotal+' error'+(errTotal!==1?'s':'')+' · '+m.maxConsecLoss+' max consec. loss'+(scores.discipline>=70?' — good emotional control':scores.discipline>=50?' — a few rule breaks':' — address errors and consecutive loss streaks')
+  };
   var scoreItems=[
     {key:'overall',label:'Overall',score:scores.overall},
     {key:'perf',label:'Trade Quality',score:scores.perf},
@@ -9670,7 +9726,12 @@ function aiRenderResults(m,scores,aiText,sessionInfo,totalCount,typeF){
   ];
   scoreItems.forEach(function(si){
     var g=aiGrade(si.score);
-    html+='<div class="ai-score-card"><div class="ai-score-val '+aiGradeClass(g)+'">'+g+'</div><div style="font-size:11px;font-family:\'DM Mono\',monospace;color:var(--text3);margin-bottom:3px">'+si.score+'/100</div><div class="ai-score-lbl">'+si.label+'</div></div>';
+    html+='<div class="ai-score-card">';
+    html+='<div class="ai-score-val '+aiGradeClass(g)+'">'+g+'</div>';
+    html+='<div style="font-size:11px;font-family:\'DM Mono\',monospace;color:var(--text3);margin-bottom:3px">'+si.score+'/100</div>';
+    html+='<div class="ai-score-lbl">'+si.label+'</div>';
+    html+='<div style="font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5;text-align:left;border-top:1px solid var(--border);padding-top:6px">'+scoreJustify[si.key]+'</div>';
+    html+='</div>';
   });
   html+='</div>';
 
@@ -9685,61 +9746,71 @@ function aiRenderResults(m,scores,aiText,sessionInfo,totalCount,typeF){
 
   // Errors / tags
   var errEntries=Object.entries(m.errorCounts||{});
-  if(errEntries.length||m.maxConsecLoss>0){
-    html+='<div class="ai-result-card"><div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:var(--amber)"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="ai-result-card-title">Errors & Risk Flags</div></div>';
+  // ── Card: Checklist Errors ──
+  if(errEntries.length){
+    html+='<div class="ai-result-card"><div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:var(--red)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="ai-result-card-title">Checklist Errors</div></div>';
     html+='<div class="ai-result-card-body">';
-    if(errEntries.length){
-      html+='<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px">Trading Errors</div>';
-      var errExplain={
-        'FOMO':'Entered a trade driven by fear of missing out — not part of your plan',
-        'Revenge':'Traded to recover losses immediately after a losing trade',
-        'Oversize':'Position size exceeded your planned risk %',
-        'Early exit':'Closed trade before TP was hit without a valid reason',
-        'Late entry':'Entered after the ideal entry point, worsening your RR',
-        'No SL':'Trade taken without a stop loss',
-        'Moved SL':'Stop loss moved against the trade to avoid a loss',
-        'Chasing':'Entered after price had already moved significantly from the zone',
-        'Overtrading':'Took more trades than your plan allows in a session'
-      };
-      errEntries.forEach(function(e){
-        var explain=errExplain[e[0]]||'';
-        html+='<div style="margin-bottom:6px;padding:7px 10px;background:rgba(232,85,85,.06);border-radius:var(--radius);border-left:3px solid var(--red)">';
-        html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:'+(explain?'3px':'0')+'">';
-        html+='<span class="ai-tag bad">'+escHtml(e[0])+'</span>';
-        html+='<span style="font-size:11px;color:var(--text3)">occurred '+e[1]+' time'+(e[1]>1?'s':'')+'</span>';
-        html+='</div>';
-        if(explain)html+='<div style="font-size:11px;color:var(--text3)">'+escHtml(explain)+'</div>';
-        html+='</div>';
-      });
+    var errExplain={
+      'FOMO':'Entered a trade driven by fear of missing out — not part of your plan',
+      'Revenge':'Traded to recover losses immediately after a losing trade',
+      'Oversize':'Position size exceeded your planned risk %',
+      'Early exit':'Closed trade before TP was hit without a valid reason',
+      'Late entry':'Entered after the ideal entry point, worsening your RR',
+      'No SL':'Trade taken without a stop loss',
+      'Moved SL':'Stop loss moved against the trade to avoid a loss',
+      'Chasing':'Entered after price had already moved significantly from the zone',
+      'Overtrading':'Took more trades than your plan allows in a session'
+    };
+    errEntries.forEach(function(e){
+      var explain=errExplain[e[0]]||'';
+      html+='<div style="margin-bottom:6px;padding:7px 10px;background:rgba(232,85,85,.06);border-radius:var(--radius);border-left:3px solid var(--red)">';
+      html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:'+(explain?'3px':'0')+'">';
+      html+='<span class="ai-tag bad">'+escHtml(e[0])+'</span>';
+      html+='<span class="js-hint">occurred '+e[1]+' time'+(e[1]>1?'s':'')+'</span>';
       html+='</div>';
-    }
+      if(explain)html+='<div class="js-hint">'+escHtml(explain)+'</div>';
+      html+='</div>';
+    });
+    html+='</div></div>';
+  }
+
+  // ── Card: Risk Flags ──
+  if(m.maxConsecLoss>0||m.riskStdev!=null){
+    html+='<div class="ai-result-card"><div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:var(--amber)"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="ai-result-card-title">Risk Flags</div></div>';
+    html+='<div class="ai-result-card-body">';
     if(m.maxConsecLoss>0){
       var clLabel=m.maxConsecLoss>=5?'High — review position sizing and whether to stop trading after this many losses':m.maxConsecLoss>=3?'Moderate — consider if you hit your daily loss limit':'Low — within normal range';
       html+='<div style="margin-bottom:8px;padding:7px 10px;background:rgba(232,160,48,.06);border-radius:var(--radius);border-left:3px solid var(--amber)">';
       html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="font-size:11px;font-weight:700;color:var(--text)">Max consecutive losses</span><span class="ai-tag '+(m.maxConsecLoss>=5?'bad':m.maxConsecLoss>=3?'warn':'info')+'">'+m.maxConsecLoss+'</span></div>';
-      html+='<div style="font-size:11px;color:var(--text3)">'+clLabel+'</div>';
+      html+='<div class="js-hint">'+clLabel+'</div>';
       html+='</div>';
     }
     if(m.riskStdev!=null){
       var stdevLabel=m.riskStdev<0.3?'Excellent — your position sizing is very consistent':m.riskStdev<0.8?'Moderate variance — some inconsistency in your risk sizing':'High variance — you are risking different amounts per trade, which makes performance hard to evaluate';
       html+='<div style="padding:7px 10px;background:rgba(77,127,255,.06);border-radius:var(--radius);border-left:3px solid var(--accent)">';
       html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span style="font-size:11px;font-weight:700;color:var(--text)">Risk % consistency</span><span class="ai-tag '+(m.riskStdev<0.3?'good':m.riskStdev<0.8?'warn':'bad')+'">stdev ±'+m.riskStdev.toFixed(2)+'%</span></div>';
-      html+='<div style="font-size:11px;color:var(--text3)">'+stdevLabel+'</div>';
+      html+='<div class="js-hint">'+stdevLabel+'</div>';
       html+='</div>';
     }
     html+='</div></div>';
   }
 
-  // AI narrative — each section as its own card with good/bad sub-blocks
+  // AI narrative — all sections nested inside a single parent "AI Coach Analysis" collapsible card
   if(aiText){
+    // Parent card
+    html+='<div class="ai-result-card">';
+    html+='<div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:linear-gradient(135deg,var(--accent),var(--purple))"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><circle cx="12" cy="12" r="2"/></svg></div>';
+    html+='<div class="ai-result-card-title">AI Coach Analysis</div></div>';
+    html+='<div class="ai-result-card-body ai-coach-body">';
+
     if(sections.length>1){
       sections.forEach(function(sec){
+        // Child card
         html+='<div class="ai-result-card">';
-        html+='<div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:linear-gradient(135deg,var(--accent),var(--purple))"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><circle cx="12" cy="12" r="2"/></svg></div>';
-        html+='<div class="ai-result-card-title">'+(sec.title?escHtml(sec.title):'AI Coach Analysis')+'</div></div>';
+        html+='<div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:linear-gradient(135deg,var(--accent),var(--purple));width:20px;height:20px;border-radius:5px"><svg viewBox="0 0 24 24" style="width:10px;height:10px"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><circle cx="12" cy="12" r="2"/></svg></div>';
+        html+='<div class="ai-result-card-title">'+(sec.title?escHtml(sec.title):'Section')+'</div></div>';
         html+='<div class="ai-result-card-body">';
 
-        // Split body into good/bad sub-blocks if markers present
         var body=sec.body;
         var goodMarker=/[✓☑✔]\s*(What went well|Strengths?|Positives?|Good[s]?)\s*:/i;
         var badMarker=/[✗✘✖×]\s*(What needs work|Improvement[s]?|Weakness(?:es)?|Bad[s]?|Issue[s]?)\s*:/i;
@@ -9747,25 +9818,12 @@ function aiRenderResults(m,scores,aiText,sessionInfo,totalCount,typeF){
         var bIdx=body.search(badMarker);
 
         if(gIdx!==-1||bIdx!==-1){
-          // Has structured good/bad markers — render as two sub-blocks
           var goodText='',badText='',preText='';
           if(gIdx!==-1&&bIdx!==-1){
-            if(gIdx<bIdx){
-              preText=body.slice(0,gIdx).trim();
-              goodText=body.slice(gIdx,bIdx).trim();
-              badText=body.slice(bIdx).trim();
-            } else {
-              preText=body.slice(0,bIdx).trim();
-              badText=body.slice(bIdx,gIdx).trim();
-              goodText=body.slice(gIdx).trim();
-            }
-          } else if(gIdx!==-1){
-            preText=body.slice(0,gIdx).trim();
-            goodText=body.slice(gIdx).trim();
-          } else {
-            preText=body.slice(0,bIdx).trim();
-            badText=body.slice(bIdx).trim();
-          }
+            if(gIdx<bIdx){preText=body.slice(0,gIdx).trim();goodText=body.slice(gIdx,bIdx).trim();badText=body.slice(bIdx).trim();}
+            else{preText=body.slice(0,bIdx).trim();badText=body.slice(bIdx,gIdx).trim();goodText=body.slice(gIdx).trim();}
+          } else if(gIdx!==-1){preText=body.slice(0,gIdx).trim();goodText=body.slice(gIdx).trim();}
+          else{preText=body.slice(0,bIdx).trim();badText=body.slice(bIdx).trim();}
           if(preText)html+='<div style="color:var(--text2);font-size:12px;margin-bottom:8px;white-space:pre-wrap">'+escHtml(preText)+'</div>';
           if(goodText){
             html+='<div style="background:rgba(52,201,122,.07);border-left:3px solid var(--green);border-radius:0 var(--radius) var(--radius) 0;padding:8px 12px;margin-bottom:6px">';
@@ -9780,21 +9838,50 @@ function aiRenderResults(m,scores,aiText,sessionInfo,totalCount,typeF){
             html+='</div>';
           }
         } else {
-          // No markers — plain text
           html+='<div style="white-space:pre-wrap;color:var(--text2);font-size:12px">'+escHtml(body)+'</div>';
         }
-        html+='</div></div>';
+        html+='</div></div>'; // close child card
       });
     } else {
-      // Fallback: single card
-      html+='<div class="ai-result-card"><div class="ai-result-card-header"><div class="ai-result-card-icon" style="background:linear-gradient(135deg,var(--accent),var(--purple))"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><circle cx="12" cy="12" r="2"/></svg></div><div class="ai-result-card-title">AI Coach Analysis</div></div>';
-      html+='<div class="ai-result-card-body"><div style="white-space:pre-wrap;color:var(--text2);font-size:12px">'+escHtml(aiText)+'</div></div></div>';
+      // Fallback: plain text inside parent body
+      html+='<div style="white-space:pre-wrap;color:var(--text2);font-size:12px">'+escHtml(aiText)+'</div>';
     }
+
+    html+='</div></div>'; // close parent card body + card
   }
 
   html+='<div style="font-size:10px;color:var(--text3);text-align:right;padding:4px 2px">Analysis generated at '+new Date().toLocaleTimeString()+'</div>';
   html+='</div>';
   container.innerHTML=html;
+
+  // Post-process: inject chevron SVG + toggle click into every card header
+  container.querySelectorAll('.ai-result-card .ai-result-card-header').forEach(function(h){
+    var chev=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    chev.setAttribute('class','ai-card-chevron');
+    chev.setAttribute('viewBox','0 0 24 24');
+    var poly=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    poly.setAttribute('points','6 9 12 15 18 9');
+    chev.appendChild(poly);
+    h.appendChild(chev);
+    h.addEventListener('click',function(e){e.stopPropagation();aiToggleCard(h);});
+  });
+}
+
+// Toggle a single AI result card open/collapsed
+function aiToggleCard(header){
+  var card=header.parentElement;
+  while(card&&!card.classList.contains('ai-result-card'))card=card.parentElement;
+  if(card)card.classList.toggle('collapsed');
+}
+
+// Expand or collapse all AI result cards
+function aiExpandCollapseAll(expand){
+  var container=document.getElementById('ai-result-container');
+  if(!container)return;
+  container.querySelectorAll('.ai-result-card').forEach(function(card){
+    if(expand)card.classList.remove('collapsed');
+    else card.classList.add('collapsed');
+  });
 }
 
 // Parse AI response into titled sections
