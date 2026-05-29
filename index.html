@@ -3492,6 +3492,16 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                   <input type="number" id="sm-demo-count" value="10" min="1" max="100" step="1" style="text-align:center;font-family:'DM Mono',monospace;font-weight:600" oninput="this.value=Math.max(1,Math.min(100,parseInt(this.value)||1))">
                   <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4">+ ½ skipped trades auto-added</div>
                 </div>
+                <div class="frow" style="max-width:90px">
+                  <label class="flabel">Risk %</label>
+                  <input type="number" id="sm-demo-risk" value="1" min="0.1" max="100" step="0.1" style="text-align:center;font-family:'DM Mono',monospace;font-weight:600" oninput="this.value=Math.max(0.1,Math.min(100,parseFloat(this.value)||1))">
+                  <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4">per trade</div>
+                </div>
+                <div class="frow" style="max-width:90px">
+                  <label class="flabel">Target RR</label>
+                  <input type="number" id="sm-demo-rr" value="3" min="0.5" max="20" step="0.1" style="text-align:center;font-family:'DM Mono',monospace;font-weight:600" oninput="this.value=Math.max(0.5,Math.min(20,parseFloat(this.value)||3))">
+                  <div style="font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4">per trade</div>
+                </div>
               </div>
               <div style="margin-bottom:12px;display:flex;justify-content:flex-end">
                 <button class="btn btn-ghost btn-sm" onclick="saveDemoDefaults()" style="font-size:10px;color:var(--purple);border-color:rgba(155,127,240,.3)">
@@ -3508,7 +3518,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <label class="flabel" style="margin-bottom:7px">Trade hold duration</label>
                 <div style="display:flex;flex-direction:column;gap:6px" id="demo-duration-options">
                   <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 11px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);transition:all .12s" id="demo-dur-hours-lbl">
-                    <input type="radio" name="demo-duration-mode" id="demo-dur-hours" value="hours" checked style="accent-color:var(--accent);cursor:pointer" onchange="onDemoDurationModeChange()">
+                    <input type="radio" name="demo-duration-mode" id="demo-dur-hours" value="hours" style="accent-color:var(--accent);cursor:pointer" onchange="onDemoDurationModeChange()">
                     <span style="flex:1">
                       <span style="font-size:12px;font-weight:600;color:var(--text)">Intraday only</span>
                       <span style="font-size:10px;color:var(--text3);display:block;margin-top:1px">All trades close within the same day</span>
@@ -3520,9 +3530,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                     </span>
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 11px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);transition:all .12s" id="demo-dur-days-lbl">
-                    <input type="radio" name="demo-duration-mode" id="demo-dur-days" value="days" style="accent-color:var(--purple);cursor:pointer" onchange="onDemoDurationModeChange()">
+                    <input type="radio" name="demo-duration-mode" id="demo-dur-days" value="days" checked style="accent-color:var(--purple);cursor:pointer" onchange="onDemoDurationModeChange()">
                     <span style="flex:1">
-                      <span style="font-size:12px;font-weight:600;color:var(--text)">Multi-day</span>
+                      <span style="font-size:12px;font-weight:600;color:var(--text)">Swing</span>
                       <span style="font-size:10px;color:var(--text3);display:block;margin-top:1px">Swing / position trades spanning multiple days</span>
                     </span>
                     <span style="display:flex;align-items:center;gap:5px">
@@ -3535,7 +3545,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                     <input type="radio" name="demo-duration-mode" id="demo-dur-mix" value="mix" style="accent-color:var(--amber);cursor:pointer" onchange="onDemoDurationModeChange()">
                     <span style="flex:1">
                       <span style="font-size:12px;font-weight:600;color:var(--text)">Mix</span>
-                      <span style="font-size:10px;color:var(--text3);display:block;margin-top:1px">Blend of intraday and multi-day trades</span>
+                      <span style="font-size:10px;color:var(--text3);display:block;margin-top:1px">Blend of intraday and swing trades</span>
                     </span>
                     <span style="display:flex;align-items:center;gap:5px;flex-shrink:0" id="demo-dur-mix-inputs">
                       <span style="font-size:10px;color:var(--text3)">≤</span>
@@ -4248,14 +4258,15 @@ function toggleDemoSessionOptions(){
     else if(!show&&nameInput.value==='[demo]')nameInput.value='';
   }
   if(show)populateDemoAssetTypePills();
-  if(show)onDemoDurationModeChange();
-  if(show)loadDemoDefaults();
+  if(show)(async function(){await loadDemoDefaults();onDemoDurationModeChange();}());
 }
 
 async function saveDemoDefaults(){
   var val={
     count:parseInt(document.getElementById('sm-demo-count').value)||10,
-    durMode:(document.querySelector('input[name="demo-duration-mode"]:checked')||{}).value||'hours',
+    riskPct:parseFloat(document.getElementById('sm-demo-risk').value)||1,
+    targetRR:parseFloat(document.getElementById('sm-demo-rr').value)||3,
+    durMode:(document.querySelector('input[name="demo-duration-mode"]:checked')||{}).value||'days',
     durHoursMax:parseInt(document.getElementById('demo-dur-hours-max').value)||24,
     durDaysMax:parseInt(document.getElementById('demo-dur-days-max').value)||7,
     durMixHours:parseInt(document.getElementById('demo-dur-mix-hours').value)||24,
@@ -4271,6 +4282,10 @@ async function loadDemoDefaults(){
   if(!val)return;
   var countEl=document.getElementById('sm-demo-count');
   if(countEl&&val.count)countEl.value=val.count;
+  var riskEl=document.getElementById('sm-demo-risk');
+  if(riskEl&&val.riskPct)riskEl.value=val.riskPct;
+  var rrEl=document.getElementById('sm-demo-rr');
+  if(rrEl&&val.targetRR)rrEl.value=val.targetRR;
   if(val.durMode){
     var radio=document.querySelector('input[name="demo-duration-mode"][value="'+val.durMode+'"]');
     if(radio){radio.checked=true;}
@@ -4342,7 +4357,9 @@ function rnd(min,max,decimals){
 
 function randChoice(arr){return arr[Math.floor(Math.random()*arr.length)];}
 
-async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEquity,count,selectedAssets,durationOpts){
+async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,startingEquity,count,selectedAssets,durationOpts,riskPct,targetRR){
+  riskPct=(typeof riskPct==='number'&&riskPct>0)?riskPct:1;
+  targetRR=(typeof targetRR==='number'&&targetRR>0)?targetRR:3;
   // Pull real user settings so demo trades match the actual form options
   var strategies=await getStrategies();
   var checklistTemplate=await getChecklist();
@@ -4481,9 +4498,9 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
     if(isLong){exitPrice=parseFloat((entry+(isWin?exitDist:-exitDist)).toFixed(pdata.decimals));}
     else{exitPrice=parseFloat((entry-(isWin?exitDist:-exitDist)).toFixed(pdata.decimals));}
 
-    // Quantity based on 1% risk
+    // Quantity based on user-specified risk %
     var acct=currentEquity;
-    var riskDollar=acct*0.01;
+    var riskDollar=acct*(riskPct/100);
     var qty=parseFloat((riskDollar/slDist).toFixed(pdata.decimals<3?4:pdata.decimals));
     if(qty<=0)qty=0.01;
 
@@ -4525,7 +4542,7 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       return yr+'-'+mo+'-'+dy+'T'+hh+':'+mm;
     }
 
-    var targetRR=rnd(1.5,3.5,1);
+    var tradeTargetRR=targetRR;
     var arr=Math.abs(rrAchieved)*(isWin?1:-1);
     var tfBiases={W:randChoice(biasOptions),D:randChoice(biasOptions),'4h':randChoice(biasOptions),'1h':randChoice(biasOptions),'15m':randChoice(biasOptions)};
 
@@ -4557,13 +4574,13 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       rating:rating,
       error:error,
       acct:acct,
-      riskpct:1,
+      riskpct:riskPct,
       riskDollar:parseFloat(riskDollar.toFixed(2)),
       entryPrice:entry,
       stopLoss:sl,
       exitPrice:exitPrice,
       qty:qty,
-      targetRR:targetRR,
+      targetRR:tradeTargetRR,
       actualRR:parseFloat(arr.toFixed(3)),
       plDollar:plDollar,
       plPct:plPct,
@@ -4620,12 +4637,18 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
     'Session time was outside my trading hours, skipped for discipline.'
   ];
   function fmtDt2(d){var yr=d.getFullYear(),mo=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0');var hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');return yr+'-'+mo+'-'+dy+'T'+hh+':'+mm;}
-  // Extra templates specific to skipped trade reflection
-  var skipPostAnalysisTemplates=[
+  // Extra templates specific to skipped trade reflection — split by hypothetical outcome
+  var skipPostAnalysisWinTemplates=[
     '1. In hindsight the setup would have worked, but criteria were not met at entry time.',
+    '1. Price did follow through — missed opportunity, but entry model was incomplete.',
+    '1. The move worked out, yet skipping was still correct given the incomplete confirmation.',
+    '1. Would have been a winner, however rules were not fully met. Discipline first.'
+  ];
+  var skipPostAnalysisLossTemplates=[
     '1. Good decision to skip — the move was choppy and would likely have stopped out.',
-    '1. Price did follow through but entry model was incomplete. Discipline was correct.',
-    '1. Skipping was correct given HTF bias uncertainty at the time.'
+    '1. Skipping was correct given HTF bias uncertainty at the time — would have been a loss.',
+    '1. Price reversed after the signal; skipping protected capital effectively.',
+    '1. The setup failed after entry would have been placed — correct to stay out.'
   ];
   var skipIssuesTemplates=[
     '1. Setup was close but LTF confirmation was absent.',
@@ -4668,29 +4691,45 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
     var sSlPct=rnd(0.05,0.4)/100;
     var sSlDist=sEntry*sSlPct;
     sSl=sIsLong?parseFloat((sEntry-sSlDist).toFixed(sPdata.decimals)):parseFloat((sEntry+sSlDist).toFixed(sPdata.decimals));
-    // Hypothetical exit: what would have happened if taken — used for postAnalysis context only
-    var sTargetRR=rnd(1.5,3.0,1);
+    // Hypothetical exit: what would have happened if taken — mix of wins and losses like real trades
+    var sIsWin=Math.random()<0.55;
+    var sTargetRR=targetRR;
     var sHypExitDist=sSlDist*sTargetRR;
-    var sHypExit=sIsLong?parseFloat((sEntry+sHypExitDist).toFixed(sPdata.decimals)):parseFloat((sEntry-sHypExitDist).toFixed(sPdata.decimals));
-    // Qty based on 1% risk (mirrors taken trade logic)
+    var sHypExit=sIsLong
+      ?parseFloat((sEntry+(sIsWin?sHypExitDist:-sHypExitDist)).toFixed(sPdata.decimals))
+      :parseFloat((sEntry-(sIsWin?sHypExitDist:-sHypExitDist)).toFixed(sPdata.decimals));
+    // Qty based on user-specified risk % (mirrors taken trade logic)
     var sAcct=currentEquity;
-    var sRiskDollar=sAcct*0.01;
+    var sRiskDollar=sAcct*(riskPct/100);
     var sQty=parseFloat((sRiskDollar/sSlDist).toFixed(sPdata.decimals<3?4:sPdata.decimals));
     if(sQty<=0)sQty=0.01;
     // Entry time — spread across the same window as taken trades
-    var sTradeOffset=Math.random()*spreadMs;
+    var sDurMode=(durationOpts&&durationOpts.mode)||'days';
+    var sMaxHours=(durationOpts&&durationOpts.maxHours)||8;
+    var sMaxDays=(durationOpts&&durationOpts.maxDays)||5;
+    var sIntendedDurMs;
+    if(sDurMode==='hours'){
+      sIntendedDurMs=rnd(15,Math.max(sMaxHours,8)*60,0)*60000;
+    } else if(sDurMode==='days'){
+      sIntendedDurMs=rnd(1,Math.max(sMaxDays,3))*24*3600*1000;
+    } else {
+      sIntendedDurMs=Math.random()<0.4
+        ?rnd(1,Math.max(sMaxDays,3))*24*3600*1000
+        :rnd(15,Math.max(sMaxHours,8)*60,0)*60000;
+    }
+    var sEntryRoom=Math.max(spreadMs-sIntendedDurMs,0);
+    var sTradeOffset=Math.random()*sEntryRoom;
     var sEntryDt=new Date(windowStart.getTime()+sTradeOffset);
     if(sEntryDt>hardCap)sEntryDt=new Date(hardCap);
-    // Exit time — skipped trades still have an observation window (15 min to 4 hours after entry)
-    var sObsDurMs=rnd(15,240,0)*60000;
-    var sExitDt=new Date(sEntryDt.getTime()+sObsDurMs);
+    var sExitDt=new Date(sEntryDt.getTime()+sIntendedDurMs);
     if(sExitDt>hardCap)sExitDt=new Date(hardCap);
+    if(sEntryDt>hardCap){sEntryDt=new Date(hardCap);sExitDt=new Date(hardCap);}
     var sActualDurMs=sExitDt.getTime()-sEntryDt.getTime();
     var sTradeId=Date.now().toString(36)+Math.random().toString(36).slice(2)+'_skip'+j;
     var sTfBiases={W:randChoice(biasOptions),D:randChoice(biasOptions),'4h':randChoice(biasOptions),'1h':randChoice(biasOptions),'15m':randChoice(biasOptions)};
     var sSlplace=randChoice(slplaces);
     var sTpplace=randChoice(tpplaces);
-    var sExitCrit=randChoice(winExitCrits);
+    var sExitCrit=sIsWin?randChoice(winExitCrits):randChoice(lossExitCrits);
     var sRating=randChoice(ratings);
     var sError=randChoice(errors);
     // Hypothetical P/L — what would have happened if taken
@@ -4714,7 +4753,7 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       rating:sRating,
       error:sError,
       acct:sAcct,
-      riskpct:1,
+      riskpct:riskPct,
       riskDollar:parseFloat(sRiskDollar.toFixed(2)),
       entryPrice:sEntry,
       stopLoss:sSl,
@@ -4736,7 +4775,7 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       setupNotes:'1. Trading within a '+sAsset.assetType+' context, '+sPair+' at key level — setup visible but entry criteria not fully met.',
       ledToTrade:randChoice(ledToTradeTemplates),
       issuesNotes:randChoice(skipIssuesTemplates),
-      postAnalysis:randChoice(skipPostAnalysisTemplates),
+      postAnalysis:randChoice(sIsWin?skipPostAnalysisWinTemplates:skipPostAnalysisLossTemplates),
       news:'1.',
       tpCriteria:'',
       tpSlPlace:sSlplace,
@@ -4790,6 +4829,10 @@ async function saveSession(){
   if(isDemoSession){
     demoCount=parseInt((document.getElementById('sm-demo-count')||{}).value)||10;
     demoCount=Math.max(1,Math.min(100,demoCount));
+    var demoRiskPct=parseFloat((document.getElementById('sm-demo-risk')||{}).value)||1;
+    demoRiskPct=Math.max(0.1,Math.min(100,demoRiskPct));
+    var demoTargetRR=parseFloat((document.getElementById('sm-demo-rr')||{}).value)||3;
+    demoTargetRR=Math.max(0.5,Math.min(20,demoTargetRR));
     var pills=document.querySelectorAll('#demo-asset-type-pills .opt-pill.selected');
     pills.forEach(function(p){selectedDemoAssets.push(p.dataset.demoAsset);});
     if(!selectedDemoAssets.length){toast('Select at least one asset type for demo trades','err');return;}
@@ -4834,7 +4877,7 @@ async function saveSession(){
     if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Generating trades…';}
     try{
       // Fetch available strategies for demo
-      var result=await generateDemoTrades(sess.id,startDate,endDate,startingEquity,demoCount,selectedDemoAssets,demoDurationOpts);
+      var result=await generateDemoTrades(sess.id,startDate,endDate,startingEquity,demoCount,selectedDemoAssets,demoDurationOpts,demoRiskPct,demoTargetRR);
       var trades=result.trades;
       var allExistingTrades=await dbGetAll('trades');
       var baseNum=allExistingTrades.length;
