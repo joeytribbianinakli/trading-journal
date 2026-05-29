@@ -649,6 +649,144 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 .js-pre{font-size:12px;color:var(--text2);white-space:pre-wrap}
 .js-hint{font-size:11px;color:var(--text3)}
 .js-hint-mt{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — Mobile hamburger button
+══════════════════════════════════════ */
+.mob-menu-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;flex-shrink:0;margin-right:10px}
+.mob-menu-btn svg{width:16px;height:16px;stroke:var(--text2);fill:none;stroke-width:2;stroke-linecap:round}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;backdrop-filter:blur(2px)}
+.mob-overlay.open{display:block}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — Laptop (≤1280px)
+══════════════════════════════════════ */
+@media(max-width:1280px){
+  :root{--sidebar-w:180px}
+  .stats-grid{grid-template-columns:repeat(3,1fr)}
+  .charts-grid{grid-template-columns:1fr 1fr}
+  .page-content{padding:16px 18px}
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — Tablet (≤900px)
+══════════════════════════════════════ */
+@media(max-width:900px){
+  :root{--sidebar-w:170px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .charts-grid{grid-template-columns:1fr}
+  .cal-year-months{grid-template-columns:repeat(3,1fr)}
+  .page-content{padding:14px 14px}
+  .topbar{padding:9px 14px}
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — Phone (≤600px / 6.7")
+══════════════════════════════════════ */
+@media(max-width:600px){
+  /* Sidebar — slide-in drawer */
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;z-index:200;
+    transform:translateX(-105%);transition:transform .22s cubic-bezier(.4,0,.2,1);
+    box-shadow:4px 0 24px rgba(0,0,0,.45);
+    width:220px!important;min-width:220px!important;
+  }
+  .sidebar.mob-open{transform:translateX(0)}
+  .mob-menu-btn{display:flex}
+  .mob-overlay{display:none}
+  .mob-overlay.open{display:block}
+
+  /* Shell — remove fixed height, let it scroll */
+  .shell{height:auto;min-height:100vh;flex-direction:column;overflow:visible}
+  .main{overflow-y:visible}
+
+  /* Topbar */
+  .topbar{padding:9px 12px;gap:6px;flex-wrap:nowrap}
+  .topbar-title{font-size:13px}
+  .topbar-sub{display:none}
+  .topbar-actions .btn-ghost:not(.btn-icon){display:none}
+  .topbar-actions .btn-primary{font-size:11px;padding:5px 10px}
+
+  /* Page content */
+  .page-content{padding:12px 10px}
+
+  /* Stats grid — 2 cols */
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+  .stat-value{font-size:18px}
+
+  /* Charts — stack */
+  .charts-grid{grid-template-columns:1fr;gap:8px}
+  .chart-wrap{height:170px}
+
+  /* Tables — horizontal scroll, smaller text */
+  table.data{font-size:11px}
+  table.data th{font-size:8px;padding:6px 8px}
+  table.data td{padding:7px 8px}
+
+  /* Calendar toolbar */
+  .cal-toolbar{flex-direction:column;align-items:stretch;gap:6px}
+  .cal-toolbar-left{width:100%;flex-wrap:nowrap;justify-content:flex-start}
+  .cal-toolbar-right{width:100%;flex-wrap:wrap;gap:6px}
+  .cal-title{font-size:13px;flex:1;text-align:center}
+  .cal-view-tabs{flex:1}
+  .cal-view-tab{flex:1;text-align:center;padding:5px 6px;font-size:10px}
+  #cal-set-default-btn{font-size:10px;padding:4px 8px}
+
+  /* Month grid — smaller cells */
+  .cal-cell{min-height:52px;padding:3px 3px}
+  .cal-cell-date{font-size:8px}
+  .cal-trade-dot{height:3px}
+  .cal-cell-pl{font-size:8px}
+  .cal-cell-count{font-size:8px}
+  .cal-grid,.cal-grid-header{gap:2px}
+
+  /* Week view — stack to 4 cols (Mon-Thu / Fri-Sun) */
+  .cal-week-grid{grid-template-columns:repeat(4,1fr);gap:4px}
+  .cal-week-cell{min-height:70px;padding:7px 7px}
+  .cal-week-dow{font-size:11px}
+
+  /* Year view */
+  .cal-year-months{grid-template-columns:repeat(2,1fr);gap:8px}
+
+  /* Streak bar — shrink cells to fit screen */
+  .cal-streak-bar{overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .cal-streak-bar.streak-week .cal-streak-day{width:36px;height:40px}
+  .cal-streak-bar.streak-month .cal-streak-day{width:22px;height:22px}
+
+  /* Cards */
+  .card-header{padding:9px 12px}
+  .card-body{padding:10px}
+
+  /* Modals — full width */
+  .modal-overlay > div,.detail-overlay > div{width:100%!important;max-width:100%!important;border-radius:var(--radius-lg) var(--radius-lg) 0 0!important;position:fixed!important;bottom:0!important;top:auto!important;left:0!important;right:0!important;max-height:90vh;overflow-y:auto}
+
+  /* Hide less-important table columns on very small screens */
+  table.data .col-hide-mob{display:none}
+
+  /* ── Global overflow guard ── */
+  body,html{overflow-x:hidden}
+  .page-content{overflow-x:hidden}
+
+  /* ── Filter bars — prevent overflow ── */
+  .dash-filter-row,.hist-filter-row{gap:6px}
+  .dash-filter-group,.hist-filter-group{min-width:calc(50% - 6px);flex:1 1 calc(50% - 6px)}
+  .ai-filter-bar{gap:6px;padding:10px 10px}
+  .ai-filter-group{min-width:calc(50% - 6px);flex:1 1 calc(50% - 6px)}
+  .filter-bar{gap:5px}
+  .filter-bar input{min-width:0;width:100%;flex:1 1 100%}
+  .filter-bar select{min-width:0;flex:1 1 calc(50% - 5px)}
+  /* Date inputs full width */
+  input[type="date"]{min-width:0;width:100%;max-width:100%}
+  /* Ensure no child escapes container */
+  .dash-filter-body,.hist-filter-body{overflow:hidden}
+
+  /* ── History page trigger row ── */
+  .history-filter-trigger{flex-direction:column;align-items:stretch;gap:8px;padding:9px 10px}
+  .history-filter-trigger > div:first-child{flex-wrap:wrap}
+  .history-filter-trigger > div:last-child{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+  #flt-search{width:100%!important;min-width:0!important;flex:1 1 100%!important;box-sizing:border-box}
+  #hist-demo-toggle{flex-shrink:0}
+}
 </style>
 <script>
 (function(){
@@ -743,9 +881,12 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
   </div>
 </aside>
 
+<!-- Mobile nav overlay -->
+<div id="mob-overlay" class="mob-overlay" onclick="closeMobNav()"></div>
 <!-- Main -->
 <div class="main">
   <div class="topbar">
+    <button class="mob-menu-btn" onclick="toggleMobNav()" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <div><div class="topbar-title" id="topbar-title">Dashboard</div><div class="topbar-sub" id="topbar-sub">Overview of your trading performance</div></div>
     <div class="topbar-actions">
       <button class="btn btn-ghost btn-sm" onclick="openThemeModal()" title="Change theme">
@@ -6058,12 +6199,19 @@ async function openDetail(id){
     var clTemplate=_clTemplateForDetail||DEFAULT_CHECKLIST;
     var sections=[];
     clTemplate.forEach(function(sec){
-      var unmet=sec.items.filter(function(item){var v=cl[item];return v!=null&&v!==undefined&&v!=='yes'&&v!==true&&v!==1;});
+      var unmet=sec.items.filter(function(item){var v=cl[item];return v!=='yes'&&v!==true&&v!==1;});
       if(unmet.length)sections.push({header:sec.section,items:unmet});
     });
+    // Build a lookup: "sectionIndex-itemIndex" -> item label text
+    var keyToLabel={};
+    clTemplate.forEach(function(sec,si){
+      sec.items.forEach(function(item,ii){keyToLabel[si+'-'+ii]=item;});
+    });
     var templateItems=clTemplate.reduce(function(a,s){return a.concat(s.items);},[]);
-    var legacyUnmet=Object.keys(cl).filter(function(k){var v=cl[k];return !templateItems.includes(k)&&v!=='yes'&&v!==true&&v!==1;});
-    if(legacyUnmet.length)sections.push({header:'Other',items:legacyUnmet});
+    var legacyUnmet=Object.keys(cl).filter(function(k){var v=cl[k];return !templateItems.includes(k)&&v!=='yes'&&v!==true&&v!==1&&v!==null&&v!==undefined;});
+    // Resolve numeric keys (e.g. "0-2") to their label; skip unresolvable keys
+    var legacyLabels=legacyUnmet.map(function(k){return keyToLabel[k]||null;}).filter(Boolean);
+    if(legacyLabels.length)sections.push({header:'Checklist errors',items:legacyLabels});
     if(!sections.length)return '';
     var html='';
     sections.forEach(function(sec){
@@ -13804,6 +13952,27 @@ async function sendDiscord(payload, webhookUrl) {
 
 
 
+</script>
+
+<script>
+function toggleMobNav(){
+  var s=document.querySelector('.sidebar');
+  var o=document.getElementById('mob-overlay');
+  var open=s.classList.toggle('mob-open');
+  if(open){o.classList.add('open');}else{o.classList.remove('open');}
+}
+function closeMobNav(){
+  document.querySelector('.sidebar').classList.remove('mob-open');
+  document.getElementById('mob-overlay').classList.remove('open');
+}
+// Close drawer on nav item click (mobile)
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.nav-item').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      if(window.innerWidth<=600){closeMobNav();}
+    });
+  });
+});
 </script>
 </body>
 </html>
