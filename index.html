@@ -6436,10 +6436,11 @@ async function _renderDashboardImpl(){
   }
   var totalPLpct=baselineForStats>0?(totalPL/baselineForStats*100):0;
 
+  var finalEquity=baselineForStats+totalPL;
   document.getElementById('dash-stats').innerHTML=
     '<div class="stat-card"><div class="stat-label">Total trades</div><div class="stat-value">'+n+'</div><div class="stat-sub">'+wins.length+' wins · '+(n-wins.length)+' losses</div></div>'+
-    '<div class="stat-card green"><div class="stat-label">Win rate</div><div class="stat-value '+(parseFloat(wr)>=50?'pos':'neg')+'">'+wr+'%</div><div class="stat-sub">of '+n+' trades</div></div>'+
-    '<div class="stat-card '+(totalPL>=0?'green':'red')+'"><div class="stat-label">Total P/L</div><div class="stat-value '+(totalPL>=0?'pos':'neg')+'">'+(totalPL>=0?'+':'')+totalPL.toFixed(2)+'</div><div class="stat-sub">'+(totalPLpct>=0?'+':'')+totalPLpct.toFixed(2)+'% · base $'+baselineForStats.toLocaleString()+'</div></div>'+
+    '<div class="stat-card '+(parseFloat(wr)>=50?'green':'red')+'"><div class="stat-label">Win rate</div><div class="stat-value '+(parseFloat(wr)>=50?'pos':'neg')+'">'+wr+'%</div><div class="stat-sub">of '+n+' trades</div></div>'+
+    '<div class="stat-card '+(totalPL>=0?'green':'red')+'"><div class="stat-label">Total P/L</div><div class="stat-value '+(totalPL>=0?'pos':'neg')+'">'+(totalPL>=0?'+':'')+totalPL.toFixed(2)+'</div><div class="stat-sub">'+(totalPLpct>=0?'+':'')+totalPLpct.toFixed(2)+'% · $'+baselineForStats.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+' → $'+finalEquity.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</div></div>'+
     '<div class="stat-card purple"><div class="stat-label">Avg RR · PF</div><div class="stat-value '+(avgRR!=null?(avgRR>=0?'pos':'neg'):'')+'">'+( avgRR!=null?avgRR.toFixed(2)+'R':'—')+'</div><div class="stat-sub">PF: '+pf+'</div></div>'+
     '<div class="stat-card amber"><div class="stat-label">Avg hold time</div><div class="stat-value" style="font-size:20px">'+durDisplay+'</div><div class="stat-sub">'+durSub+'</div></div>';
 
