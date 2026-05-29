@@ -486,6 +486,13 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
 /* ── Strategy items ── */
 .strategy-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;background:var(--bg3)}
+.strat-card{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg3);transition:border-color .12s,background .12s}
+.strat-card:hover{background:var(--bg4);border-color:var(--border2)}
+.strat-card-bar{width:3px;height:28px;border-radius:2px;flex-shrink:0}
+.strat-card-name{flex:1;font-size:13px;font-weight:500;color:var(--text);outline:none;cursor:text;border-radius:3px;padding:1px 4px;margin-left:-4px;transition:background .1s}
+.strat-card-name:focus{background:var(--bg2);color:var(--text)}
+.strat-card-actions{display:flex;gap:3px;opacity:0;transition:opacity .12s}
+.strat-card:hover .strat-card-actions{opacity:1}
 
 /* ── Backup ── */
 .backup-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -633,6 +640,22 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 .ai-coach-body{padding:12px;display:flex;flex-direction:column;gap:8px}
 
 
+/* ── Pairs tab bar ── */
+.pairs-tab{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--radius);font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text3);transition:all .12s;white-space:nowrap;font-family:inherit}
+.pairs-tab:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.pairs-tab.active{color:#fff;border-color:transparent}
+.pairs-tab .pairs-tab-count{font-size:9px;font-weight:700;opacity:.75;font-family:'DM Mono',monospace}
+/* ── Pair chips ── */
+.pair-chip-group{margin-bottom:10px}
+.pair-chip-group-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.pair-chip-group-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.pair-chips{display:flex;flex-wrap:wrap;gap:5px}
+.pair-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;font-family:'DM Mono',monospace;background:var(--bg4);border:1px solid var(--border2);color:var(--text2);transition:all .12s;cursor:default}
+.pair-chip:hover{border-color:rgba(232,85,85,.35);background:rgba(232,85,85,.06)}
+.pair-chip:hover .pair-chip-del{opacity:1}
+.pair-chip-del{width:13px;height:13px;border-radius:50%;background:rgba(232,85,85,.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transition:opacity .12s;padding:0;font-family:inherit}
+.pair-chip-del svg{width:7px;height:7px;stroke:var(--red);stroke-width:2.5;fill:none;stroke-linecap:round}
+.pair-chips-empty{font-size:11px;color:var(--text3);font-style:italic;padding:8px 0}
 /* ── Global placeholder color ── */
 ::placeholder{color:var(--text3);opacity:1}
 /* ── color-scheme so native date pickers match the active theme ── */
@@ -2915,9 +2938,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <span class="cov-label">🪙 Crypto</span>
                 <div class="cov-chain">
                   <span class="cov-name">Binance</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">CoinGecko</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Yahoo</span>
                 </div>
               </div>
@@ -2927,9 +2950,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <span class="cov-label">💱 Forex</span>
                 <div class="cov-chain">
                   <span class="cov-name" id="pa-chain-forex-oanda">Oanda</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Alpha Vantage</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Yahoo</span>
                 </div>
               </div>
@@ -2939,9 +2962,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <span class="cov-label">🛢 Commodities</span>
                 <div class="cov-chain">
                   <span class="cov-name">Oanda</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Alpha Vantage</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Yahoo</span>
                 </div>
               </div>
@@ -2951,9 +2974,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <span class="cov-label">📊 Stocks</span>
                 <div class="cov-chain">
                   <span class="cov-name">Finnhub</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Alpha Vantage</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Yahoo</span>
                 </div>
               </div>
@@ -2963,9 +2986,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                 <span class="cov-label">📈 Indices</span>
                 <div class="cov-chain">
                   <span class="cov-name">Finnhub</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Alpha Vantage</span>
-                  <span class="cov-sep">↳ fallback</span>
+                  <span class="cov-sep">-></span>
                   <span class="cov-name">Yahoo</span>
                 </div>
               </div>
@@ -3641,17 +3664,25 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
 <!-- Strategy modal -->
 <div class="modal-overlay" id="strategy-modal">
-  <div class="modal-box">
-    <div class="modal-header"><h3>Manage strategies</h3>
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <div>
+        <h3 style="margin-bottom:2px">Strategies</h3>
+        <div style="font-size:11px;color:var(--text3);font-weight:400">Click a name to rename inline</div>
+      </div>
       <button class="btn btn-ghost btn-icon btn-sm" onclick="document.getElementById('strategy-modal').classList.remove('open')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
-      <div id="strategy-list" style="margin-bottom:14px"></div>
-      <div style="display:flex;gap:7px;margin-bottom:6px">
-        <input type="text" id="new-strat-inp" placeholder="New strategy name..." style="flex:1" onkeydown="if(event.key==='Enter')addStrategy()">
-        <button class="btn btn-primary" onclick="addStrategy()">Add</button>
+      <!-- Add new strategy -->
+      <div style="display:flex;gap:7px;margin-bottom:16px">
+        <input type="text" id="new-strat-inp" placeholder="e.g. S&D Imbalance, Breakout Retest…" style="flex:1" onkeydown="if(event.key==='Enter')addStrategy()">
+        <button class="btn btn-primary" onclick="addStrategy()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add
+        </button>
       </div>
-      <div style="font-size:11px;color:var(--text3)">Click a name to edit inline. Changes apply immediately.</div>
+      <!-- Strategy list -->
+      <div id="strategy-list"></div>
     </div>
   </div>
 </div>
@@ -3665,28 +3696,43 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
     </div>
     <div class="modal-body" style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
       <!-- Left: Asset Types -->
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Asset Types</div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Asset Types</div>
+          <div style="font-size:10px;color:var(--text3)">click name to rename</div>
+        </div>
         <div id="asset-type-list" style="margin-bottom:10px"></div>
         <div style="display:flex;gap:7px">
-          <input type="text" id="new-asset-type-inp" placeholder="New asset type..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addAssetType()">
-          <button class="btn btn-primary btn-sm" onclick="addAssetType()">Add</button>
+          <input type="text" id="new-asset-type-inp" placeholder="e.g. Forex Major, Crypto…" style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addAssetType()">
+          <button class="btn btn-primary btn-sm" onclick="addAssetType()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add
+          </button>
         </div>
       </div>
       <!-- Right: Pairs -->
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Pairs / Instruments</div>
-        <div style="margin-bottom:8px">
-          <label class="flabel" style="font-size:11px">Filter by type</label>
-          <select id="asset-type-filter" onchange="renderPairList()" style="font-size:12px;padding:5px 9px;margin-top:3px">
-            <option value="">All types</option>
-          </select>
+      <div style="display:flex;flex-direction:column;gap:0;min-width:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Pairs / Instruments</div>
+          <span id="pairs-total-count" style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace"></span>
         </div>
-        <div id="pair-list" style="margin-bottom:10px;max-height:260px;overflow-y:auto"></div>
-        <div style="display:flex;gap:7px;flex-wrap:wrap">
-          <input type="text" id="new-pair-inp" placeholder="Pair name (e.g. EUR/USD)" style="flex:1;min-width:100px;font-size:12px" onkeydown="if(event.key==='Enter')addPair()">
-          <select id="new-pair-type-sel" style="font-size:12px;padding:5px 9px;min-width:120px"></select>
-          <button class="btn btn-primary btn-sm" onclick="addPair()">Add</button>
+        <!-- Tabs -->
+        <div id="pairs-tab-bar" style="display:flex;gap:2px;flex-wrap:wrap;margin-bottom:10px;min-height:28px"></div>
+        <!-- Hidden legacy select kept for JS compat -->
+        <select id="asset-type-filter" onchange="renderPairList()" style="display:none"><option value="">All types</option></select>
+        <!-- Chip grid -->
+        <div id="pair-list" style="flex:1;min-height:80px;max-height:220px;overflow-y:auto;margin-bottom:10px"></div>
+        <!-- Add pair row -->
+        <div id="add-pair-row" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:9px 10px;display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Add pair to <span id="add-pair-type-label" style="color:var(--accent)">—</span></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="text" id="new-pair-inp" placeholder="e.g. EUR/USD" style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addPair()">
+            <select id="new-pair-type-sel" style="font-size:11px;padding:5px 8px;min-width:90px;display:none"></select>
+            <button class="btn btn-primary btn-sm" onclick="addPair()">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -3802,16 +3848,28 @@ async function getChecklist(){return await getSetting('checklist',JSON.parse(JSO
 
 // ══ Strategy manager ══════════════════════════════
 function openStrategyManager(){renderStrategyList();document.getElementById('strategy-modal').classList.add('open');}
+var STRAT_COLORS=['#4d7fff','#34c97a','#9b7ff0','#e8a030','#e85555','#26c6da','#ff7043','#66bb6a'];
 async function renderStrategyList(){
   var strats=await getStrategies();
   var el=document.getElementById('strategy-list');
-  el.innerHTML=strats.length?strats.map(function(s,i){
-    return'<div class="strategy-item"><span contenteditable="true" id="se-'+i+'" style="outline:none;flex:1;cursor:text" onblur="updateStrategy('+i+',this.textContent.trim())">'+escHtml(s)+'</span>'
-      +'<div style="display:flex;gap:4px">'
-      +'<button class="btn btn-ghost btn-sm btn-icon" title="Edit" onclick="document.getElementById(\'se-'+i+'\').focus()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>'
-      +'<button class="btn btn-danger btn-sm btn-icon" onclick="deleteStrategy('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>'
+  if(!strats.length){
+    el.innerHTML='<div style="text-align:center;padding:28px 0 20px;color:var(--text3)">'
+      +'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="opacity:.35;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="15" x2="12" y2="15"/></svg>'
+      +'<div style="font-size:13px;font-weight:600;margin-bottom:4px">No strategies yet</div>'
+      +'<div style="font-size:11px">Add your first strategy above</div>'
+      +'</div>';
+    return;
+  }
+  el.innerHTML='<div style="display:flex;flex-direction:column;gap:6px">'+strats.map(function(s,i){
+    var color=STRAT_COLORS[i%STRAT_COLORS.length];
+    return'<div class="strat-card" style="--sc:#'+color.replace('#','')+';" >'
+      +'<div class="strat-card-bar" style="background:'+color+'"></div>'
+      +'<span contenteditable="true" id="se-'+i+'" class="strat-card-name" onblur="updateStrategy('+i+',this.textContent.trim())" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'+escHtml(s)+'</span>'
+      +'<div class="strat-card-actions">'
+      +'<button class="btn btn-ghost btn-sm btn-icon" title="Rename" onclick="document.getElementById(\'se-'+i+'\').focus();var r=window.getSelection();var rng=document.createRange();rng.selectNodeContents(document.getElementById(\'se-'+i+'\'));r.removeAllRanges();r.addRange(rng)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>'
+      +'<button class="btn btn-danger btn-sm btn-icon" title="Delete" onclick="deleteStrategy('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>'
       +'</div></div>';
-  }).join(''):'<div style="font-size:13px;color:var(--text3);padding:8px 0">No strategies yet.</div>';
+  }).join('')+'</div>';
 }
 async function addStrategy(){
   var inp=document.getElementById('new-strat-inp');var name=inp.value.trim();
@@ -6997,7 +7055,8 @@ async function runMonteCarlo(){
 var DEFAULT_ASSET_TYPES=[
   {name:'Forex Major',pairs:['EUR/USD','GBP/USD','USD/JPY','USD/CHF','AUD/USD','USD/CAD','NZD/USD']},
   {name:'Commodity',pairs:['XAU/USD','XAG/USD','OIL/USD']},
-  {name:'Index',pairs:['US30','NAS100','US500','UK100']},
+  {name:'Index',pairs:['MNQ','MES','US30','NAS100','US500','UK100']},
+  {name:'Stocks',pairs:['QQQ','QQQM','MSFT','GOOG','AMZN','NVDA','TSLA','AAPL','NFLX','RDDT','HOOD']},
   {name:'Crypto',pairs:['BTC/USD','ETH/USD']}
 ];
 
@@ -7005,42 +7064,124 @@ async function getAssets(){return await getSetting('assets',JSON.parse(JSON.stri
 async function saveAssetsData(data){await setSetting('assets',data);}
 
 async function openAssetManager(){
+  _activePairsTab=''; // will auto-pick first tab in renderPairList
   await renderAssetTypeList();
   await renderPairList();
   document.getElementById('asset-modal').classList.add('open');
 }
 
+// Tracks the currently active tab in the pairs column
+var _activePairsTab = '';
+
 async function renderAssetTypeList(){
   var assets=await getAssets();
   var el=document.getElementById('asset-type-list');
-  el.innerHTML=assets.map(function(at,i){
-    return'<div class="strategy-item"><span contenteditable="true" id="ate-'+i+'" style="outline:none;flex:1;cursor:text;font-size:13px" onblur="updateAssetTypeName('+i+',this.textContent.trim())">'+escHtml(at.name)+'</span>'
-      +'<button class="btn btn-danger btn-sm btn-icon" onclick="deleteAssetType('+i+')" title="Delete"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>'
-      +'</div>';
-  }).join('') || '<div style="font-size:12px;color:var(--text3)">No asset types yet.</div>';
-  // populate type filter and new pair type selector
+  if(!assets.length){
+    el.innerHTML='<div style="text-align:center;padding:20px 0 12px;color:var(--text3);font-size:12px">No asset types yet.</div>';
+  } else {
+    el.innerHTML='<div style="display:flex;flex-direction:column;gap:5px">'+assets.map(function(at,i){
+      var color=STRAT_COLORS[i%STRAT_COLORS.length];
+      var count=at.pairs.length;
+      return'<div class="strat-card" style="cursor:default">'
+        +'<div class="strat-card-bar" style="background:'+color+'"></div>'
+        +'<span contenteditable="true" id="ate-'+i+'" class="strat-card-name" onblur="updateAssetTypeName('+i+',this.textContent.trim())" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'+escHtml(at.name)+'</span>'
+        +'<span style="font-size:10px;font-weight:700;color:var(--text3);font-family:\'DM Mono\',monospace;flex-shrink:0;margin-right:4px">'+count+' pair'+(count!==1?'s':'')+'</span>'
+        +'<div class="strat-card-actions">'
+        +'<button class="btn btn-ghost btn-sm btn-icon" title="Rename" onclick="var n=document.getElementById(\'ate-'+i+'\');n.focus();var r=window.getSelection();var rng=document.createRange();rng.selectNodeContents(n);r.removeAllRanges();r.addRange(rng)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>'
+        +'<button class="btn btn-danger btn-sm btn-icon" title="Delete" onclick="deleteAssetType('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>'
+        +'</div></div>';
+    }).join('')+'</div>';
+  }
+  // keep legacy hidden select in sync (used by other parts of the app)
   var opts='<option value="">All types</option>'+assets.map(function(at){return'<option value="'+escHtml(at.name)+'">'+escHtml(at.name)+'</option>'}).join('');
   document.getElementById('asset-type-filter').innerHTML=opts;
   document.getElementById('new-pair-type-sel').innerHTML=assets.map(function(at){return'<option value="'+escHtml(at.name)+'">'+escHtml(at.name)+'</option>'}).join('');
+  // sync tab bar
+  _renderPairsTabBar(assets);
 }
 
-async function renderPairList(){
-  var assets=await getAssets();
-  var filter=document.getElementById('asset-type-filter').value;
+function _renderPairsTabBar(assets){
+  var bar=document.getElementById('pairs-tab-bar');
+  if(!bar)return;
+  if(!assets||!assets.length){bar.innerHTML='<span style="font-size:11px;color:var(--text3);font-style:italic">Add an asset type first</span>';return;}
+  // If active tab no longer exists, reset to first
+  if(_activePairsTab&&!assets.find(function(a){return a.name===_activePairsTab;})) _activePairsTab='';
+  if(!_activePairsTab&&assets.length) _activePairsTab=assets[0].name;
+  bar.innerHTML=assets.map(function(at,i){
+    var color=STRAT_COLORS[i%STRAT_COLORS.length];
+    var isActive=at.name===_activePairsTab;
+    return'<button class="pairs-tab'+(isActive?' active':'')+'" style="'+(isActive?'background:'+color+';':'')+'border-color:'+(isActive?color:'')+';" onclick="setPairsTab(\''+escHtml(at.name).replace(/'/g,"\\'")+'\')">'
+      +escHtml(at.name)
+      +'<span class="pairs-tab-count">'+at.pairs.length+'</span>'
+      +'</button>';
+  }).join('');
+}
+
+function setPairsTab(name){
+  _activePairsTab=name;
+  getAssets().then(function(assets){
+    _renderPairsTabBar(assets);
+    _renderPairChips(assets);
+    _updateAddPairLabel(assets);
+  });
+}
+
+function _updateAddPairLabel(assets){
+  var lbl=document.getElementById('add-pair-type-label');
+  var row=document.getElementById('add-pair-row');
+  if(!lbl)return;
+  if(!assets||!assets.length){lbl.textContent='—';if(row)row.style.opacity='.45';return;}
+  if(row)row.style.opacity='1';
+  var at=assets.find(function(a){return a.name===_activePairsTab;});
+  lbl.textContent=at?at.name:'—';
+  // keep hidden new-pair-type-sel in sync so addPair() still works
+  var sel=document.getElementById('new-pair-type-sel');
+  if(sel&&at)sel.value=at.name;
+}
+
+function _renderPairChips(assets){
   var el=document.getElementById('pair-list');
+  var totalEl=document.getElementById('pairs-total-count');
+  if(!assets||!assets.length){
+    if(el)el.innerHTML='<div class="pair-chips-empty">No pairs yet. Add an asset type first.</div>';
+    if(totalEl)totalEl.textContent='';
+    return;
+  }
+  var totalPairs=assets.reduce(function(s,a){return s+a.pairs.length;},0);
+  if(totalEl)totalEl.textContent=totalPairs+' pair'+(totalPairs!==1?'s':'');
+
+  var visibleAssets=_activePairsTab?assets.filter(function(a){return a.name===_activePairsTab;}):assets;
   var html='';
-  assets.forEach(function(at,ti){
-    if(filter&&at.name!==filter)return;
-    html+='<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">'+escHtml(at.name)+'</div>';
+  visibleAssets.forEach(function(at,gi){
+    var ti=assets.indexOf(at);
+    if(!at.pairs.length){
+      html+='<div class="pair-chips-empty" style="padding:10px 0 4px">No pairs in '+escHtml(at.name)+' yet.</div>';
+      return;
+    }
+    var color=STRAT_COLORS[ti%STRAT_COLORS.length];
+    // if showing "all" (no active tab), show group headers
+    if(!_activePairsTab){
+      html+='<div class="pair-chip-group-label" style="color:'+color+'">'+escHtml(at.name)+'</div>';
+    }
+    html+='<div class="pair-chips">';
     at.pairs.forEach(function(p,pi){
-      html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:var(--bg3);border-radius:4px;margin-bottom:3px">'
-        +'<span style="font-size:12px;font-family:monospace">'+escHtml(p)+'</span>'
-        +'<button class="btn btn-danger btn-sm btn-icon" onclick="deletePair('+ti+','+pi+')" style="padding:2px 5px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>'
+      html+='<div class="pair-chip">'
+        +escHtml(p)
+        +'<button class="pair-chip-del" onclick="deletePair('+ti+','+pi+')" title="Remove '+escHtml(p)+'">'
+        +'<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+        +'</button>'
         +'</div>';
     });
     html+='</div>';
   });
-  el.innerHTML=html||'<div style="font-size:12px;color:var(--text3)">No pairs.</div>';
+  el.innerHTML=html||'<div class="pair-chips-empty">No pairs found.</div>';
+}
+
+async function renderPairList(){
+  var assets=await getAssets();
+  _renderPairsTabBar(assets);
+  _renderPairChips(assets);
+  _updateAddPairLabel(assets);
 }
 async function addAssetType(){
   var inp=document.getElementById('new-asset-type-inp');var name=inp.value.trim();
@@ -7048,6 +7189,7 @@ async function addAssetType(){
   var assets=await getAssets();
   if(assets.find(function(a){return a.name===name})){toast('Already exists','err');return;}
   assets.push({name,pairs:[]});await saveAssetsData(assets);inp.value='';
+  _activePairsTab=name; // auto-switch to the new tab
   await renderAssetTypeList();await renderPairList();ghAutoSyncConfig();
 }
 async function deleteAssetType(idx){
@@ -7059,6 +7201,7 @@ async function deleteAssetType(idx){
   var total=new Set([...usingType.map(function(t){return t.id;}), ...usingPair.map(function(t){return t.id;})]).size;
   if(total){toast('Cannot delete "'+at.name+'" — used in '+total+' trade'+(total>1?'s':'')+' (including archived)','err');return;}
   if(!confirm('Delete "'+at.name+'" and all its pairs?'))return;
+  if(_activePairsTab===at.name)_activePairsTab=''; // will auto-pick next
   assets.splice(idx,1);await saveAssetsData(assets);await renderAssetTypeList();await renderPairList();ghAutoSyncConfig();
 }
 async function updateAssetTypeName(idx,name){
@@ -7084,17 +7227,24 @@ async function deletePair(typeIdx,pairIdx){
   var trades=await dbGetAll('trades');
   var using=trades.filter(function(t){return t.pair===pair;});
   if(using.length){toast('Cannot delete "'+pair+'" — used in '+using.length+' trade'+(using.length>1?'s':'')+' (including archived)','err');return;}
-  assets[typeIdx].pairs.splice(pairIdx,1);await saveAssetsData(assets);await renderPairList();ghAutoSyncConfig();
+  assets[typeIdx].pairs.splice(pairIdx,1);await saveAssetsData(assets);
+  await renderAssetTypeList(); // refresh left column counts + tab bar
+  await renderPairList();
+  ghAutoSyncConfig();
 }
 async function addPair(){
   var pInp=document.getElementById('new-pair-inp');var pair=pInp.value.trim().toUpperCase();
   if(!pair){toast('Enter a pair name','err');return;}
-  var typeSel=document.getElementById('new-pair-type-sel');var typeName=typeSel.value;
-  if(!typeName){toast('Select an asset type','err');return;}
+  // use active tab as the type, fall back to hidden select
+  var typeName=_activePairsTab||(document.getElementById('new-pair-type-sel').value);
+  if(!typeName){toast('Select an asset type first','err');return;}
   var assets=await getAssets();var at=assets.find(function(a){return a.name===typeName;});
   if(!at){toast('Asset type not found','err');return;}
-  if(at.pairs.includes(pair)){toast('Pair already exists','err');return;}
-  at.pairs.push(pair);await saveAssetsData(assets);pInp.value='';await renderPairList();ghAutoSyncConfig();
+  if(at.pairs.includes(pair)){toast('Pair already exists in '+typeName,'err');return;}
+  at.pairs.push(pair);await saveAssetsData(assets);pInp.value='';
+  // keep active tab on the type we just added to
+  _activePairsTab=typeName;
+  await renderAssetTypeList();await renderPairList();ghAutoSyncConfig();
 }
 async function saveAssets(){
   await populatePairSelect();
