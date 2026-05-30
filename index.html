@@ -18,27 +18,28 @@
   --blue:#4d7fff;
   --green:#34c97a; --red:#e85555; --amber:#e8a030; --purple:#9b7ff0;
   --radius:6px; --radius-lg:10px; --radius-xl:14px;
-  --sidebar-w:200px;
+  --sidebar-w:216px;
 }
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.55;min-height:100vh}
 
 /* ── Layout ── */
 .shell{display:flex;height:100vh;overflow:hidden}
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column}
-.sidebar-logo{padding:18px 16px 14px}
-.sidebar-logo .logo-mark{display:flex;align-items:center;gap:9px}
-.sidebar-logo .logo-icon{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-logo{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo .logo-mark{display:flex;align-items:center;gap:10px}
+.sidebar-logo .logo-icon{width:30px;height:30px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sidebar-logo .logo-icon svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .sidebar-logo .logo-text{font-size:13px;font-weight:600;letter-spacing:-.01em}
-.sidebar-logo .logo-sub{font-size:10px;color:var(--text3);margin-top:1px}
-.sidebar-nav{flex:1;padding:8px 6px;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text2);font-size:12px;font-weight:500;transition:color .12s,background .12s;user-select:none;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
-.nav-item svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.7}
+.sidebar-logo .logo-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.sidebar-nav{flex:1;padding:10px 8px;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text2);font-size:12px;font-weight:500;transition:color .12s,background .12s;user-select:none;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;line-height:1}
+.nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:.6;transition:opacity .12s}
 .nav-item:hover{background:var(--bg3);color:var(--text)}
 .nav-item:hover svg{opacity:1}
-.nav-item.active{background:rgba(77,127,255,.1);color:var(--accent)}
+.nav-item.active{background:rgba(77,127,255,.12);color:var(--accent)}
 .nav-item.active svg{opacity:1;stroke:var(--accent)}
-.nav-section-label{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding:14px 10px 5px}
+.nav-section-label{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.09em;text-transform:uppercase;padding:18px 10px 6px;opacity:.7}
+.nav-section-label:first-child{padding-top:6px}
 .main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:11px 22px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:50;flex-shrink:0}
 .topbar-title{font-size:14px;font-weight:600;letter-spacing:-.01em}
@@ -859,7 +860,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
     </button>
     <button class="nav-item" onclick="nav('calendar',this)">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar view
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendar
     </button>
     <div class="nav-section-label">Trades</div>
     <button class="nav-item" onclick="nav('log',this)">
@@ -867,6 +868,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
     </button>
     <button class="nav-item" onclick="nav('history',this)">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>History
+    </button>
+    <button class="nav-item" onclick="nav('calculator',this)">
+      <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>Calculator
     </button>
     <div class="nav-section-label">Manage</div>
     <button class="nav-item" onclick="nav('sessions',this)">
@@ -881,13 +885,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
     <button class="nav-item" onclick="openAssetManager()">
       <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Assets &amp; pairs
     </button>
-    <div class="nav-section-label">AI</div>
+    <div class="nav-section-label">Tools</div>
     <button class="nav-item" onclick="nav('ai-analyzer',this)">
       <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M21.17 8H12V2.83"/><circle cx="12" cy="12" r="2"/></svg>AI Analyzer
-    </button>
-    <div class="nav-section-label">Data</div>
-    <button class="nav-item" onclick="nav('calculator',this)">
-      <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>Calculator
     </button>
     <button class="nav-item" onclick="nav('price-alerts',this)" id="nav-price-alerts">
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><circle cx="18" cy="5" r="3" fill="var(--red)" stroke="none" id="nav-alerts-badge" style="display:none"/></svg>Price Alerts
@@ -1644,9 +1644,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
           <div class="analysis-body open">
             <div class="plan-block">
-              <div class="plan-line"><span class="plan-kw plan-kw-code">if</span><textarea class="plan-editable" id="plan-if" rows="2">price provides a confirmation</textarea></div>
+              <div class="plan-line"><span class="plan-kw plan-kw-code">if</span><textarea class="plan-editable" id="plan-if" rows="2">&lt;price provides a confirmation&gt;</textarea></div>
               <div class="plan-line" style="margin-left:18px"><span class="plan-kw then plan-kw-code">then</span><textarea class="plan-editable" id="plan-if-then" rows="2"></textarea></div>
-              <div class="plan-line" style="margin-top:6px"><span class="plan-kw plan-kw-code plan-kw-elseif">else if</span><textarea class="plan-editable" id="plan-elseif" rows="2">the price breaks the zone</textarea></div>
+              <div class="plan-line" style="margin-top:6px"><span class="plan-kw plan-kw-code plan-kw-elseif">else if</span><textarea class="plan-editable" id="plan-elseif" rows="2">&lt;the price breaks the zone&gt;</textarea></div>
               <div class="plan-line" style="margin-left:18px"><span class="plan-kw then plan-kw-code">then</span><textarea class="plan-editable" id="plan-elseif-then" rows="2"></textarea></div>
             </div>
           </div>
@@ -1659,7 +1659,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body open">
-            <div class="frow"><textarea id="led-to-trade">1.</textarea></div>
+            <div class="frow"><textarea id="led-to-trade">1. </textarea></div>
             <!-- HTF screenshots: W / D / 4h + custom -->
             <div class="screenshots-group" style="margin-top:14px">
               <div class="screenshots-group-hdr">
@@ -1707,14 +1707,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
                     <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
                   </div>
                 </div>
-                <div class="tf-sub-section">
-                  <div class="tf-sub-label">30m</div>
-                  <div class="img-grid" id="imgs-mtf-30m"></div>
-                  <div class="img-paste-zone" id="paste-zone-mtf-30m" tabindex="0" onclick="focusPasteZone('mtf-30m')" ondragover="onDragOver(event,'mtf-30m')" ondragleave="onDragLeave(event,'mtf-30m')" ondrop="onDrop(event,'mtf-30m')">
-                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                    <p>Click then <kbd>Ctrl+V</kbd> / drop</p>
-                  </div>
-                </div>
+
               </div>
               <div class="tf-add-row"><button class="tf-add-btn" onclick="addCustomTfZone('mtf')">+ Add TF</button></div>
             </div>
@@ -1762,7 +1755,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body open">
-            <div class="frow"><textarea id="why-skipped-notes" placeholder="Describe why you chose not to take this trade...">1.</textarea></div>
+            <div class="frow"><textarea id="why-skipped-notes" placeholder="Describe why you chose not to take this trade...">1. </textarea></div>
           </div>
         </div>
 
@@ -1773,7 +1766,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body open">
-            <div class="frow"><textarea id="issues-notes">1.</textarea></div>
+            <div class="frow"><textarea id="issues-notes">1. </textarea></div>
           </div>
         </div>
 
@@ -1784,7 +1777,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body">
-            <div class="frow"><textarea id="post-analysis">1.</textarea></div>
+            <div class="frow"><textarea id="post-analysis">1. </textarea></div>
             <div class="screenshots-group" style="margin-top:10px">
               <div class="screenshots-group-hdr"><span class="screenshots-group-title">Screenshots (optional)</span><span style="font-size:10px;color:var(--text3)"><kbd>Ctrl+V</kbd></span></div>
               <div class="img-grid" id="imgs-postanalysis"></div>
@@ -1801,7 +1794,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <svg class="ah-toggle" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="analysis-body">
-            <div class="frow"><textarea id="f-news">1.</textarea></div>
+            <div class="frow"><textarea id="f-news">1. </textarea></div>
           </div>
         </div>
 
@@ -1822,17 +1815,17 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
         <div class="form-section">
           <div class="fsec-title">Emotions</div>
           <div class="frow-inline">
-            <div class="frow"><label class="flabel">Before placing trade <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-before">1.</textarea></div>
-            <div class="frow"><label class="flabel">After placing trade <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-after">1.</textarea></div>
-            <div class="frow"><label class="flabel">After trade completed <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-complete">1.</textarea></div>
+            <div class="frow"><label class="flabel">Before placing trade <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-before">1. </textarea></div>
+            <div class="frow"><label class="flabel">After placing trade <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-after">1. </textarea></div>
+            <div class="frow"><label class="flabel">After trade completed <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="emo-complete">1. </textarea></div>
           </div>
         </div>
         <div class="form-section">
           <div class="fsec-title">Lessons</div>
           <div class="frow-inline">
-            <div class="frow"><label class="flabel">Mistakes <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-mistakes">1.</textarea></div>
-            <div class="frow"><label class="flabel">Lessons learned <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-lessons">1.</textarea></div>
-            <div class="frow"><label class="flabel">What went well <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-good">1.</textarea></div>
+            <div class="frow"><label class="flabel">Mistakes <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-mistakes">1. </textarea></div>
+            <div class="frow"><label class="flabel">Lessons learned <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-lessons">1. </textarea></div>
+            <div class="frow"><label class="flabel">What went well <span style="color:var(--red);margin-left:2px">*</span></label><textarea id="l-good">1. </textarea></div>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
@@ -2503,6 +2496,14 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <div class="calc-info-body open" id="calc-info-body">
             <div class="calc-info-grid" id="calc-info-grid"></div>
           </div>
+          <!-- Log Trade Button (backtest mode only) -->
+          <div id="calc-log-trade-box" style="display:block;margin-top:10px">
+            <button onclick="calcLogTrade()" style="width:100%;padding:10px;border-radius:var(--radius);border:1px solid rgba(77,127,255,.35);background:rgba(77,127,255,.1);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.01em" onmouseover="this.style.background='rgba(77,127,255,.18)'" onmouseout="this.style.background='rgba(77,127,255,.1)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;margin-top:-1px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Log This Trade
+            </button>
+            <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:5px">Sends session, balance, risk %, entry, SL &amp; qty to the trade form</div>
+          </div>
         </div>
 
         <!-- RIGHT: Results -->
@@ -2575,14 +2576,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="calc-section-title a">Margin</div>
             <div class="calc-srow"><span class="calc-sl2">Required ($)</span><span class="calc-sv a" id="calc-out-margin">—</span></div>
             <div class="calc-srow"><span class="calc-sl2">Used (%)</span><span class="calc-sv a" id="calc-out-margin-pct">—</span></div>
-          </div>
-          <!-- Log Trade Button (backtest mode only) -->
-          <div id="calc-log-trade-box" style="display:block;margin-top:4px">
-            <button onclick="calcLogTrade()" style="width:100%;padding:10px;border-radius:var(--radius);border:1px solid rgba(77,127,255,.35);background:rgba(77,127,255,.1);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.01em" onmouseover="this.style.background='rgba(77,127,255,.18)'" onmouseout="this.style.background='rgba(77,127,255,.1)'">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;margin-top:-1px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Log This Trade
-            </button>
-            <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:5px">Sends session, balance, risk %, entry, SL &amp; qty to the trade form</div>
           </div>
         </div>
       </div>
@@ -3483,7 +3476,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
           <div class="frow" style="margin-bottom:16px">
             <label class="flabel">Default Risk (%) <span style="color:var(--text3);font-weight:400">— used as default for all trades &amp; calculator in this session</span></label>
-            <input type="number" id="sm-default-risk" value="1" min="0.01" max="100" step="0.1" placeholder="e.g. 1" oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
+            <input type="number" id="sm-default-risk" value="1" min="0.01" max="100" step="any" placeholder="e.g. 1">
           </div>
           <div class="frow" style="margin-bottom:16px">
             <label style="display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none">
@@ -4662,9 +4655,9 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       checklist:makeDemoChecklist(isWin),
       setupNotes:'1. Trading within a '+asset.assetType+' context, '+pair+' at key level.',
       ledToTrade:randChoice(ledToTradeTemplates),
-      issuesNotes:'1.',
-      postAnalysis:'1.',
-      news:'1.',
+      issuesNotes:'1. ',
+      postAnalysis:'1. ',
+      news:'1. ',
       tpCriteria:'',
       tpSlPlace:slplace,
       tpTpPlace:tpplace,
@@ -4847,7 +4840,7 @@ async function generateDemoTrades(sessionId,sessionStartDate,sessionEndDate,star
       ledToTrade:randChoice(ledToTradeTemplates),
       issuesNotes:randChoice(skipIssuesTemplates),
       postAnalysis:randChoice(sIsWin?skipPostAnalysisWinTemplates:skipPostAnalysisLossTemplates),
-      news:'1.',
+      news:'1. ',
       tpCriteria:'',
       tpSlPlace:sSlplace,
       tpTpPlace:sTpplace,
@@ -4997,10 +4990,16 @@ async function onSessionChange(){
   var sessions=await dbGetAll('sessions');
   var sess=sessions.find(function(s){return s.id===sesId;});
   if(sess){
-    var equity=sess.currentEquity||sess.startingEquity||5000;
-    document.getElementById('f-acct').value=equity;
+    // When editing an existing trade, don't overwrite f-acct with currentEquity.
+    // editTrade() already set f-acct to the equity *before* that trade was entered
+    // (currentEquity minus the trade's own P/L). Overwriting it here (from the async
+    // completion of this function) would corrupt P/L% with the post-trade balance.
+    if(!editingId){
+      var equity=sess.currentEquity||sess.startingEquity||5000;
+      document.getElementById('f-acct').value=equity;
+    }
     var riskEl=document.getElementById('f-riskpct');
-    if(riskEl&&sess.defaultRisk!=null){riskEl.value=sess.defaultRisk;}
+    if(!editingId&&riskEl&&sess.defaultRisk!=null){riskEl.value=sess.defaultRisk;}
     recalc();
   }
 }
@@ -5875,11 +5874,12 @@ function cancelEdit(){editingId=null;document.getElementById('edit-banner').clas
 async function clearForm(skipCancelEdit){
   if(!skipCancelEdit)cancelEdit();
   var textIds=['f-entry','f-sl-price','f-sl','f-exit','f-qty','trail-notes','trail-count','trail-final-sl','tpchg-notes','tpchg-orig','tpchg-new',
-    'plan-if','plan-if-then','plan-elseif','plan-elseif-then','tp-rr-a'];
+    'plan-if-then','plan-elseif-then','tp-rr-a'];
   textIds.forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   // Restore pre-filled defaults for analysis/reflection textareas
-  var prefilledDefaults={'led-to-trade':'1.','issues-notes':'1.','post-analysis':'1.','f-news':'1.',
-    'emo-before':'1.','emo-after':'1.','emo-complete':'1.','l-mistakes':'1.','l-lessons':'1.','l-good':'1.'};
+  var prefilledDefaults={'led-to-trade':'1. ','issues-notes':'1. ','post-analysis':'1. ','f-news':'1. ',
+    'emo-before':'1. ','emo-after':'1. ','emo-complete':'1. ','l-mistakes':'1. ','l-lessons':'1. ','l-good':'1. ',
+    'plan-if':'<price provides a confirmation>','plan-elseif':'<the price breaks the zone>'};
   Object.keys(prefilledDefaults).forEach(function(id){var el=document.getElementById(id);if(el)el.value=prefilledDefaults[id];});
   var setupEl=document.getElementById('setup-notes');if(setupEl)setupEl.value='1. Trading within a ';
   document.getElementById('f-acct').value='5000'; // will be overwritten by onSessionChange after populateSessionSelects
@@ -5917,7 +5917,7 @@ async function clearForm(skipCancelEdit){
   activePasteZone=null;
   // Reset skipped trade
   var skippedCb=document.getElementById('f-skipped');if(skippedCb){skippedCb.checked=false;onSkippedChange();}
-  var whyEl=document.getElementById('why-skipped-notes');if(whyEl)whyEl.value='1.';
+  var whyEl=document.getElementById('why-skipped-notes');if(whyEl)whyEl.value='1. ';
   // Reset TF pills
   resetTfPills();
   recalc();switchTab(0,null);
@@ -5956,7 +5956,34 @@ async function editTrade(id){
   setOptPill('opt-ltf',trade.ltf);s('f-ltf-val',trade.ltf);
   setOptPill('opt-trail',trade.tpTrail||'');s('f-trail-val',trade.tpTrail||'');
   s('f-strategy',trade.strategy);s('f-error',trade.error);s('f-rating',trade.rating);
-  s('f-acct',trade.acct);s('f-riskpct',trade.riskpct);s('f-entry',trade.entryPrice);s('f-sl-price',trade.stopLoss||'');s('f-exit',trade.exitPrice);s('f-qty',trade.qty);s('f-trr',trade.targetRR);
+  // Set f-acct to the equity *before* this trade was entered.
+  // Correct for any trade position (1st, 2nd, Nth):
+  //   startingEquity + sum of plDollar of all session trades that entered BEFORE this one.
+  // This is derived fresh from live data so even trades previously saved with a wrong
+  // acct value are self-corrected on the next edit.
+  (async function(_tradeClosure,_idClosure){
+    var _preTradeEquity;
+    try{
+      var _allS=await dbGetAll('sessions');
+      var _sess=_allS.find(function(x){return x.id===_tradeClosure.sessionId;});
+      var _startEq=_sess?(parseFloat(_sess.startingEquity)||5000):5000;
+      // All trades in the same session, excluding the one being edited
+      var _allT=await dbGetAll('trades');
+      var _sessTrades=_allT.filter(function(x){return x.sessionId===_tradeClosure.sessionId&&x.id!==_idClosure;});
+      // Sort by entry time (same order the equity curve uses)
+      var _thisTime=new Date(_tradeClosure.entryTime||_tradeClosure.savedAt||0).getTime();
+      var _sessTrades=_sessTrades.filter(function(x){
+        return new Date(x.entryTime||x.savedAt||0).getTime()<_thisTime;
+      });
+      var _priorPL=_sessTrades.reduce(function(sum,x){return sum+(parseFloat(x.plDollar)||0);},0);
+      _preTradeEquity=parseFloat((_startEq+_priorPL).toFixed(2));
+    }catch(e){
+      _preTradeEquity=parseFloat(_tradeClosure.acct)||5000;
+    }
+    var _acctEl=document.getElementById('f-acct');
+    if(_acctEl&&editingId===_idClosure){_acctEl.value=_preTradeEquity;recalc();}
+  })(trade,id);
+  s('f-riskpct',trade.riskpct);s('f-entry',trade.entryPrice);s('f-sl-price',trade.stopLoss||'');s('f-exit',trade.exitPrice);s('f-qty',trade.qty);s('f-trr',trade.targetRR);
   if(trade.entryTime){setDT('f-etime-date','f-etime-time',trade.entryTime);}
   if(trade.exitTime){setDT('f-xtime-date','f-xtime-time',trade.exitTime);}
   if(trade.trailDetail){s('trail-notes',trade.trailDetail.notes);s('trail-trigger',trade.trailDetail.trigger);s('trail-count',trade.trailDetail.count);s('trail-final-sl',trade.trailDetail.finalSl);}
@@ -6009,8 +6036,27 @@ async function rebalanceSession(sessionIds){
     var sess=allSessions.find(function(s){return s.id===sid;});
     if(!sess)continue;
     var sessTrades=allTrades.filter(function(t){return t.sessionId===sid;});
-    var totalPL=sessTrades.reduce(function(a,t){return a+(parseFloat(t.plDollar)||0);},0);
-    sess.currentEquity=parseFloat(((sess.startingEquity||5000)+totalPL).toFixed(2));
+    // Sort chronologically — same order as the equity curve uses
+    sessTrades.sort(function(a,b){
+      return new Date(a.entryTime||a.savedAt||0)-new Date(b.entryTime||b.savedAt||0);
+    });
+    // Walk trades in order so each trade's acct (equity entering that trade) and
+    // plPct are always correct — even when an earlier trade is edited and its P/L changes.
+    var startEq=parseFloat(sess.startingEquity)||5000;
+    var runningEquity=startEq;
+    for(var t of sessTrades){
+      var pl=parseFloat(t.plDollar)||0;
+      var correctAcct=parseFloat(runningEquity.toFixed(2));
+      var correctPlPct=correctAcct?parseFloat((pl/correctAcct*100).toFixed(4)):0;
+      // Only write back if something changed (avoids unnecessary DB writes)
+      if(t.acct!==correctAcct||t.plPct!==correctPlPct){
+        t.acct=correctAcct;
+        t.plPct=correctPlPct;
+        await dbPut('trades',t);
+      }
+      runningEquity=parseFloat((runningEquity+pl).toFixed(2));
+    }
+    sess.currentEquity=parseFloat(runningEquity.toFixed(2));
     await dbPut('sessions',sess);
   }
 }
@@ -6435,9 +6481,9 @@ async function openDetail(id){
     +planHtml
     +(trade.ledToTrade?'<div class="detail-section-title">What led to the trade</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.ledToTrade)+'</div>':'')
     +(trade.skipped&&trade.whySkipped?'<div class="detail-section-title" style="color:var(--amber)">Why skipped</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.whySkipped)+'</div>':'')
-    +(trade.issuesNotes&&trade.issuesNotes!='1.'?'<div class="detail-section-title">Issues</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.issuesNotes)+'</div>':'')
+    +(trade.issuesNotes&&trade.issuesNotes!='1. '?'<div class="detail-section-title">Issues</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.issuesNotes)+'</div>':'')
     +imgSections
-    +(trade.postAnalysis&&trade.postAnalysis!='1.'?'<div class="detail-section-title">Post-journal</div><div class="js-pre">'+escHtml(trade.postAnalysis)+'</div>':'')
+    +(trade.postAnalysis&&trade.postAnalysis!='1. '?'<div class="detail-section-title">Post-journal</div><div class="js-pre">'+escHtml(trade.postAnalysis)+'</div>':'')
     +(trade.emoBefore||trade.emoAfter||trade.emoComplete?
       '<div class="detail-section-title">Emotions</div><div class="detail-grid">'
       +(trade.emoBefore?'<div class="detail-item"><div class="di-label">Before trade</div><div class="di-val js-pre">'+escHtml(trade.emoBefore)+'</div></div>':'')
@@ -6445,7 +6491,7 @@ async function openDetail(id){
       +(trade.emoComplete?'<div class="detail-item"><div class="di-label">Session complete</div><div class="di-val js-pre">'+escHtml(trade.emoComplete)+'</div></div>':'')
       +'</div>':'')
     +(trade.mistakes||trade.lessons||trade.good?'<div class="detail-section-title">Lessons</div><div class="detail-grid">'+noteRow('Mistakes',trade.mistakes)+noteRow('Lessons learned',trade.lessons)+noteRow('What went well',trade.good)+'</div>':'')
-    +(trade.news&&trade.news!='1.'?'<div class="detail-section-title">News</div><div class="js-pre">'+escHtml(trade.news)+'</div>':'')
+    +(trade.news&&trade.news!='1. '?'<div class="detail-section-title">News</div><div class="js-pre">'+escHtml(trade.news)+'</div>':'')
     +'<div style="height:16px"></div>';
   document.getElementById('detail-overlay').classList.add('open');
 }
@@ -7504,6 +7550,7 @@ var calcCurrentClass = 'forex';
 var calcDirection = 'long';
 var calcInfoOpen = true;
 var calcUseMargin = false; // false = cap to balance (safe), true = allow leveraged position
+var calcLastUnits = 0; // units (not lots) from the most recent calcCalc() run
 
 function calcToggleMarginMode(){
   calcUseMargin=!calcUseMargin;
@@ -7705,11 +7752,8 @@ async function calcLogTrade(){
   // Validate we have minimum required values
   var entry=parseFloat((document.getElementById('calc-entry')||{}).value)||0;
   var sl=parseFloat((document.getElementById('calc-sl')||{}).value)||0;
-  var size=document.getElementById('calc-out-size');
-  var sizeVal=size?size.textContent.replace(/[^0-9.]/g,''):'';
-  var qty=parseFloat(sizeVal)||0;
   if(!entry||!sl){toast('Enter entry and stop loss prices first','err');return;}
-  if(!qty){toast('Calculate a position size first','err');return;}
+  if(!calcLastUnits){toast('Calculate a position size first','err');return;}
 
   var sessSel=document.getElementById('calc-backtest-session');
   var sessId=sessSel?sessSel.value:'';
@@ -7718,6 +7762,11 @@ async function calcLogTrade(){
   var balance=parseFloat((document.getElementById('calc-balance')||{}).value)||5000;
   var riskPct=parseFloat((document.getElementById('calc-risk-pct')||{}).value)||1;
   var tp=parseFloat((document.getElementById('calc-tp')||{}).value)||0;
+
+  // Capture instrument sym and direction before navigating away
+  var inst=calcGetInst();
+  var pairSym=inst?inst.sym:'';
+  var tradeType=calcDirection==='short'?'Short':'Long';
 
   // Navigate to log page and pre-fill
   var logBtn=document.querySelector('.nav-item:nth-of-type(2)');
@@ -7738,7 +7787,21 @@ async function calcLogTrade(){
     if(riskEl)riskEl.value=riskPct;
     if(entryEl)entryEl.value=entry;
     if(slEl)slEl.value=sl;
-    if(qtyEl)qtyEl.value=qty;
+    // Quantity as units (not lots) — matches the f-qty field which expects units
+    if(qtyEl)qtyEl.value=calcLastUnits;
+    // Copy asset/pair to the pair select
+    if(pairSym){
+      var pairSel=document.getElementById('f-pair');
+      if(pairSel){
+        // Try exact match first, then case-insensitive
+        var matched=[].find.call(pairSel.options,function(o){return o.value===pairSym;})
+          ||[].find.call(pairSel.options,function(o){return o.value.toUpperCase()===pairSym.toUpperCase();});
+        if(matched){pairSel.value=matched.value;onPairChange();}
+      }
+    }
+    // Copy trade direction (Long / Short)
+    setOptPill('opt-type',tradeType);
+    document.getElementById('f-type-val').value=tradeType;
     recalc();
     toast('Trade pre-filled from calculator','ok');
   },150);
@@ -7859,9 +7922,10 @@ function calcCalc(){
     document.getElementById('calc-breakdown-row').style.display='grid';
   }
 
+  calcLastUnits=Math.round(size*(inst.contract||1));
   document.getElementById('calc-out-size').textContent=sizeDisplay;
   document.getElementById('calc-out-unit-label').textContent=sizeLabel;
-  document.getElementById('calc-out-sub').textContent=Math.round(size*(inst.contract||1)).toLocaleString()+' units · $'+calcFmt(posValue,2)+' notional';
+  document.getElementById('calc-out-sub').textContent=calcLastUnits.toLocaleString()+' units · $'+calcFmt(posValue,2)+' notional';
 
   // SL info
   if(calcCurrentClass==='forex'){
@@ -10505,7 +10569,7 @@ function aiComputeMetrics(trades,sessions){
   // Reflection completion
   var reflFields=['emoBefore','emoAfter','emoComplete','mistakes','lessons','good','postAnalysis'];
   var reflScores=taken.map(function(t){
-    var filled=reflFields.filter(function(f){return t[f]&&t[f].trim()&&t[f].trim()!=='1.';}).length;
+    var filled=reflFields.filter(function(f){return t[f]&&t[f].trim()&&t[f].trim()!=='1. ';}).length;
     return filled/reflFields.length;
   });
   var avgRefl=reflScores.reduce(function(a,v){return a+v;},0)/reflScores.length;
@@ -10513,7 +10577,7 @@ function aiComputeMetrics(trades,sessions){
   // Plan quality (setup notes + trade plan fields filled)
   var planFields=['setupNotes','ledToTrade','tpCriteria','planIf','planIfThen'];
   var planScores=taken.map(function(t){
-    var filled=planFields.filter(function(f){return t[f]&&t[f].trim()&&t[f].trim()!=='1.'&&t[f].trim()!=='1. Trading within a ';}).length;
+    var filled=planFields.filter(function(f){return t[f]&&t[f].trim()&&t[f].trim()!=='1. '&&t[f].trim()!=='1. Trading within a ';}).length;
     return filled/planFields.length;
   });
   var avgPlan=planScores.reduce(function(a,v){return a+v;},0)/planScores.length;
@@ -10632,7 +10696,7 @@ function aiBuilderPrompt(m,sessionInfo,depth){
   m.trades.forEach(function(t,i){
     var techParts=[];
     if(t.setupNotes&&t.setupNotes.trim()&&!t.setupNotes.trim().startsWith('1. Trading within'))techParts.push('setup: '+t.setupNotes.trim().slice(0,120));
-    if(t.ledToTrade&&t.ledToTrade.trim()&&t.ledToTrade.trim()!=='1.')techParts.push('led to trade: '+t.ledToTrade.trim().slice(0,120));
+    if(t.ledToTrade&&t.ledToTrade.trim()&&t.ledToTrade.trim()!=='1. ')techParts.push('led to trade: '+t.ledToTrade.trim().slice(0,120));
     if(t.narrativeNotes&&t.narrativeNotes.trim())techParts.push('narrative: '+t.narrativeNotes.trim().slice(0,80));
     if(t.tpCriteria&&t.tpCriteria.trim())techParts.push('TP criteria: '+t.tpCriteria.trim().slice(0,80));
     if(t.planIf&&t.planIf.trim())techParts.push('if: '+t.planIf.trim().slice(0,80));
@@ -10672,15 +10736,15 @@ function aiBuilderPrompt(m,sessionInfo,depth){
       }
       lines.push(row);
       if(t.setupNotes&&t.setupNotes.trim()&&!t.setupNotes.trim().startsWith('1. Trading within'))lines.push('  Setup: '+t.setupNotes.trim().slice(0,200));
-      if(t.ledToTrade&&t.ledToTrade.trim()&&t.ledToTrade.trim()!=='1.')lines.push('  Led to trade: '+t.ledToTrade.trim().slice(0,200));
+      if(t.ledToTrade&&t.ledToTrade.trim()&&t.ledToTrade.trim()!=='1. ')lines.push('  Led to trade: '+t.ledToTrade.trim().slice(0,200));
       if(t.narrativeNotes&&t.narrativeNotes.trim())lines.push('  Narrative: '+t.narrativeNotes.trim().slice(0,150));
       if(t.tpCriteria&&t.tpCriteria.trim())lines.push('  TP criteria: '+t.tpCriteria.trim().slice(0,100));
       if(t.planIf&&t.planIf.trim())lines.push('  Plan (if): '+t.planIf.trim().slice(0,150));
       if(t.planIfThen&&t.planIfThen.trim())lines.push('  Plan (then): '+t.planIfThen.trim().slice(0,150));
-      if(t.postAnalysis&&t.postAnalysis.trim()&&t.postAnalysis.trim()!=='1.')lines.push('  Post-analysis: '+t.postAnalysis.trim().slice(0,150));
-      if(t.mistakes&&t.mistakes.trim()&&t.mistakes.trim()!=='1.')lines.push('  Mistakes: '+t.mistakes.trim().slice(0,150));
-      if(t.lessons&&t.lessons.trim()&&t.lessons.trim()!=='1.')lines.push('  Lessons: '+t.lessons.trim().slice(0,150));
-      if(t.good&&t.good.trim()&&t.good.trim()!=='1.')lines.push('  What went well: '+t.good.trim().slice(0,150));
+      if(t.postAnalysis&&t.postAnalysis.trim()&&t.postAnalysis.trim()!=='1. ')lines.push('  Post-analysis: '+t.postAnalysis.trim().slice(0,150));
+      if(t.mistakes&&t.mistakes.trim()&&t.mistakes.trim()!=='1. ')lines.push('  Mistakes: '+t.mistakes.trim().slice(0,150));
+      if(t.lessons&&t.lessons.trim()&&t.lessons.trim()!=='1. ')lines.push('  Lessons: '+t.lessons.trim().slice(0,150));
+      if(t.good&&t.good.trim()&&t.good.trim()!=='1. ')lines.push('  What went well: '+t.good.trim().slice(0,150));
     });
   }
 
