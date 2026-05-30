@@ -4213,10 +4213,15 @@ function toggleRetroPanel(forceOpen){
   }
 }
 
-function openNewSessionModal(){
+async function openNewSessionModal(){
   editingSessionId=null;
   document.getElementById('sm-title').textContent='New Session';
-  document.getElementById('sm-name').value='';
+  // Auto-increment session name for non-demo sessions
+  var allSessions=await dbGetAll('sessions');
+  var nonDemoCount=allSessions.filter(function(s){return !s.isDemo;}).length;
+  var nextNum=nonDemoCount+1;
+  var currentYear=new Date().getFullYear();
+  document.getElementById('sm-name').value='['+nextNum+']  ['+currentYear+']';
   document.getElementById('sm-start').value=new Date().toISOString().slice(0,10);
   document.getElementById('sm-end').value='';
   document.getElementById('sm-equity').value='5000';
@@ -4296,8 +4301,23 @@ function toggleDemoSessionOptions(){
   panel.style.display=show?'block':'none';
   if(saveBtn)saveBtn.textContent=show?'Create demo session':'Save session';
   if(nameInput){
-    if(show&&!nameInput.value)nameInput.value='[demo]';
-    else if(!show&&nameInput.value==='[demo]')nameInput.value='';
+    if(show&&(!nameInput.value||/^\[\d+\]\s+\[\d{4}\]$/.test(nameInput.value))){
+      (async function(){
+        var allSessions=await dbGetAll('sessions');
+        var demoCount=allSessions.filter(function(s){return !!s.isDemo;}).length;
+        var nextDemoNum=demoCount+1;
+        nameInput.value='[demo] ['+nextDemoNum+']';
+      }());
+    }
+    else if(!show&&/^\[demo\] \[\d+\]$/.test(nameInput.value)){
+      (async function(){
+        var allSessions=await dbGetAll('sessions');
+        var nonDemoCount=allSessions.filter(function(s){return !s.isDemo;}).length;
+        var nextNum=nonDemoCount+1;
+        var currentYear=new Date().getFullYear();
+        nameInput.value='['+nextNum+']  ['+currentYear+']';
+      }());
+    }
   }
   if(show)populateDemoAssetTypePills();
   if(show)(async function(){await loadDemoDefaults();onDemoDurationModeChange();}());
