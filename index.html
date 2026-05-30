@@ -1313,6 +1313,14 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
       <!-- TAB 0: Trade info -->
       <div class="form-step active" id="tab-0">
+        <!-- Skipped trade toggle — placed here so account size is set correctly from the start -->
+        <div class="skipped-row" id="skipped-trade-row" style="margin-bottom:14px">
+          <input type="checkbox" id="f-skipped" style="width:15px;height:15px;accent-color:var(--amber);cursor:pointer;flex-shrink:0" onchange="onSkippedChange()">
+          <label for="f-skipped" style="cursor:pointer;display:flex;flex-direction:column;gap:2px">
+            <span style="font-size:12px;font-weight:600;color:var(--amber)">Trade skipped</span>
+            <span style="font-size:10px;color:var(--text3);line-height:1.4">Check this if you saw the setup but did not take the trade — account size will use the session's base equity, not running equity.</span>
+          </label>
+        </div>
         <div class="form-section">
           <div class="fsec-title">Identity</div>
           <!-- Row 1: Trade #, Asset type, Pair, Session -->
@@ -1739,16 +1747,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
         </div>
 
-        <!-- 4b. Skipped trade toggle -->
-        <div class="skipped-row" id="skipped-trade-row">
-          <input type="checkbox" id="f-skipped" style="width:15px;height:15px;accent-color:var(--amber);cursor:pointer;flex-shrink:0" onchange="onSkippedChange()">
-          <label for="f-skipped" style="cursor:pointer;display:flex;flex-direction:column;gap:2px">
-            <span style="font-size:12px;font-weight:600;color:var(--amber)">Trade skipped</span>
-            <span style="font-size:10px;color:var(--text3);line-height:1.4">Check this if you saw the setup but did not take the trade — log it anyway to review your decision later.</span>
-          </label>
-        </div>
-
-        <!-- 4c. Why skipped (only shown when skipped is checked) -->
+        <!-- Why skipped (only shown when skipped is checked — checkbox moved to Trade Info tab) -->
         <div class="analysis-section" id="why-skipped-section" style="display:none">
           <div class="analysis-header open" onclick="toggleAnalysis(this)">
             <div class="ah-bar amber"></div><span class="ah-title">Why skipped the trade</span>
@@ -2436,6 +2435,12 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
               <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">Session</div>
               <select id="calc-backtest-session" onchange="calcOnBacktestSessionChange()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 28px 7px 10px;outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2711%27 height=%2711%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%233d4457%27 stroke-width=%272.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 9px center"><option value="">— select session —</option></select>
               <div id="calc-backtest-hint" style="font-size:10px;color:var(--text3);margin-top:5px;line-height:1.5;display:none">Balance and risk % auto-filled from session</div>
+              <!-- Skipped trade toggle for backtest mode -->
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:9px;padding-top:8px;border-top:1px solid rgba(77,127,255,.15)">
+                <input type="checkbox" id="calc-skipped" style="width:13px;height:13px;accent-color:var(--amber);cursor:pointer;flex-shrink:0" onchange="calcOnBacktestSessionChange()">
+                <span style="font-size:11px;font-weight:600;color:var(--amber)">Skipped trade</span>
+                <span style="font-size:10px;color:var(--text3)">(uses base equity)</span>
+              </label>
             </div>
           </div>
 
@@ -4997,7 +5002,8 @@ async function onSessionChange(){
     // (currentEquity minus the trade's own P/L). Overwriting it here (from the async
     // completion of this function) would corrupt P/L% with the post-trade balance.
     if(!editingId){
-      var equity=sess.currentEquity||sess.startingEquity||5000;
+      var isSkipped=document.getElementById('f-skipped')&&document.getElementById('f-skipped').checked;
+      var equity=isSkipped?(sess.startingEquity||5000):(sess.currentEquity||sess.startingEquity||5000);
       document.getElementById('f-acct').value=equity;
     }
     var riskEl=document.getElementById('f-riskpct');
@@ -5312,6 +5318,45 @@ function onSkippedChange(){
   var isSkipped=document.getElementById('f-skipped').checked;
   var whySection=document.getElementById('why-skipped-section');
   if(whySection) whySection.style.display=isSkipped?'':'none';
+  // Update account size based on skipped state.
+  // skipped -> session startingEquity (base); taken -> running equity.
+  // Works for both new trades and edits.
+  var sesId=document.getElementById('f-session').value;
+  if(!sesId) return;
+  dbGetAll('sessions').then(function(sessions){
+    var sess=sessions.find(function(s){return s.id===sesId;});
+    if(!sess) return;
+    var acctEl=document.getElementById('f-acct');
+    if(!acctEl) return;
+    if(isSkipped){
+      // Always use base equity for skipped trades regardless of edit mode
+      acctEl.value=sess.startingEquity||5000;
+      recalc();
+    } else if(!editingId){
+      // New taken trade: use running equity
+      acctEl.value=sess.currentEquity||sess.startingEquity||5000;
+      recalc();
+    } else {
+      // Editing a trade and un-skipping: restore the pre-trade running equity
+      // using the same computation editTrade() uses.
+      (async function(){
+        try{
+          var _allT=await dbGetAll('trades');
+          var _trade=_allT.find(function(x){return x.id===editingId;});
+          if(!_trade){recalc();return;}
+          var _startEq=parseFloat(sess.startingEquity)||5000;
+          var _thisTime=new Date(_trade.entryTime||_trade.savedAt||0).getTime();
+          var _prior=_allT.filter(function(x){
+            return x.sessionId===sesId&&x.id!==editingId&&!x.skipped&&
+                   new Date(x.entryTime||x.savedAt||0).getTime()<_thisTime;
+          });
+          var _priorPL=_prior.reduce(function(sum,x){return sum+(parseFloat(x.plDollar)||0);},0);
+          acctEl.value=parseFloat((_startEq+_priorPL).toFixed(2));
+        }catch(e){}
+        recalc();
+      })();
+    }
+  });
 }
 
 function toggleAnalysis(hdr){hdr.classList.toggle('open');hdr.nextElementSibling.classList.toggle('open');}
@@ -7751,13 +7796,14 @@ async function calcOnBacktestSessionChange(){
   var sessions=await dbGetAll('sessions');
   var sess=sessions.find(function(s){return s.id===sel.value;});
   if(!sess){return;}
-  var equity=sess.currentEquity||sess.startingEquity||5000;
+  var isSkipped=document.getElementById('calc-skipped')&&document.getElementById('calc-skipped').checked;
+  var equity=isSkipped?(sess.startingEquity||5000):(sess.currentEquity||sess.startingEquity||5000);
   var riskPct=sess.defaultRisk||1;
   var balEl=document.getElementById('calc-balance');
   var riskEl=document.getElementById('calc-risk-pct');
   if(balEl){balEl.value=equity;}
   if(riskEl){riskEl.value=riskPct;}
-  if(hint){hint.textContent='Balance $'+equity.toLocaleString()+' · Risk '+riskPct+'% auto-filled';hint.style.display='block';}
+  if(hint){hint.textContent='Balance $'+equity.toLocaleString()+' · Risk '+riskPct+'%'+(isSkipped?' (base equity — skipped)':' (running equity)')+' auto-filled';hint.style.display='block';}
   calcCalc();
 }
 
@@ -7780,6 +7826,7 @@ async function calcLogTrade(){
   var inst=calcGetInst();
   var pairSym=inst?inst.sym:'';
   var tradeType=calcDirection==='short'?'Short':'Long';
+  var calcIsSkipped=!!(document.getElementById('calc-skipped')&&document.getElementById('calc-skipped').checked);
 
   // Navigate to log page and pre-fill
   var logBtn=document.querySelector('.nav-item:nth-of-type(2)');
@@ -7815,6 +7862,9 @@ async function calcLogTrade(){
     // Copy trade direction (Long / Short)
     setOptPill('opt-type',tradeType);
     document.getElementById('f-type-val').value=tradeType;
+    // Forward skipped state from calculator
+    var skippedCb=document.getElementById('f-skipped');
+    if(skippedCb){skippedCb.checked=calcIsSkipped;onSkippedChange();}
     recalc();
     toast('Trade pre-filled from calculator','ok');
   },150);
