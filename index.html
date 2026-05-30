@@ -641,7 +641,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
 
 /* ── Pairs tab bar ── */
-.pairs-tab{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--radius);font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text3);transition:all .12s;white-space:nowrap;font-family:inherit}
+.pairs-tab{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--radius);font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text3);transition:all .12s;white-space:nowrap;font-family:inherit}
 .pairs-tab:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
 .pairs-tab.active{color:#fff;border-color:transparent}
 .pairs-tab .pairs-tab-count{font-size:9px;font-weight:700;opacity:.75;font-family:'DM Mono',monospace}
@@ -1556,9 +1556,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
         </div>
 
-        <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
           <button class="btn btn-ghost" onclick="clearForm()">Clear form</button>
-          <button class="btn" onclick="switchTab(1,document.querySelector('.form-tab:nth-child(2)'))">Next: Checklist →</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="switchTab(3,document.querySelector('.form-tab:nth-child(4)'));document.getElementById('tab-3').scrollIntoView({behavior:'smooth',block:'start'})" title="Jump to Save Trade">
+              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Jump to Save ↓
+            </button>
+            <button class="btn" onclick="switchTab(1,document.querySelector('.form-tab:nth-child(2)'))">Next: Checklist →</button>
+          </div>
         </div>
       </div>
 
@@ -1569,9 +1575,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           Checklist not complete
         </div>
         <div class="checklist-cols" id="cl-render-area"></div>
-        <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
           <button class="btn btn-ghost" onclick="switchTab(0,document.querySelector('.form-tab:nth-child(1)'))">← Back</button>
-          <button class="btn" onclick="switchTab(2,document.querySelector('.form-tab:nth-child(3)'))">Next: Analysis →</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="switchTab(3,document.querySelector('.form-tab:nth-child(4)'));document.getElementById('tab-3').scrollIntoView({behavior:'smooth',block:'start'})" title="Jump to Save Trade">
+              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Jump to Save ↓
+            </button>
+            <button class="btn" onclick="switchTab(2,document.querySelector('.form-tab:nth-child(3)'))">Next: Analysis →</button>
+          </div>
         </div>
       </div>
 
@@ -1792,9 +1804,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
         </div>
 
-        <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
           <button class="btn btn-ghost" onclick="switchTab(1,document.querySelector('.form-tab:nth-child(2)'))">← Back</button>
-          <button class="btn" onclick="switchTab(3,document.querySelector('.form-tab:nth-child(4)'))">Next: Reflection →</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="switchTab(3,document.querySelector('.form-tab:nth-child(4)'));document.getElementById('tab-3').scrollIntoView({behavior:'smooth',block:'start'})" title="Jump to Save Trade">
+              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Jump to Save ↓
+            </button>
+            <button class="btn" onclick="switchTab(3,document.querySelector('.form-tab:nth-child(4)'))">Next: Reflection →</button>
+          </div>
         </div>
       </div>
 
@@ -3700,54 +3718,78 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
 
 <!-- Asset Manager modal -->
 <div class="modal-overlay" id="asset-modal">
-  <div class="modal-box" style="max-width:680px">
-    <div class="modal-header"><h3>Manage Assets &amp; Pairs</h3>
-      <button class="btn btn-ghost btn-icon btn-sm" onclick="document.getElementById('asset-modal').classList.remove('open')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="modal-box" style="max-width:780px;display:flex;flex-direction:column;max-height:88vh">
+    <!-- Header -->
+    <div class="modal-header" style="flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px">
+        <h3>Manage Assets &amp; Pairs</h3>
+        <span id="asset-modal-dirty" style="display:none;font-size:10px;font-weight:600;color:var(--amber);background:rgba(232,160,48,.1);border:1px solid rgba(232,160,48,.25);border-radius:4px;padding:2px 8px">Unsaved changes</span>
+      </div>
+      <button class="btn btn-ghost btn-icon btn-sm" onclick="closeAssetModal()" title="Cancel"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="modal-body" style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
-      <!-- Left: Asset Types -->
-      <div style="display:flex;flex-direction:column;gap:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Asset Types</div>
-          <div style="font-size:10px;color:var(--text3)">click name to rename</div>
+
+    <!-- Body — scrollable -->
+    <div style="flex:1;overflow-y:auto;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:16px;min-height:0">
+
+      <!-- ── Left: Asset Types ── -->
+      <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
+        <!-- Section header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+            <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Asset Types</span>
+          </div>
+          <span style="font-size:10px;color:var(--text3);font-style:italic">click name to rename</span>
         </div>
-        <div id="asset-type-list" style="margin-bottom:10px"></div>
-        <div style="display:flex;gap:7px">
+        <!-- List -->
+        <div id="asset-type-list" style="flex:1;overflow-y:auto;min-height:60px"></div>
+        <!-- Add row -->
+        <div style="display:flex;gap:7px;padding-top:8px;border-top:1px solid var(--border);flex-shrink:0">
           <input type="text" id="new-asset-type-inp" placeholder="e.g. Forex Major, Crypto…" style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addAssetType()">
           <button class="btn btn-primary btn-sm" onclick="addAssetType()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
           </button>
         </div>
       </div>
-      <!-- Right: Pairs -->
-      <div style="display:flex;flex-direction:column;gap:0;min-width:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Pairs / Instruments</div>
-          <span id="pairs-total-count" style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace"></span>
+
+      <!-- ── Right: Pairs / Instruments ── -->
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0">
+        <!-- Section header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em">Pairs / Instruments</span>
+          </div>
+          <span id="pairs-total-count" style="font-size:10px;font-weight:600;color:var(--text3);font-family:'DM Mono',monospace;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:1px 7px"></span>
         </div>
-        <!-- Tabs -->
-        <div id="pairs-tab-bar" style="display:flex;gap:2px;flex-wrap:wrap;margin-bottom:10px;min-height:28px"></div>
+        <!-- Asset type filter tabs -->
+        <div id="pairs-tab-bar" style="display:flex;gap:4px;flex-wrap:wrap;min-height:24px;flex-shrink:0"></div>
         <!-- Hidden legacy select kept for JS compat -->
         <select id="asset-type-filter" onchange="renderPairList()" style="display:none"><option value="">All types</option></select>
         <!-- Chip grid -->
-        <div id="pair-list" style="flex:1;min-height:80px;max-height:220px;overflow-y:auto;margin-bottom:10px"></div>
+        <div id="pair-list" style="flex:1;overflow-y:auto;min-height:60px;max-height:200px"></div>
         <!-- Add pair row -->
-        <div id="add-pair-row" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:9px 10px;display:flex;flex-direction:column;gap:7px">
+        <div id="add-pair-row" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:9px 10px;display:flex;flex-direction:column;gap:7px;flex-shrink:0">
           <div style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase">Add pair to <span id="add-pair-type-label" style="color:var(--accent)">—</span></div>
           <div style="display:flex;gap:6px;align-items:center">
             <input type="text" id="new-pair-inp" placeholder="e.g. EUR/USD" style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addPair()">
             <select id="new-pair-type-sel" style="font-size:11px;padding:5px 8px;min-width:90px;display:none"></select>
             <button class="btn btn-primary btn-sm" onclick="addPair()">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
             </button>
           </div>
         </div>
       </div>
+
     </div>
-    <div style="padding:14px 18px 0;border-top:1px solid var(--border);margin-top:14px;display:flex;justify-content:flex-end">
-      <button class="btn btn-primary" onclick="saveAssets()">Save &amp; apply</button>
+
+    <!-- Footer — sticky, never scrolls away -->
+    <div style="flex-shrink:0;padding:14px 18px;border-top:1px solid var(--border);background:var(--bg2);display:flex;justify-content:flex-end;align-items:center;gap:8px">
+      <button class="btn btn-ghost" onclick="closeAssetModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAssets()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save &amp; apply
+      </button>
     </div>
   </div>
 </div>
@@ -6348,18 +6390,13 @@ async function openDetail(id){
     +'<div class="detail-item"><div class="di-label">Exit criteria</div><div class="di-val">'+(trade.tpExitA||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">TP criteria</div><div class="di-val">'+(trade.tpCriteria||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">SL trailing</div><div class="di-val">'+(trade.tpTrail||'No')+(trade.trailDetail?' ('+trade.trailDetail.trigger+')':'')+'</div></div>'
+    +(trade.trailDetail&&trade.trailDetail.notes?'<div class="detail-item" style="grid-column:1/-1"><div class="di-label">SL trail description</div><div class="di-val js-pre">'+escHtml(trade.trailDetail.notes)+'</div></div>':'')
     +'<div class="detail-item"><div class="di-label">TP changed</div><div class="di-val">'+(trade.tpTpChg||'No')+(trade.tpChangeDetail?' → '+trade.tpChangeDetail.dir:'')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Mistake/error</div><div class="di-val">'+(trade.error||'—')+'</div></div>'
     +'<div class="detail-item"><div class="di-label">Rating</div><div class="di-val">'+(trade.rating?'★ '+trade.rating:'—')+'</div></div>'
     +'</div>'
     +biasHtml
     +checklistUnmetHtml
-    +(trade.emoBefore||trade.emoAfter||trade.emoComplete?
-      '<div class="detail-section-title">Emotions</div><div class="detail-grid">'
-      +(trade.emoBefore?'<div class="detail-item"><div class="di-label">Before trade</div><div class="di-val js-pre">'+escHtml(trade.emoBefore)+'</div></div>':'')
-      +(trade.emoAfter?'<div class="detail-item"><div class="di-label">After trade</div><div class="di-val js-pre">'+escHtml(trade.emoAfter)+'</div></div>':'')
-      +(trade.emoComplete?'<div class="detail-item"><div class="di-label">Session complete</div><div class="di-val js-pre">'+escHtml(trade.emoComplete)+'</div></div>':'')
-      +'</div>':'')
     +(trade.narrativeNotes?'<div class="detail-section-title">Narrative</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.narrativeNotes)+'</div>':'')
     +(trade.setupNotes?'<div class="detail-section-title">Setup</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.setupNotes)+'</div>':'')
     +planHtml
@@ -6367,6 +6404,12 @@ async function openDetail(id){
     +(trade.skipped&&trade.whySkipped?'<div class="detail-section-title" style="color:var(--amber)">Why skipped</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.whySkipped)+'</div>':'')
     +(trade.issuesNotes&&trade.issuesNotes!='1.'?'<div class="detail-section-title">Issues</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.issuesNotes)+'</div>':'')
     +imgSections
+    +(trade.emoBefore||trade.emoAfter||trade.emoComplete?
+      '<div class="detail-section-title">Emotions</div><div class="detail-grid">'
+      +(trade.emoBefore?'<div class="detail-item"><div class="di-label">Before trade</div><div class="di-val js-pre">'+escHtml(trade.emoBefore)+'</div></div>':'')
+      +(trade.emoAfter?'<div class="detail-item"><div class="di-label">After trade</div><div class="di-val js-pre">'+escHtml(trade.emoAfter)+'</div></div>':'')
+      +(trade.emoComplete?'<div class="detail-item"><div class="di-label">Session complete</div><div class="di-val js-pre">'+escHtml(trade.emoComplete)+'</div></div>':'')
+      +'</div>':'')
     +(trade.mistakes||trade.lessons||trade.good?'<div class="detail-section-title">Lessons</div><div class="detail-grid">'+noteRow('Mistakes',trade.mistakes)+noteRow('Lessons learned',trade.lessons)+noteRow('What went well',trade.good)+'</div>':'')
     +(trade.postAnalysis&&trade.postAnalysis!='1.'?'<div class="detail-section-title">Post-journal</div><div class="js-pre">'+escHtml(trade.postAnalysis)+'</div>':'')
     +(trade.news&&trade.news!='1.'?'<div class="detail-section-title">News</div><div class="js-pre">'+escHtml(trade.news)+'</div>':'')
@@ -7107,18 +7150,38 @@ var DEFAULT_ASSET_TYPES=[
 async function getAssets(){return await getSetting('assets',JSON.parse(JSON.stringify(DEFAULT_ASSET_TYPES)));}
 async function saveAssetsData(data){await setSetting('assets',data);}
 
+// ── Staging draft for asset modal ────────────────────────────────
+// All mutations inside the modal work on _assetsDraft (a deep copy).
+// Only saveAssets() flushes the draft to storage + git.
+var _assetsDraft = null;
+
+function _assetsDraftDirty(){
+  var ind=document.getElementById('asset-modal-dirty');
+  if(ind)ind.style.display='';
+}
+
 async function openAssetManager(){
+  // Load a fresh deep copy from storage as the working draft
+  var saved=await getAssets();
+  _assetsDraft=JSON.parse(JSON.stringify(saved));
   _activePairsTab=''; // will auto-pick first tab in renderPairList
+  var ind=document.getElementById('asset-modal-dirty');
+  if(ind)ind.style.display='none';
   await renderAssetTypeList();
   await renderPairList();
   document.getElementById('asset-modal').classList.add('open');
+}
+
+function closeAssetModal(){
+  _assetsDraft=null; // discard any staged changes
+  document.getElementById('asset-modal').classList.remove('open');
 }
 
 // Tracks the currently active tab in the pairs column
 var _activePairsTab = '';
 
 async function renderAssetTypeList(){
-  var assets=await getAssets();
+  var assets=_assetsDraft!==null?_assetsDraft:await getAssets();
   var el=document.getElementById('asset-type-list');
   if(!assets.length){
     el.innerHTML='<div style="text-align:center;padding:20px 0 12px;color:var(--text3);font-size:12px">No asset types yet.</div>';
@@ -7163,11 +7226,13 @@ function _renderPairsTabBar(assets){
 
 function setPairsTab(name){
   _activePairsTab=name;
-  getAssets().then(function(assets){
+  var assets=_assetsDraft!==null?_assetsDraft:null;
+  if(assets){_renderPairsTabBar(assets);_renderPairChips(assets);_updateAddPairLabel(assets);}
+  else{getAssets().then(function(assets){
     _renderPairsTabBar(assets);
     _renderPairChips(assets);
     _updateAddPairLabel(assets);
-  });
+  });}
 }
 
 function _updateAddPairLabel(assets){
@@ -7222,7 +7287,7 @@ function _renderPairChips(assets){
 }
 
 async function renderPairList(){
-  var assets=await getAssets();
+  var assets=_assetsDraft!==null?_assetsDraft:await getAssets();
   _renderPairsTabBar(assets);
   _renderPairChips(assets);
   _updateAddPairLabel(assets);
@@ -7230,14 +7295,17 @@ async function renderPairList(){
 async function addAssetType(){
   var inp=document.getElementById('new-asset-type-inp');var name=inp.value.trim();
   if(!name){toast('Enter a type name','err');return;}
-  var assets=await getAssets();
+  var assets=_assetsDraft!==null?_assetsDraft:await getAssets();
   if(assets.find(function(a){return a.name===name})){toast('Already exists','err');return;}
-  assets.push({name,pairs:[]});await saveAssetsData(assets);inp.value='';
+  assets.push({name,pairs:[]});
+  if(_assetsDraft!==null){_assetsDraft=assets;_assetsDraftDirty();}
+  else{await saveAssetsData(assets);}
+  inp.value='';
   _activePairsTab=name; // auto-switch to the new tab
-  await renderAssetTypeList();await renderPairList();ghAutoSyncConfig();
+  await renderAssetTypeList();await renderPairList();
 }
 async function deleteAssetType(idx){
-  var assets=await getAssets();
+  var assets=_assetsDraft!==null?_assetsDraft:await getAssets();
   var at=assets[idx];
   var trades=await dbGetAll('trades');
   var usingType=trades.filter(function(t){return t.assetType===at.name;});
@@ -7246,35 +7314,46 @@ async function deleteAssetType(idx){
   if(total){toast('Cannot delete "'+at.name+'" — used in '+total+' trade'+(total>1?'s':'')+' (including archived)','err');return;}
   if(!confirm('Delete "'+at.name+'" and all its pairs?'))return;
   if(_activePairsTab===at.name)_activePairsTab=''; // will auto-pick next
-  assets.splice(idx,1);await saveAssetsData(assets);await renderAssetTypeList();await renderPairList();ghAutoSyncConfig();
+  assets.splice(idx,1);
+  if(_assetsDraft!==null){_assetsDraft=assets;_assetsDraftDirty();}
+  else{await saveAssetsData(assets);}
+  await renderAssetTypeList();await renderPairList();
 }
 async function updateAssetTypeName(idx,name){
   if(!name)return;
-  var assets=await getAssets();
+  var assets=_assetsDraft!==null?_assetsDraft:await getAssets();
   var oldName=assets[idx].name;
   if(oldName===name)return;
   assets[idx].name=name;
-  await saveAssetsData(assets);
-  // Update all trades that used old asset type name
-  var trades=await dbGetAll('trades');
-  var updated=0;
-  for(var t of trades){
-    if(t.assetType===oldName){t.assetType=name;await dbPut('trades',t);updated++;}
+  if(_assetsDraft!==null){
+    // Also update the active tab name if it was the renamed one
+    if(_activePairsTab===oldName)_activePairsTab=name;
+    _assetsDraft=assets;_assetsDraftDirty();
+    await renderAssetTypeList();
+  } else {
+    await saveAssetsData(assets);
+    // Update all trades that used old asset type name
+    var trades=await dbGetAll('trades');
+    var updated=0;
+    for(var t of trades){
+      if(t.assetType===oldName){t.assetType=name;await dbPut('trades',t);updated++;}
+    }
+    await renderAssetTypeList();
+    if(updated)toast('Asset type renamed — updated '+updated+' trade'+(updated>1?'s':''),'ok');
+    ghAutoSyncConfig();
   }
-  await renderAssetTypeList();
-  if(updated)toast('Asset type renamed — updated '+updated+' trade'+(updated>1?'s':''),'ok');
-  ghAutoSyncConfig();
 }
 async function deletePair(typeIdx,pairIdx){
-  var assets=await getAssets();
+  var assets=_assetsDraft!==null?_assetsDraft:await getAssets();
   var pair=assets[typeIdx].pairs[pairIdx];
   var trades=await dbGetAll('trades');
   var using=trades.filter(function(t){return t.pair===pair;});
   if(using.length){toast('Cannot delete "'+pair+'" — used in '+using.length+' trade'+(using.length>1?'s':'')+' (including archived)','err');return;}
-  assets[typeIdx].pairs.splice(pairIdx,1);await saveAssetsData(assets);
+  assets[typeIdx].pairs.splice(pairIdx,1);
+  if(_assetsDraft!==null){_assetsDraft=assets;_assetsDraftDirty();}
+  else{await saveAssetsData(assets);}
   await renderAssetTypeList(); // refresh left column counts + tab bar
   await renderPairList();
-  ghAutoSyncConfig();
 }
 async function addPair(){
   var pInp=document.getElementById('new-pair-inp');var pair=pInp.value.trim().toUpperCase();
@@ -7282,19 +7361,43 @@ async function addPair(){
   // use active tab as the type, fall back to hidden select
   var typeName=_activePairsTab||(document.getElementById('new-pair-type-sel').value);
   if(!typeName){toast('Select an asset type first','err');return;}
-  var assets=await getAssets();var at=assets.find(function(a){return a.name===typeName;});
+  var assets=_assetsDraft!==null?_assetsDraft:await getAssets();
+  var at=assets.find(function(a){return a.name===typeName;});
   if(!at){toast('Asset type not found','err');return;}
   if(at.pairs.includes(pair)){toast('Pair already exists in '+typeName,'err');return;}
-  at.pairs.push(pair);await saveAssetsData(assets);pInp.value='';
+  at.pairs.push(pair);
+  if(_assetsDraft!==null){_assetsDraft=assets;_assetsDraftDirty();}
+  else{await saveAssetsData(assets);}
+  pInp.value='';
   // keep active tab on the type we just added to
   _activePairsTab=typeName;
-  await renderAssetTypeList();await renderPairList();ghAutoSyncConfig();
+  await renderAssetTypeList();await renderPairList();
 }
 async function saveAssets(){
+  if(_assetsDraft!==null){
+    // Detect renames vs previously saved data and update trades accordingly
+    var savedAssets=await getAssets();
+    var draftAssets=_assetsDraft;
+    // Build a rename map by index (length match only — renames done inline)
+    if(savedAssets.length===draftAssets.length){
+      var trades=await dbGetAll('trades');
+      var totalUpdated=0;
+      for(var i=0;i<savedAssets.length;i++){
+        if(savedAssets[i].name!==draftAssets[i].name){
+          var oldN=savedAssets[i].name;var newN=draftAssets[i].name;
+          for(var t of trades){if(t.assetType===oldN){t.assetType=newN;await dbPut('trades',t);totalUpdated++;}}
+        }
+      }
+      if(totalUpdated)toast('Asset type(s) renamed — updated '+totalUpdated+' trade'+(totalUpdated>1?'s':''),'ok');
+    }
+    await saveAssetsData(draftAssets);
+    _assetsDraft=null;
+  }
   await populatePairSelect();
   calcSyncAssets();
   document.getElementById('asset-modal').classList.remove('open');
   toast('Assets saved','ok');
+  ghAutoSyncConfig();
 }
 
 async function populatePairSelect(){
