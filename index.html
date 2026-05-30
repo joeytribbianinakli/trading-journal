@@ -4972,6 +4972,7 @@ async function saveSession(){
       closeSessionModal();renderSessionsList();populateSessionSelects();renderDashboard();updateSidebarStats();
       var hiddenMsg=archived?' (hidden from dashboard)':'';
       toast('Demo session created: '+demoCount+' trades + '+result.skippedCount+' skipped'+hiddenMsg+' ✓','ok');
+      await ghAutoSync();
     }catch(e){
       toast('Error generating demo trades: '+e.message,'err');
       if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Create demo session';}
@@ -4979,6 +4980,7 @@ async function saveSession(){
   } else {
     closeSessionModal();renderSessionsList();populateSessionSelects();
     toast(editingSessionId?'Session updated':'Session created','ok');
+    await ghAutoSync();
   }
   editingSessionId=null;
 }
@@ -6872,6 +6874,7 @@ async function importCSV(input){
     }
     toast('Imported '+added+' trades from CSV','ok');
     await refreshUI();
+    ghAutoSync();
   }catch(e){toast('CSV error: '+e.message,'err');console.error(e);}
   input.value='';
 }
@@ -8125,7 +8128,13 @@ async function ghPushAlertsFile(cfg){
         placeholders: paGetPlaceholders ? paGetPlaceholders() : {},
         deleteDays: localStorage.getItem('tj-pa-delete-days') || '0',
         provider:   localStorage.getItem(PA_KEY_PROVIDER)  || 'yahoo',
-        oandaEnv:   localStorage.getItem(PA_KEY_OANDA_ENV) || 'practice'
+        oandaEnv:   localStorage.getItem(PA_KEY_OANDA_ENV) || 'practice',
+        // Discord embed appearance settings (cosmetic — no credentials)
+        discordTitlePrefix: localStorage.getItem('tj-pa-discord-title-prefix') || '',
+        discordFooter:      localStorage.getItem('tj-pa-discord-footer')       || '',
+        discordColorAbove:  localStorage.getItem('tj-pa-discord-color-above')  || '',
+        discordColorBelow:  localStorage.getItem('tj-pa-discord-color-below')  || ''
+        // Note: Discord webhook URL is intentionally excluded (credential — stays local only)
       }
     };
     var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
@@ -8173,6 +8182,11 @@ async function ghPullAlertsFile(cfg){
     // Restore data provider settings (keys stay local — never synced)
     if(c.provider)  localStorage.setItem(PA_KEY_PROVIDER,  c.provider);
     if(c.oandaEnv)  localStorage.setItem(PA_KEY_OANDA_ENV, c.oandaEnv);
+    // Restore Discord embed appearance settings (cosmetic — webhook URL stays local)
+    if(c.discordTitlePrefix !== undefined) localStorage.setItem('tj-pa-discord-title-prefix', c.discordTitlePrefix);
+    if(c.discordFooter      !== undefined) localStorage.setItem('tj-pa-discord-footer',       c.discordFooter);
+    if(c.discordColorAbove  !== undefined) localStorage.setItem('tj-pa-discord-color-above',  c.discordColorAbove);
+    if(c.discordColorBelow  !== undefined) localStorage.setItem('tj-pa-discord-color-below',  c.discordColorBelow);
     // Refresh provider config cache and UI if already rendered
     if(typeof paLoadConfig === 'function') paLoadConfig();
     if(typeof paProviderUIInit === 'function')   paProviderUIInit();
@@ -8245,23 +8259,33 @@ async function ghFetchFileContent(cfg,filePath){
 
 async function ghAutoPullOnSetup(){
   var cfg=ghGetConfig();
-  toast('Credentials saved — pulling from GitHub…','ok');
   try{
     var jsonStr=await ghFetchFileContent(cfg,GH_FILE);
-    if(!jsonStr){toast('Auto-pull skipped: file not found or could not be decoded','err');return;}
+    if(!jsonStr)return; // no remote file yet — fresh repo, nothing to pull
     var data=JSON.parse(jsonStr);
     var importedTrades=Array.isArray(data)?data:(data.trades||[]);
-    var existing=new Set((await dbGetAll('trades')).map(function(t){return t.num+'|'+t.pair+'|'+t.entryTime;}));
-    var added=0,skipped=0;
-    for(var tr of importedTrades){
-      var key=tr.num+'|'+tr.pair+'|'+tr.entryTime;
-      if(!existing.has(key)){recomputeTradeFields(tr);await dbPut('trades',tr);added++;existing.add(key);}
-      else skipped++;
+
+    // ── True sync: upsert all remote trades, delete any local trade not in remote ──
+    var remoteIds=new Set(importedTrades.map(function(t){return t.id;}));
+    var localTrades=await dbGetAll('trades');
+    var removed=0;
+    for(var lt of localTrades){
+      if(lt.id&&!remoteIds.has(lt.id)){await dbDelete('trades',lt.id);removed++;}
     }
-    var imgCount=0;
-    for(var img of(data.images||[])){await dbPut('images',img);imgCount++;}
+    var added=0,updated=0;
+    for(var t of importedTrades){
+      recomputeTradeFields(t);
+      var existing=await dbGet('trades',t.id).catch(function(){return null;});
+      if(!existing){added++;}else{updated++;}
+      await dbPut('trades',t);
+    }
+
+    // Images: upsert remote
+    for(var img of(data.images||[])){await dbPut('images',img);}
+    // Sessions & settings: upsert
     for(var sess of(data.sessions||[]))await dbPut('sessions',sess);
     for(var setting of(data.settings||[]))await dbPut('settings',setting);
+    // Restore localStorage prefs
     if(data.localData){Object.keys(data.localData).forEach(function(k){localStorage.setItem(k,data.localData[k]);});}
     // Pull config file (checklist, strategies, assets)
     try{
@@ -8273,9 +8297,13 @@ async function ghAutoPullOnSetup(){
     var now=new Date().toISOString();
     localStorage.setItem('tj-gh-last-sync',now);
     ghRefreshStatus();
-    toast('Auto-pull complete: '+added+' trades added'+(skipped?' ('+skipped+' dupes skipped)':''),'ok');
+    // Only show toast if something actually changed
+    if(added||updated||removed){
+      var msg='Synced from GitHub: '+added+' added, '+updated+' updated'+(removed?', '+removed+' removed':'');
+      toast(msg,'ok');
+    }
     await refreshUI();
-  }catch(e){toast('Auto-pull error: '+e.message,'err');}
+  }catch(e){console.warn('Auto-sync pull error:',e.message);}
 }
 function ghClearConfig(){
   if(!confirm('Remove GitHub credentials from this browser?'))return;
@@ -13266,6 +13294,8 @@ function paDiscordSave(){
   if(!url.startsWith('https://discord.com/api/webhooks/')){ toast('That doesn\'t look like a Discord webhook URL', 'err'); return; }
   localStorage.setItem(PA_DISCORD_KEY, url);
   paDiscordShowConnected(url);
+  // Note: webhook URL is NOT pushed to GitHub (it's a credential — treat like an API key)
+  ghAutoSyncAlerts(); // still sync alerts array + non-sensitive config
   // Send test embed
   paDiscordSendTest(url, true);
 }
@@ -13314,6 +13344,7 @@ function paDiscordEmbedSave(){
   localStorage.setItem('tj-pa-discord-footer',       footer);
   localStorage.setItem('tj-pa-discord-color-above',  colorAbove);
   localStorage.setItem('tj-pa-discord-color-below',  colorBelow);
+  ghAutoSyncAlerts();
   toast('Discord embed settings saved', 'ok');
 }
 
@@ -13330,6 +13361,7 @@ function paDiscordEmbedReset(){
   if(elF)  elF.value  = '';
   if(elCA) elCA.value = '#34c97a';
   if(elCB) elCB.value = '#e85555';
+  ghAutoSyncAlerts();
   toast('Discord embed settings reset', 'ok');
 }
 
