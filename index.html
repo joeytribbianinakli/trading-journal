@@ -1644,9 +1644,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           </div>
           <div class="analysis-body open">
             <div class="plan-block">
-              <div class="plan-line"><span class="plan-kw plan-kw-code">if</span><textarea class="plan-editable" id="plan-if" rows="2"><price provides a confirmation></textarea></div>
+              <div class="plan-line"><span class="plan-kw plan-kw-code">if</span><textarea class="plan-editable" id="plan-if" rows="2">price provides a confirmation</textarea></div>
               <div class="plan-line" style="margin-left:18px"><span class="plan-kw then plan-kw-code">then</span><textarea class="plan-editable" id="plan-if-then" rows="2"></textarea></div>
-              <div class="plan-line" style="margin-top:6px"><span class="plan-kw plan-kw-code plan-kw-elseif">else if</span><textarea class="plan-editable" id="plan-elseif" rows="2"><the price breaks the zone></textarea></div>
+              <div class="plan-line" style="margin-top:6px"><span class="plan-kw plan-kw-code plan-kw-elseif">else if</span><textarea class="plan-editable" id="plan-elseif" rows="2">the price breaks the zone</textarea></div>
               <div class="plan-line" style="margin-left:18px"><span class="plan-kw then plan-kw-code">then</span><textarea class="plan-editable" id="plan-elseif-then" rows="2"></textarea></div>
             </div>
           </div>
@@ -6437,6 +6437,7 @@ async function openDetail(id){
     +(trade.skipped&&trade.whySkipped?'<div class="detail-section-title" style="color:var(--amber)">Why skipped</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.whySkipped)+'</div>':'')
     +(trade.issuesNotes&&trade.issuesNotes!='1.'?'<div class="detail-section-title">Issues</div><div style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6">'+escHtml(trade.issuesNotes)+'</div>':'')
     +imgSections
+    +(trade.postAnalysis&&trade.postAnalysis!='1.'?'<div class="detail-section-title">Post-journal</div><div class="js-pre">'+escHtml(trade.postAnalysis)+'</div>':'')
     +(trade.emoBefore||trade.emoAfter||trade.emoComplete?
       '<div class="detail-section-title">Emotions</div><div class="detail-grid">'
       +(trade.emoBefore?'<div class="detail-item"><div class="di-label">Before trade</div><div class="di-val js-pre">'+escHtml(trade.emoBefore)+'</div></div>':'')
@@ -6444,7 +6445,6 @@ async function openDetail(id){
       +(trade.emoComplete?'<div class="detail-item"><div class="di-label">Session complete</div><div class="di-val js-pre">'+escHtml(trade.emoComplete)+'</div></div>':'')
       +'</div>':'')
     +(trade.mistakes||trade.lessons||trade.good?'<div class="detail-section-title">Lessons</div><div class="detail-grid">'+noteRow('Mistakes',trade.mistakes)+noteRow('Lessons learned',trade.lessons)+noteRow('What went well',trade.good)+'</div>':'')
-    +(trade.postAnalysis&&trade.postAnalysis!='1.'?'<div class="detail-section-title">Post-journal</div><div class="js-pre">'+escHtml(trade.postAnalysis)+'</div>':'')
     +(trade.news&&trade.news!='1.'?'<div class="detail-section-title">News</div><div class="js-pre">'+escHtml(trade.news)+'</div>':'')
     +'<div style="height:16px"></div>';
   document.getElementById('detail-overlay').classList.add('open');
