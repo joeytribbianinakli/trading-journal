@@ -2432,13 +2432,13 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <p class="calc-ptitle" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0">
             Trade Setup
             <span style="display:flex;gap:3px;background:var(--bg3);padding:3px;border-radius:5px;border:1px solid var(--border)">
-              <button id="calc-mode-quick-btn" onclick="calcSetMode('quick')" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);background:var(--bg2);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3)">Quick Calc</button>
-              <button id="calc-mode-backtest-btn" onclick="calcSetMode('backtest')" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;border:1px solid transparent;background:none;color:var(--text2)">Backtest</button>
+              <button id="calc-mode-quick-btn" onclick="calcSetMode('quick')" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;border:1px solid transparent;background:none;color:var(--text2)">Quick Calc</button>
+              <button id="calc-mode-backtest-btn" onclick="calcSetMode('backtest')" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;border:1px solid var(--border2);background:var(--bg2);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.3)">Backtest</button>
             </span>
           </p>
 
-          <!-- Backtest session picker (hidden by default) -->
-          <div id="calc-backtest-session-row" style="display:none;margin-top:12px;margin-bottom:4px">
+          <!-- Backtest session picker (shown by default) -->
+          <div id="calc-backtest-session-row" style="display:block;margin-top:12px;margin-bottom:4px">
             <div style="background:rgba(77,127,255,.06);border:1px solid rgba(77,127,255,.2);border-radius:var(--radius);padding:10px 12px">
               <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">Session</div>
               <select id="calc-backtest-session" onchange="calcOnBacktestSessionChange()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 28px 7px 10px;outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2711%27 height=%2711%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%233d4457%27 stroke-width=%272.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 9px center"><option value="">— select session —</option></select>
@@ -2458,7 +2458,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="calc-field">
               <label style="display:flex;align-items:center;justify-content:space-between">
                 Account Balance ($)
-                <button id="calc-set-default-btn" onclick="calcSetDefaultCapital()" title="Save as default capital" style="font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--text3);cursor:pointer;font-family:inherit;transition:all .12s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text3)';this.style.borderColor='var(--border2)'">Set default</button>
+                <button id="calc-set-default-btn" onclick="calcSetDefaultCapital()" title="Save as default capital" style="display:none;font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--text3);cursor:pointer;font-family:inherit;transition:all .12s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--text3)';this.style.borderColor='var(--border2)'">Set default</button>
               </label>
               <input type="number" id="calc-balance" min="1" oninput="calcCalc()">
             </div>
@@ -2577,7 +2577,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="calc-srow"><span class="calc-sl2">Used (%)</span><span class="calc-sv a" id="calc-out-margin-pct">—</span></div>
           </div>
           <!-- Log Trade Button (backtest mode only) -->
-          <div id="calc-log-trade-box" style="display:none;margin-top:4px">
+          <div id="calc-log-trade-box" style="display:block;margin-top:4px">
             <button onclick="calcLogTrade()" style="width:100%;padding:10px;border-radius:var(--radius);border:1px solid rgba(77,127,255,.35);background:rgba(77,127,255,.1);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.01em" onmouseover="this.style.background='rgba(77,127,255,.18)'" onmouseout="this.style.background='rgba(77,127,255,.1)'">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;margin-top:-1px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Log This Trade
@@ -3482,6 +3482,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             </div>
           </div>
           <div class="frow" style="margin-bottom:16px">
+            <label class="flabel">Default Risk (%) <span style="color:var(--text3);font-weight:400">— used as default for all trades &amp; calculator in this session</span></label>
+            <input type="number" id="sm-default-risk" value="1" min="0.01" max="100" step="0.1" placeholder="e.g. 1" oninput="this.value=this.value.replace(/[^0-9.]/g,'')">
+          </div>
+          <div class="frow" style="margin-bottom:16px">
             <label style="display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none">
               <input type="checkbox" id="sm-archived" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
               <span>
@@ -4226,6 +4230,8 @@ async function openNewSessionModal(){
   document.getElementById('sm-start').value=new Date().toISOString().slice(0,10);
   document.getElementById('sm-end').value='';
   document.getElementById('sm-equity').value='5000';
+  var drElN=document.getElementById('sm-default-risk');
+  if(drElN)drElN.value='1';
   var eqElN=document.getElementById('sm-equity');
   var eqNoteN=document.getElementById('sm-equity-lock-note');
   if(eqElN){eqElN.readOnly=false;eqElN.style.color='';eqElN.style.cursor='';eqElN.style.background='';eqElN.style.borderColor='';}
@@ -4256,6 +4262,8 @@ function openEditSessionModal(sess,hasTrades){
   document.getElementById('sm-start').value=sess.startDate||'';
   document.getElementById('sm-end').value=sess.endDate||'';
   document.getElementById('sm-equity').value=sess.startingEquity||5000;
+  var drEl=document.getElementById('sm-default-risk');
+  if(drEl)drEl.value=sess.defaultRisk!=null?sess.defaultRisk:1;
   // Lock equity field if session already has trades
   var eqEl=document.getElementById('sm-equity');
   var eqNote=document.getElementById('sm-equity-lock-note');
@@ -4876,6 +4884,7 @@ async function saveSession(){
   var name=document.getElementById('sm-name').value.trim()||('['+n+'] '+startDate);
   var endDate=document.getElementById('sm-end').value;
   var startingEquity=parseFloat(document.getElementById('sm-equity').value)||5000;
+  var defaultRisk=parseFloat(document.getElementById('sm-default-risk').value)||1;
   var archived=document.getElementById('sm-archived').checked;
   var existing=editingSessionId?sessions.find(function(s){return s.id===editingSessionId;}):null;
   // Block equity change if session has trades
@@ -4920,6 +4929,7 @@ async function saveSession(){
     id:editingSessionId||(Date.now().toString(36)+Math.random().toString(36).slice(2)),
     name,startDate,endDate,
     startingEquity:startingEquity,
+    defaultRisk:defaultRisk,
     currentEquity:(function(){
       if(!existing)return startingEquity;
       // If startingEquity changed and there are no trades yet, keep currentEquity in sync
@@ -4989,6 +4999,8 @@ async function onSessionChange(){
   if(sess){
     var equity=sess.currentEquity||sess.startingEquity||5000;
     document.getElementById('f-acct').value=equity;
+    var riskEl=document.getElementById('f-riskpct');
+    if(riskEl&&sess.defaultRisk!=null){riskEl.value=sess.defaultRisk;}
     recalc();
   }
 }
@@ -7623,7 +7635,7 @@ function calcSetDefaultCapital(){
 }
 
 // ── Calculator mode: quick / backtest ─────────────────────────────
-var _calcMode='quick';
+var _calcMode='backtest';
 
 function calcSetMode(mode){
   _calcMode=mode;
@@ -7733,24 +7745,6 @@ async function calcLogTrade(){
 }
 
 function calcReset(){
-  // Reset mode to quick
-  _calcMode='quick';
-  var qBtn=document.getElementById('calc-mode-quick-btn');
-  var bBtn=document.getElementById('calc-mode-backtest-btn');
-  var sessionRow=document.getElementById('calc-backtest-session-row');
-  var logBox=document.getElementById('calc-log-trade-box');
-  var setDefaultBtn=document.getElementById('calc-set-default-btn');
-  if(qBtn){qBtn.style.background='var(--bg2)';qBtn.style.color='var(--text)';qBtn.style.border='1px solid var(--border2)';qBtn.style.boxShadow='0 1px 3px rgba(0,0,0,.3)';}
-  if(bBtn){bBtn.style.background='none';bBtn.style.color='var(--text2)';bBtn.style.border='1px solid transparent';bBtn.style.boxShadow='none';}
-  if(sessionRow)sessionRow.style.display='none';
-  if(logBox)logBox.style.display='none';
-  if(setDefaultBtn)setDefaultBtn.style.display='';
-  // Balance — restore to saved default
-  var bal=document.getElementById('calc-balance');
-  if(bal)bal.value=calcGetDefaultCapital();
-  // Risk % back to 1
-  var riskEl=document.getElementById('calc-risk-pct');
-  if(riskEl)riskEl.value=1;
   // Clear price fields
   ['calc-entry','calc-sl','calc-tp'].forEach(function(id){
     var el=document.getElementById(id);
@@ -7770,6 +7764,8 @@ function calcReset(){
   var warn2=document.getElementById('calc-warn-margin');
   if(warn1)warn1.textContent='';
   if(warn2)warn2.textContent='';
+  // Default to backtest mode
+  calcSetMode('backtest');
 }
 
 function calcCalc(){
