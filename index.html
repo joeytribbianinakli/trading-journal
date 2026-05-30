@@ -5003,7 +5003,7 @@ async function onSessionChange(){
     // completion of this function) would corrupt P/L% with the post-trade balance.
     if(!editingId){
       var isSkipped=document.getElementById('f-skipped')&&document.getElementById('f-skipped').checked;
-      var equity=isSkipped?(sess.startingEquity||5000):(sess.currentEquity||sess.startingEquity||5000);
+      var equity=isSkipped?(sess.skippedCurrentEquity||sess.startingEquity||5000):(sess.currentEquity||sess.startingEquity||5000);
       document.getElementById('f-acct').value=equity;
     }
     var riskEl=document.getElementById('f-riskpct');
@@ -5319,8 +5319,8 @@ function onSkippedChange(){
   var whySection=document.getElementById('why-skipped-section');
   if(whySection) whySection.style.display=isSkipped?'':'none';
   // Update account size based on skipped state.
-  // skipped -> session startingEquity (base); taken -> running equity.
-  // Works for both new trades and edits.
+  // Skipped chain: startingEquity compounded through prior skipped trades only.
+  // Taken chain:   startingEquity compounded through prior non-skipped trades only.
   var sesId=document.getElementById('f-session').value;
   if(!sesId) return;
   dbGetAll('sessions').then(function(sessions){
@@ -5329,32 +5329,53 @@ function onSkippedChange(){
     var acctEl=document.getElementById('f-acct');
     if(!acctEl) return;
     if(isSkipped){
-      // Always use base equity for skipped trades regardless of edit mode
-      acctEl.value=sess.startingEquity||5000;
-      recalc();
-    } else if(!editingId){
-      // New taken trade: use running equity
-      acctEl.value=sess.currentEquity||sess.startingEquity||5000;
-      recalc();
-    } else {
-      // Editing a trade and un-skipping: restore the pre-trade running equity
-      // using the same computation editTrade() uses.
-      (async function(){
-        try{
-          var _allT=await dbGetAll('trades');
-          var _trade=_allT.find(function(x){return x.id===editingId;});
-          if(!_trade){recalc();return;}
-          var _startEq=parseFloat(sess.startingEquity)||5000;
-          var _thisTime=new Date(_trade.entryTime||_trade.savedAt||0).getTime();
-          var _prior=_allT.filter(function(x){
-            return x.sessionId===sesId&&x.id!==editingId&&!x.skipped&&
-                   new Date(x.entryTime||x.savedAt||0).getTime()<_thisTime;
-          });
-          var _priorPL=_prior.reduce(function(sum,x){return sum+(parseFloat(x.plDollar)||0);},0);
-          acctEl.value=parseFloat((_startEq+_priorPL).toFixed(2));
-        }catch(e){}
+      if(!editingId){
+        // New skipped trade: use running skipped equity
+        acctEl.value=sess.skippedCurrentEquity||sess.startingEquity||5000;
         recalc();
-      })();
+      } else {
+        // Editing a trade and marking it skipped: compute prior skipped equity up to this trade
+        (async function(){
+          try{
+            var _allT=await dbGetAll('trades');
+            var _trade=_allT.find(function(x){return x.id===editingId;});
+            if(!_trade){recalc();return;}
+            var _startEq=parseFloat(sess.startingEquity)||5000;
+            var _thisTime=new Date(_trade.entryTime||_trade.savedAt||0).getTime();
+            var _prior=_allT.filter(function(x){
+              return x.sessionId===sesId&&x.id!==editingId&&x.skipped&&
+                     new Date(x.entryTime||x.savedAt||0).getTime()<_thisTime;
+            });
+            var _priorPL=_prior.reduce(function(sum,x){return sum+(parseFloat(x.plDollar)||0);},0);
+            acctEl.value=parseFloat((_startEq+_priorPL).toFixed(2));
+          }catch(e){}
+          recalc();
+        })();
+      }
+    } else {
+      if(!editingId){
+        // New taken trade: use running taken equity
+        acctEl.value=sess.currentEquity||sess.startingEquity||5000;
+        recalc();
+      } else {
+        // Editing a trade and un-skipping: restore prior taken equity
+        (async function(){
+          try{
+            var _allT=await dbGetAll('trades');
+            var _trade=_allT.find(function(x){return x.id===editingId;});
+            if(!_trade){recalc();return;}
+            var _startEq=parseFloat(sess.startingEquity)||5000;
+            var _thisTime=new Date(_trade.entryTime||_trade.savedAt||0).getTime();
+            var _prior=_allT.filter(function(x){
+              return x.sessionId===sesId&&x.id!==editingId&&!x.skipped&&
+                     new Date(x.entryTime||x.savedAt||0).getTime()<_thisTime;
+            });
+            var _priorPL=_prior.reduce(function(sum,x){return sum+(parseFloat(x.plDollar)||0);},0);
+            acctEl.value=parseFloat((_startEq+_priorPL).toFixed(2));
+          }catch(e){}
+          recalc();
+        })();
+      }
     }
   });
 }
@@ -6088,19 +6109,19 @@ async function rebalanceSession(sessionIds){
     sessTrades.sort(function(a,b){
       return new Date(a.entryTime||a.savedAt||0)-new Date(b.entryTime||b.savedAt||0);
     });
-    // Walk trades in order so each trade's acct (equity entering that trade) and
-    // plPct are always correct — even when an earlier trade is edited and its P/L changes.
-    // Skipped trades are hypothetical — their P/L never touches the real equity chain.
-    // They always use startingEquity as their acct base and never advance runningEquity.
+    // Walk trades in order maintaining two parallel equity chains:
+    //   taken chain  — non-skipped trades compound from startingEquity
+    //   skipped chain — skipped trades compound from startingEquity independently
     var startEq=parseFloat(sess.startingEquity)||5000;
     var runningEquity=startEq;
+    var skippedRunningEquity=startEq;
     for(var t of sessTrades){
       var pl=parseFloat(t.plDollar)||0;
       var correctAcct, correctPlPct;
       if(t.skipped){
-        // Skipped trades: hypothetical — always based on session starting equity, never chain
-        correctAcct=startEq;
-        correctPlPct=startEq?parseFloat((pl/startEq*100).toFixed(4)):0;
+        correctAcct=parseFloat(skippedRunningEquity.toFixed(2));
+        correctPlPct=correctAcct?parseFloat((pl/correctAcct*100).toFixed(4)):0;
+        skippedRunningEquity=parseFloat((skippedRunningEquity+pl).toFixed(2));
       } else {
         correctAcct=parseFloat(runningEquity.toFixed(2));
         correctPlPct=correctAcct?parseFloat((pl/correctAcct*100).toFixed(4)):0;
@@ -6114,6 +6135,7 @@ async function rebalanceSession(sessionIds){
       }
     }
     sess.currentEquity=parseFloat(runningEquity.toFixed(2));
+    sess.skippedCurrentEquity=parseFloat(skippedRunningEquity.toFixed(2));
     await dbPut('sessions',sess);
   }
 }
@@ -7609,6 +7631,7 @@ var calcDirection = 'long';
 var calcInfoOpen = true;
 var calcUseMargin = false; // false = cap to balance (safe), true = allow leveraged position
 var calcLastUnits = 0; // units (not lots) from the most recent calcCalc() run
+var calcLastRR = 0;   // RR ratio from the most recent calcCalc() run (0 if no TP set)
 
 function calcToggleMarginMode(){
   calcUseMargin=!calcUseMargin;
@@ -7797,7 +7820,7 @@ async function calcOnBacktestSessionChange(){
   var sess=sessions.find(function(s){return s.id===sel.value;});
   if(!sess){return;}
   var isSkipped=document.getElementById('calc-skipped')&&document.getElementById('calc-skipped').checked;
-  var equity=isSkipped?(sess.startingEquity||5000):(sess.currentEquity||sess.startingEquity||5000);
+  var equity=isSkipped?(sess.skippedCurrentEquity||sess.startingEquity||5000):(sess.currentEquity||sess.startingEquity||5000);
   var riskPct=sess.defaultRisk||1;
   var balEl=document.getElementById('calc-balance');
   var riskEl=document.getElementById('calc-risk-pct');
@@ -7820,12 +7843,12 @@ async function calcLogTrade(){
 
   var balance=parseFloat((document.getElementById('calc-balance')||{}).value)||5000;
   var riskPct=parseFloat((document.getElementById('calc-risk-pct')||{}).value)||1;
-  var tp=parseFloat((document.getElementById('calc-tp')||{}).value)||0;
 
-  // Capture instrument sym and direction before navigating away
+  // Capture everything before nav() resets the calculator
   var inst=calcGetInst();
   var pairSym=inst?inst.sym:'';
   var tradeType=calcDirection==='short'?'Short':'Long';
+  var capturedRR=calcLastRR;
   var calcIsSkipped=!!(document.getElementById('calc-skipped')&&document.getElementById('calc-skipped').checked);
 
   // Navigate to log page and pre-fill
@@ -7849,6 +7872,9 @@ async function calcLogTrade(){
     if(slEl)slEl.value=sl;
     // Quantity as units (not lots) — matches the f-qty field which expects units
     if(qtyEl)qtyEl.value=calcLastUnits;
+    // Target RR — captured before nav() so it survives the page switch
+    var trrEl=document.getElementById('f-trr');
+    if(trrEl&&capturedRR)trrEl.value=capturedRR;
     // Copy asset/pair to the pair select
     if(pairSym){
       var pairSel=document.getElementById('f-pair');
@@ -7890,6 +7916,12 @@ function calcReset(){
   var warn2=document.getElementById('calc-warn-margin');
   if(warn1)warn1.textContent='';
   if(warn2)warn2.textContent='';
+  // Reset skipped checkbox
+  var calcSkippedCb=document.getElementById('calc-skipped');
+  if(calcSkippedCb)calcSkippedCb.checked=false;
+  var calcHint=document.getElementById('calc-backtest-hint');
+  if(calcHint)calcHint.style.display='none';
+  calcLastRR=0;
   // Default to backtest mode
   calcSetMode('backtest');
 }
@@ -8036,6 +8068,7 @@ function calcCalc(){
     var tpDist=Math.abs(tpVal-entry);
     var tpTicks=tpDist/pip;
     var rr=tpDist/slDist;
+    calcLastRR=parseFloat(rr.toFixed(2));
     var tpUsd=rr*actualRiskUsd;
     var tpPct=(tpUsd/balance)*100;
     document.getElementById('calc-rr-loss').textContent='-$'+calcFmt(actualRiskUsd,2);
@@ -8055,6 +8088,7 @@ function calcCalc(){
   } else {
     rrBox.style.display='none';
     tpSection.style.display='none';
+    calcLastRR=0;
   }
 }
 
