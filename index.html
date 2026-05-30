@@ -5977,7 +5977,8 @@ async function editTrade(id){
       var _sessTrades=_sessTrades.filter(function(x){
         return new Date(x.entryTime||x.savedAt||0).getTime()<_thisTime;
       });
-      var _priorPL=_sessTrades.reduce(function(sum,x){return sum+(parseFloat(x.plDollar)||0);},0);
+      // Skipped trades are hypothetical — exclude their P/L from the real equity chain
+      var _priorPL=_sessTrades.reduce(function(sum,x){return x.skipped?sum:sum+(parseFloat(x.plDollar)||0);},0);
       _preTradeEquity=parseFloat((_startEq+_priorPL).toFixed(2));
     }catch(e){
       _preTradeEquity=parseFloat(_tradeClosure.acct)||5000;
@@ -6044,19 +6045,28 @@ async function rebalanceSession(sessionIds){
     });
     // Walk trades in order so each trade's acct (equity entering that trade) and
     // plPct are always correct — even when an earlier trade is edited and its P/L changes.
+    // Skipped trades are hypothetical — their P/L never touches the real equity chain.
+    // They always use startingEquity as their acct base and never advance runningEquity.
     var startEq=parseFloat(sess.startingEquity)||5000;
     var runningEquity=startEq;
     for(var t of sessTrades){
       var pl=parseFloat(t.plDollar)||0;
-      var correctAcct=parseFloat(runningEquity.toFixed(2));
-      var correctPlPct=correctAcct?parseFloat((pl/correctAcct*100).toFixed(4)):0;
+      var correctAcct, correctPlPct;
+      if(t.skipped){
+        // Skipped trades: hypothetical — always based on session starting equity, never chain
+        correctAcct=startEq;
+        correctPlPct=startEq?parseFloat((pl/startEq*100).toFixed(4)):0;
+      } else {
+        correctAcct=parseFloat(runningEquity.toFixed(2));
+        correctPlPct=correctAcct?parseFloat((pl/correctAcct*100).toFixed(4)):0;
+        runningEquity=parseFloat((runningEquity+pl).toFixed(2));
+      }
       // Only write back if something changed (avoids unnecessary DB writes)
       if(t.acct!==correctAcct||t.plPct!==correctPlPct){
         t.acct=correctAcct;
         t.plPct=correctPlPct;
         await dbPut('trades',t);
       }
-      runningEquity=parseFloat((runningEquity+pl).toFixed(2));
     }
     sess.currentEquity=parseFloat(runningEquity.toFixed(2));
     await dbPut('sessions',sess);
