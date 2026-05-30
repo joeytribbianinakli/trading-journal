@@ -2503,6 +2503,14 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
           <div class="calc-info-body open" id="calc-info-body">
             <div class="calc-info-grid" id="calc-info-grid"></div>
           </div>
+          <!-- Log Trade Button (backtest mode only) -->
+          <div id="calc-log-trade-box" style="display:block;margin-top:12px">
+            <button onclick="calcLogTrade()" style="width:100%;padding:10px;border-radius:var(--radius);border:1px solid rgba(77,127,255,.35);background:rgba(77,127,255,.1);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.01em" onmouseover="this.style.background='rgba(77,127,255,.18)'" onmouseout="this.style.background='rgba(77,127,255,.1)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;margin-top:-1px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Log This Trade
+            </button>
+            <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:5px">Sends session, balance, risk %, entry, SL &amp; qty to the trade form</div>
+          </div>
         </div>
 
         <!-- RIGHT: Results -->
@@ -2575,14 +2583,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.55}
             <div class="calc-section-title a">Margin</div>
             <div class="calc-srow"><span class="calc-sl2">Required ($)</span><span class="calc-sv a" id="calc-out-margin">—</span></div>
             <div class="calc-srow"><span class="calc-sl2">Used (%)</span><span class="calc-sv a" id="calc-out-margin-pct">—</span></div>
-          </div>
-          <!-- Log Trade Button (backtest mode only) -->
-          <div id="calc-log-trade-box" style="display:block;margin-top:4px">
-            <button onclick="calcLogTrade()" style="width:100%;padding:10px;border-radius:var(--radius);border:1px solid rgba(77,127,255,.35);background:rgba(77,127,255,.1);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:.01em" onmouseover="this.style.background='rgba(77,127,255,.18)'" onmouseout="this.style.background='rgba(77,127,255,.1)'">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;margin-top:-1px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Log This Trade
-            </button>
-            <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:5px">Sends session, balance, risk %, entry, SL &amp; qty to the trade form</div>
           </div>
         </div>
       </div>
